@@ -1,0 +1,102 @@
+﻿@{
+    Layout = null;
+}
+@model WebApplication1.Models.User
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <style>
+
+        #loginCard {
+            border: 1px solid lightgray;
+            padding: 6px;
+            box-shadow: 5px 10px 8px lightgray;
+        }
+    </style>
+</head>
+<body>
+    <div class="ui centered middle aligned grid" style="height : 100vh;">
+        <div class="sixteen wide tablet four wide computer column">
+            <div class="ui blue card" style="width : 100%;border-color:whitesmoke;" id="loginCard">
+                <div class="content">
+                    <div class="header" style="text-align: center">
+                        <img src="~/Content/Lu.png" style="width: 45px;" /><br />
+                        <p style="color:gray;margin-top:5px;">Logic University</p>
+                    </div>
+                </div>
+                <center><div class="ui divider" style="padding:0px;width:60%;"></div>
+                </center>
+                @using (Html.BeginForm("Login", "Auth", FormMethod.Post))
+                {
+                    <div class="content">
+                        <div class="ui form" style="padding:15px;">
+                            <div class="field">
+                                <label>Username</label>
+                                @Html.TextBoxFor(model => model.Username, new { @class = "form-control", @placeholder = " Username", @style = "background-color:whitesmoke" })
+                            </div>
+                            <div class="field">
+                                @Html.ValidationMessageFor(model => model.Username, null, new { @style = "color:indianred" })
+                            </div>
+                            <div class="field">
+                                <label>Password</label>
+                                @Html.PasswordFor(model => model.Password, new { @class = "form-control", @placeholder = " Username", @style = "background-color:whitesmoke" })
+                            </div>
+                            <div class="field">
+                                @Html.ValidationMessageFor(model => model.Password, null, new { @style = "color:indianred" })
+                            </div>
+                            @{
+                                if (ViewData["Error"] != null)
+                                {
+                                    <div class="field">
+                                        <label style="color : red;">@ViewData["Error"]</label>
+                                    </div>
+                                }
+                            }
+
+                            <div class="sixteen wide tablet right aligned column">
+                                <button class="ui button" style="background-color :#4285F4;color : white;margin-bottom:7px;">
+                                    <i class="sign in alternate icon"></i>
+                                    Login
+                                </button>
+                            </div>
+                            <div class="ui divider"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+    <script>
+
+        var usernameError = document.getElementById("userError");
+        var passwordError = document.getElementById("passError");
+
+        function validateForm() {
+            var username = document.forms["loginform"]["Username"].value;
+            var password = document.forms["loginform"]["Password"].value;
+            var valid = true;
+            if (username == "") {
+                usernameError.setAttribute("style", "display : block;");
+                valid = false;
+            } else {
+                usernameError.setAttribute("style", "display : none;");
+            }
+            if (password == "") {
+                passwordError.setAttribute("style", "display : block;");
+                valid = false;
+            } else {
+                passwordError.setAttribute("style", "display : none;");
+                console.log("PASSWORD FILLED")
+            }
+
+            return valid;
+        }
+    </script>
+</body>
+</html>

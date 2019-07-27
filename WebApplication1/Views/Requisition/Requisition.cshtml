@@ -1,0 +1,97 @@
+﻿@using WebApplication1.Models
+
+<div class="sixteen wide tablet twelve wide computer column">
+    <h5 class="ui header">Order View</h5>
+    <table class="ui celled table">
+        <thead>
+            <tr>
+                <th>Employee Name</th>
+                <th>Requested Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ 
+                if (ViewData["Requests"] != null)
+                {
+                    foreach (var r in (List <Request>)ViewData["Requests"])
+                    {
+                        <tr>
+                            <td>@r.Requestor.Name</td>
+                            <td>@r.Date.Date</td>
+                            <td><button class="ui basic primary outline button" onclick="viewOrder('@r.RequestId-@r.Requestor.Name')">View</button></td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="ui modal">
+    <div class="header" id="requestor">Employee Name : Mr.XYZ</div>
+    <div class="content">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th style="background-color:#f2f2f2;">Name</th>
+                    <th style="background-color:#f2f2f2;">Qty</th>
+                </tr>
+            </thead>
+            <tbody id="tBody"></tbody>
+
+        </table>
+        <form id="form-request" method="POST">
+            <div class="ui grid">
+
+                <div class="eight wide tablet column">
+                    <textarea style="width: 100%" rows="4" placeholder="Pleave give a reason..."></textarea>
+                </div>
+                <div class="eight wide tablet column" style="position: relative;">
+                    <div style="position : absolute; bottom : 10px;right: 10px;">
+                        <button onclick="submitClick('ACCEPT')" class="ui positive button">Approve</button>
+                        <button onclick="submitClick('REJECT')" class="ui negative button">Reject</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var form = document.getElementById("form-request");
+    var tBody = document.getElementById("tBody");
+    var requestorName = document.getElementById("requestor");
+    var modal = $('.ui.modal');
+    function viewOrder(msg) {
+        var arr = msg.split('-');
+        requestId = arr[0];
+        requestorName.innerHTML = `Employee Name : ${arr[1]}`
+        $.ajax({
+            url: 'http://localhost:50271/requisitions/'+arr[0],
+            type: 'GET',
+            contentType: 'application/json',
+            xhrFields: { withCredentials: true },
+            success: function (data, textStatus, xhr) {
+                
+                var rowsString = "";
+                for (var i = 0; i < data.length; i++) {
+                    rowsString += `<tr><td>${data[i].Item.Description}</td><td>${data[i].Quantity}</td></tr>`
+                }
+                tBody.innerHTML = rowsString;
+                form.setAttribute("action", "http://localhost:50271/requisitions/" + arr[0])
+                modal.modal('show');
+
+            }
+        })
+    }
+
+    function submitClick(ans) {
+
+        var input = document.createElement("input");
+        input.setAttribute("type", "hidden");
+        input.setAttribute("name", "status");
+        input.setAttribute("value", ans);
+        form.appendChild(input)
+        form.submit();
+    }
+</script>

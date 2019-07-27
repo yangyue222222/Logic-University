@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <style>
+        body {
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="ui container" style="height: 100%">
+        <div style="padding : 2px;"></div>
+        <div class="ui secondary menu" style="border-bottom: 1px solid lightgray;background-color:#f2f2f2;padding : 10px;">
+            <div class="header item">
+                <img style="width: 22px;height : 30px" src="~/Content/Lu.png" />&nbsp;&nbsp;&nbsp;
+                <span style="font-family:Arial, Helvetica, sans-serif">Logic University</span>
+            </div>
+            <div class="right menu">
+                <a class="ui item">
+                    <i class="user icon"></i>
+                    Johnny Cena
+                </a>
+                <a class="ui tiny item button" id="computer-logout" style="background-color: #fff;">
+                    <i class="sign out alternate icon"></i>
+                    Logout
+                </a>
+                <a class="ui tiny item" id="sidebar-activator">
+                    <i class="align justify icon"></i>
+                </a>
+            </div>
+        </div>
+
+        <br>
+        <div class="ui grid">
+            <div class="four wide computer column" id="sidebar">
+                <div class="ui secondary vertical pointing fluid menu">
+                    <a class="item">
+                        <i class="file alternate icon"></i>
+                        Item Requisition
+                    </a>
+                    <a class="item active" style="color :#4285F4;background-color : #e6eeff;">
+                        <i class="icon clone"></i>
+                        Pending Requisitions
+                    </a>
+                    <a class="item">
+                        <i class="briefcase icon"></i>
+                        Items Pick-up
+                    </a>
+                    <a class="item">
+                        <i class="street view icon"></i>
+                        Delegate Functions
+                    </a>
+                    <a class="item">
+                        <i class="file alternate icon"></i>
+                        History
+                    </a>
+                </div>
+            </div>
+            <div class="sixteen wide tablet twelve wide computer column">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <div class="ui sidebar vertical menu" id="mobile-sidebar">
+
+        <div class="item" style="text-align: center;">
+            <h4 class="ui header">
+                <i class="user icon"></i>
+            </h4>
+            <br />
+            <p>
+                Kyaw Soe han
+            </p>
+        </div>
+        <div class="item" style="text-align: center">
+            <a class="item">
+                <i class="icon plus square"></i>
+                Item Requisition
+            </a>
+            <a class="item">
+                <i class="icon clone"></i>
+                Order Requests
+            </a>
+        </div>
+        <div class="item" style="text-align: center">
+            <a class="tiny ui inverted secondary button">
+                <i class="icon sign-out"></i>
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var mobileSidebar = $('#mobile-sidebar');
+            var sidebarActivator = $('#sidebar-activator');
+            var sideBar = $('#sidebar');
+            var computerLogout = $('#computer-logout');
+
+
+            sidebarActivator.bind('click', function () {
+                mobileSidebar.sidebar('toggle');
+            })
+            var resizeScreen = function () {
+                if ($(window).width() < 992) {
+                    sideBar.hide();
+                    computerLogout.hide();
+                    sidebarActivator.show();
+                } else {
+                    sidebarActivator.hide();
+                    computerLogout.show();
+                    sideBar.show();
+                }
+
+            }
+
+            resizeScreen();
+
+            $(window).resize(resizeScreen);
+        });
+
+
+    </script>
+</body>
+</html>
