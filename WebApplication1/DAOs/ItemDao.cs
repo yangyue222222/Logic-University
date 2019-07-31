@@ -19,5 +19,14 @@ namespace WebApplication1.DAOs
 
             return ItemsList;
         }
+        public static Item getItemById(int itemId)
+        {
+            Item item = null;
+            using (var ctx = new UniDBContext())
+            {
+                item = ctx.Items.Where(i => i.ItemId == itemId).FirstOrDefault();
+            }
+            return item;
+        }
     }
 }

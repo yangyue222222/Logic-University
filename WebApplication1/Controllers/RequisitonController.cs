@@ -7,9 +7,11 @@ using WebApplication1.Models;
 using System.Diagnostics;
 using WebApplication1.DAOs;
 using WebApplication1.Utilities;
+using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
+    [AuthFilter]
     public class RequisitionController : Controller
     {
         [HttpPost]
@@ -27,23 +29,20 @@ namespace WebApplication1.Controllers
 
                 try
                 {
-                    string token = HttpContext.Request.Cookies["token"].Value;
-                    string decryptedToken = TokenUtility.Decrypt(token);
-                    string[] arr = decryptedToken.Split(new string[] { "%" }, StringSplitOptions.None);
+                    int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+                    int userId = Convert.ToInt32(RouteData.Values["userId"]);
+                    
                     
                     Department d = new Department()
                     {
-                        DepartmentId = Convert.ToInt32(arr[2])
+                        DepartmentId = Convert.ToInt32(departmentId)
                     };
                     User u = new User()
                     {
-                        UserId = Convert.ToInt32(arr[0]),
+                        UserId = userId,
                         Department = d
                     };
-
-
-
-                    RequestDao.InsertRequest(items,u);
+                    RequestDao.InsertRequest(items, u);
                     return new HttpStatusCodeResult(200);
                 }
                 catch (Exception e)
@@ -69,8 +68,8 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-        [Route("Requisitions"),HttpGet]
-        public ActionResult Requisition()
+        [HttpGet]
+        public ActionResult PendingRequisitions()
         {
 
             string token = HttpContext.Request.Cookies["token"].Value;
@@ -81,16 +80,13 @@ namespace WebApplication1.Controllers
 
             ViewData["Requests"] = requests;
 
-            return View("Requisition");
+            return View("PendingRequisitions");
         }
 
         [Route("Requisitions/{id}"),HttpGet]
         public JsonResult RequisitionById(int id)
         {
-            string token = HttpContext.Request.Cookies["token"].Value;
-            string decodedToken = TokenUtility.Decrypt(token);
-            string[] arr = decodedToken.Split(new string[] { "%" }, StringSplitOptions.None);
-            int departmentId = Convert.ToInt32(arr[2]);
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
 
             List<RequestDetail> requestDetails = RequestDao.getRequestDetailsByRequestId(id,departmentId);
             return Json(requestDetails,JsonRequestBehavior.AllowGet);
@@ -99,17 +95,16 @@ namespace WebApplication1.Controllers
         [Route("Requisitions/{id}"), HttpPost]
         public ActionResult ApproveRequisition(int id,string status)
         {
-            string token = HttpContext.Request.Cookies["token"].Value;
-            string decodedToken = TokenUtility.Decrypt(token);
-            string[] arr = decodedToken.Split(new string[] { "%" }, StringSplitOptions.None);
-            int departmentId = Convert.ToInt32(arr[2]);
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+
             Department d = new Department()
             {
                 DepartmentId = departmentId
             };
             User u = new User()
             {
-                UserId = Convert.ToInt32(arr[0])
+                UserId = userId
             };
             Request request = new Request()
             {
@@ -126,7 +121,7 @@ namespace WebApplication1.Controllers
             }
 
             RequestDao.updateRequestStatus(request);
-            return RedirectToAction("Requisition");
+            return RedirectToAction("PendingRequisitions");
         }
 
         

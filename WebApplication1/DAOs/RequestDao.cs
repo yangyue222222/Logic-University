@@ -20,7 +20,7 @@ namespace WebApplication1.DAOs
                     req.Requestor = u;
                     req.Department = u.Department;
                     ICollection<RequestDetail> details = new List<RequestDetail>();
-                    req.Date = DateTime.UtcNow;
+                    req.Date = DateTime.Now;
                     req.Status = (int)RequestStatus.Requested;
                     foreach (var i in items)
                     {
@@ -72,13 +72,106 @@ namespace WebApplication1.DAOs
 
         public static void updateRequestStatus(Request request)
         {
-            using(var ctx = new UniDBContext())
+            
+            using (var ctx = new UniDBContext())
             {
-                var req = ctx.Requests.Where(r => r.RequestId == request.RequestId && r.Department.DepartmentId == request.Department.DepartmentId).SingleOrDefault();
+                var req = ctx.Requests.Include("RequestDetails").Include("RequestDetails.Item").Where(r => r.RequestId == request.RequestId && r.Department.DepartmentId == request.Department.DepartmentId).SingleOrDefault();
                 req.Status = request.Status;
                 req.ApprovedBy = request.ApprovedBy;
                 ctx.Users.Attach(req.ApprovedBy);
-                ctx.SaveChanges();
+                ctx.Departments.Attach(request.Department);
+
+                if(req.Status == (int)RequestStatus.Approved)
+                {
+                    //get list of item ids
+                    Disbursement disbursement = new Disbursement();
+                    List<int> itemIds = req.RequestDetails.Select(rd => rd.Item.ItemId).ToList();
+                    List<DisbursementDetail> disbursementDetails = new List<DisbursementDetail>();
+
+                    //get the current stock items 
+                    IDictionary<int, Item> itemsDictionary = ctx.Items.Where(i => itemIds.Contains(i.ItemId)).ToDictionary(i => i.ItemId, i => i);
+
+                    foreach(var rD in req.RequestDetails)
+                    {
+                        Item i = itemsDictionary[rD.Item.ItemId];
+                       
+                        if (rD.Quantity > i.Quantity)
+                        {
+                            //requested amount is more than current stock
+                            disbursement.Status = (int)DisbursementStatus.Allocated;
+                            req.Status = (int)RequestStatus.PartiallyAllocated;
+                            DisbursementDetail dd = new DisbursementDetail()
+                            {
+                                Item = i,
+                                Quantity = i.Quantity
+                            };
+                            rD.DeliveredQuantity = i.Quantity;
+
+                            i.Quantity = 0;
+                            disbursementDetails.Add(dd);
+                        }else
+                        {
+                            DisbursementDetail dd = new DisbursementDetail()
+                            {
+                                Item = i,
+                                Quantity = rD.Quantity,
+                            };
+
+                            i.Quantity = i.Quantity - rD.Quantity;
+                            disbursementDetails.Add(dd);
+                        }
+                    }
+
+                    disbursement.DisbursementDetails = disbursementDetails;
+                    disbursement.Date = DateTime.Now;
+                    disbursement.Department = request.Department;
+                    disbursement.Request = req;
+                    ctx.Disbursements.Add(disbursement);
+                    ctx.DisbursementDetails.AddRange(disbursementDetails);
+
+                    if(req.Status != (int)RequestStatus.PartiallyAllocated)
+                    {
+                        req.Status = (int)RequestStatus.FullyAllocated;
+                    }
+                }
+                try
+                {
+                    ctx.SaveChanges();
+
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.InnerException.Message);
+                    Debug.WriteLine(e.InnerException.StackTrace.ToString());
+                }
+            }
+        }
+
+        public static List<RetrievalItem> GetRequestDeailsByItems()
+        {
+            using(var ctx = new UniDBContext())
+            {
+                List<RetrievalItem> items = ctx.RequestDetails.Include("Request").Include("Item")
+                    .Where(r =>
+                        r.Request.Date.CompareTo(DateTime.Now) < 0 && r.Request.Status == (int)RequestStatus.Approved
+                    ).GroupBy(r =>new { r.Item.Description, r.Item.ItemId })
+                    .Select(r => new RetrievalItem
+                    {
+                        Description = r.Key.Description,
+                        Quantity = r.Sum(rq => rq.Quantity),
+                        ItemId = r.Key.ItemId
+                    }).ToList();
+
+                return items;
+            }
+        }
+
+        public static List<Request> GetRequestDetailByDepartment()
+        {
+            using (var ctx = new UniDBContext())
+            {
+                List<Request> requests = ctx.Requests.Include("RequestDetails").Include("RequestDetails.Item").Include("Department").Where(r => r.Status == (int)RequestStatus.Approved).ToList();
+                return requests;
             }
         }
         

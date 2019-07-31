@@ -7,7 +7,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DataAccessLayer
 {
-    public class DBInitializer : DropCreateDatabaseIfModelChanges<UniDBContext>
+    public class DBInitializer : DropCreateDatabaseAlways<UniDBContext>
     {
         protected override void Seed(UniDBContext context)
         {
@@ -31,6 +31,10 @@ namespace WebApplication1.DataAccessLayer
 
             PopulateUser u = new PopulateUser();
             u.populateUsers(context);
+
+            PopulateSupplier sup = new PopulateSupplier();
+            sup.populateSuppliers(context);
+
             base.Seed(context);
         }
     }

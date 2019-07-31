@@ -12,7 +12,9 @@ namespace WebApplication1.Models
         Rejected,
         Cancelled,
         Delivered,
-        PartiallyDelivered
+        PartiallyDelivered,
+        FullyAllocated,
+        PartiallyAllocated
     }
 
     public class Request

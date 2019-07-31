@@ -145,16 +145,25 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\DelegateController.cs" />
+    <Compile Include="Controllers\DisbursementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\RequisitonController.cs" />
+    <Compile Include="Controllers\StationeryController.cs" />
+    <Compile Include="DAOs\DepartmentDao.cs" />
+    <Compile Include="DAOs\DisbursementDao.cs" />
     <Compile Include="DAOs\ItemDao.cs" />
+    <Compile Include="DAOs\OrderDao.cs" />
     <Compile Include="DAOs\RequestDao.cs" />
+    <Compile Include="DAOs\SupplierDao.cs" />
     <Compile Include="DAOs\UserDao.cs" />
     <Compile Include="DataAccessLayer\DBInitializer.cs" />
     <Compile Include="DataAccessLayer\Populate.cs" />
+    <Compile Include="DataAccessLayer\PopulateSupplier.cs" />
     <Compile Include="DataAccessLayer\PopulateUser.cs" />
     <Compile Include="DataAccessLayer\UniDBContext.cs" />
+    <Compile Include="Filters\AuthFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -164,8 +173,10 @@
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderDetail.cs" />
+    <Compile Include="Models\PendingOrder.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="Models\RequestDetail.cs" />
+    <Compile Include="Models\RetrievalItem.cs" />
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -203,15 +214,23 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Requisition\Index.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
-    <Content Include="Views\Requisition\Requisition.cshtml" />
+    <Content Include="Views\Requisition\PendingRequisitions.cshtml" />
+    <Content Include="Views\Delegate\Index.cshtml" />
+    <Content Include="Views\Orders\Index.cshtml" />
+    <Content Include="Views\Orders\PendingOrders.cshtml" />
+    <Content Include="Views\Orders\OrderDetail.cshtml" />
+    <Content Include="Views\Shared\_BaseLayout.cshtml" />
+    <Content Include="Views\Shared\_DeptLayout.cshtml" />
+    <Content Include="Views\Shared\_StoreLayout.cshtml" />
+    <Content Include="Views\Auth\Dashboard.cshtml" />
+    <Content Include="Views\Stationery\Retrieval.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Order\" />
+    <Folder Include="Views\Disbursement\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

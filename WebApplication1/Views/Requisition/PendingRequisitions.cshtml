@@ -1,4 +1,8 @@
-﻿@using WebApplication1.Models
+﻿@{
+    Layout = "~/Views/Shared/_DeptLayout.cshtml";
+}
+
+@using WebApplication1.Models
 
 <div class="sixteen wide tablet twelve wide computer column">
     <h5 class="ui header">Order View</h5>
@@ -11,10 +15,10 @@
             </tr>
         </thead>
         <tbody>
-            @{ 
+            @{
                 if (ViewData["Requests"] != null)
                 {
-                    foreach (var r in (List <Request>)ViewData["Requests"])
+                    foreach (var r in (List<Request>)ViewData["Requests"])
                     {
                         <tr>
                             <td>@r.Requestor.Name</td>
@@ -62,17 +66,18 @@
     var tBody = document.getElementById("tBody");
     var requestorName = document.getElementById("requestor");
     var modal = $('.ui.modal');
+    var requestId = null;
     function viewOrder(msg) {
         var arr = msg.split('-');
         requestId = arr[0];
         requestorName.innerHTML = `Employee Name : ${arr[1]}`
         $.ajax({
-            url: 'http://localhost:50271/requisitions/'+arr[0],
+            url: 'http://localhost:50271/requisitions/' + arr[0],
             type: 'GET',
             contentType: 'application/json',
             xhrFields: { withCredentials: true },
             success: function (data, textStatus, xhr) {
-                
+
                 var rowsString = "";
                 for (var i = 0; i < data.length; i++) {
                     rowsString += `<tr><td>${data[i].Item.Description}</td><td>${data[i].Quantity}</td></tr>`
@@ -91,6 +96,7 @@
         input.setAttribute("type", "hidden");
         input.setAttribute("name", "status");
         input.setAttribute("value", ans);
+        form.setAttribute("action", "http://localhost:50271/requisitions/" + requestId);
         form.appendChild(input)
         form.submit();
     }

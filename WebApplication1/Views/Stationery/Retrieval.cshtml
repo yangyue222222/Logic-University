@@ -1,0 +1,135 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    List<RetrievalItem> retrievalItems = null;
+    List<Item> inventory = null;
+    if (ViewData["RetrievalItems"] != null)
+    {
+        retrievalItems = (List<RetrievalItem>)ViewData["RetrievalItems"];
+        inventory = (List<Item>)ViewData["Inventory"];
+    }
+}
+
+<div class="ui grid">
+    @*<div class="sixteen wide tablet column">
+        Sort By : 
+        <select class="ui dropdown" id="select-box">
+            <option value="0">Item</option>
+            <option value="1">Department</option>
+        </select>
+    </div>*@
+    <div class=" sixteen wide tablet column" id="table">
+        <form method="POST" action="http://localhost:50271/disbursement/Disbursements">
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <th>
+                            Item Description
+                        </th>
+                        <th>
+                            Requested Quantity
+                        </th>
+                        <th>
+                            Actual Quantity
+                        </th>
+                        <th>
+                            Delivered Quantity
+                        </th>
+                        <th>
+                            Reason
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @if (retrievalItems != null)
+                    {
+                        for (var i = 0; i < retrievalItems.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @retrievalItems[i].Description
+                                </td>
+                                <td>
+                                    @retrievalItems[i].Quantity
+                                </td>
+                                <td>
+                                    @inventory[i].Quantity
+                                    <input type="hidden" value="@inventory[i].Quantity" name="inventory[@i]" />
+                                </td>
+                                <td>
+                                    <input type="hidden" value="@retrievalItems[i].ItemId" name="[@i].ItemId"/>
+                                    <div class="ui input" style="width : 100%">
+                                        <input type="number" min="0" max="@retrievalItems[i].Quantity" name="[@i].Quantity" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <select class="ui dropdown" id="select-box" name="reasons[@i]">
+                                        <option value="0"></option>
+                                        <option value="1">No stock</option>
+                                        <option value="2">Missing</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+            <button type="submit" class="ui primary button">PREPARED</button>
+        </form>
+
+    </div>
+    
+</div>
+
+<script>
+    //$(document).ready(function () {
+    //    //$('.ui.dropdown').dropdown();
+    //    var select = null;
+    //    var table = $('#table');
+    //    $('#select-box').change(function () {
+    //        select = $(this).children('option:selected').val();
+    //        $.ajax('http://localhost:50271/stationery/requestdetails?sortBy=' + select, {
+    //            dataType: 'json',
+    //            xhrFields: { withCredentials: true },
+    //            success: function (data, status, xhr) {
+    //                table.empty();
+    //                generateTable(data);
+    //            }
+    //        });
+    //    });
+
+    //    function generateTable(data) {
+
+    //        if (select == 0) {
+    //            var tableText = '<table class="ui celled table"><thead><tr><th>Item Description</th><th>Quantity</th></tr></thead><tbody>';
+    //            var rows = "";
+    //            data.forEach(x => {
+    //                rows += `<tr><td>${x.Description}</td><td>${x.Quantity}</td><tr/>`
+    //            });
+    //            tableText += rows;
+    //            tableText += "</tbody></table>"
+    //            table.html(tableText);
+    //        } else if (select == 1) {
+    //            var htmlText = "";
+    //            data.forEach(x => {
+    //                htmlText += `<div class="sixteen wide tablet column">${x.departmentname}</div>`
+    //                htmlText += `<table class="ui celled table"><thead><tr><th>Item Description</th><th>Quantity</th></tr></thead><tbody>`;
+    //                x.items.forEach(y => {
+    //                    htmlText += `<tr><td>${y.name}</td><td>${y.count}</td></tr>`
+    //                });
+
+    //                htmlText += '</tbody></table>';
+    //            });
+
+    //            table.html(htmlText);
+                
+    //        } 
+    //    }
+        
+
+        
+    //});
+</script>

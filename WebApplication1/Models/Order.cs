@@ -5,10 +5,11 @@ using System.Web;
 
 namespace WebApplication1.Models
 {
-    enum OrderStatus
+    public enum OrderStatus
     {
         Requested,
         Approved,
+        Rejected,
         Delivered
     }
     public class Order

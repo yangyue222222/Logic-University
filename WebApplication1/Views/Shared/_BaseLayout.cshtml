@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <title>@ViewBag.Title</title>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <style>
+        .activeLink {
+            color: #4285F4 !important;
+            background-color: #e6eeff !important;
+            font-weight : bold !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="ui container">
+        <div style="padding : 2px;"></div>
+        <div class="ui secondary menu" style="border-bottom: 1px solid lightgray;background-color:#f2f2f2;padding : 10px;">
+            <div class="header item">
+                <img style="width: 22px;height : 30px" src="~/Content/Lu.png" />&nbsp;&nbsp;&nbsp;
+                <span style="font-family:Arial, Helvetica, sans-serif">Logic University</span>
+            </div>
+            <div class="right menu">
+                <a class="ui item">
+                    <i class="user icon"></i>
+                    @ViewData["Username"]
+                </a>
+
+                <a class="ui tiny item button" id="computer-logout" style="background-color: #fff;" href="@Url.Action("Logout", "Auth")">
+                    <i class="sign out alternate icon"></i>
+                    <span>Logout</span>
+                </a>
+
+                <a class="ui tiny item" id="sidebar-activator">
+                    <i class="align justify icon"></i>
+                </a>
+            </div>
+        </div>
+        @RenderBody()
+    </div>
+</body>
+</html>

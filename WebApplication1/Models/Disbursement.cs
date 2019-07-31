@@ -6,6 +6,14 @@ using System.Web;
 
 namespace WebApplication1.Models
 {
+
+    public enum DisbursementStatus
+    {
+        Allocated,
+        Prepared,
+        Delivered
+    }
+
     public class Disbursement
     {
         public int DisbursementId { get; set; }
@@ -13,5 +21,6 @@ namespace WebApplication1.Models
         public DateTime Date { get; set; }
         public Request Request { get; set; }
         public int Status { get; set; }
+        public List<DisbursementDetail> DisbursementDetails { get; set; }
     }
 }

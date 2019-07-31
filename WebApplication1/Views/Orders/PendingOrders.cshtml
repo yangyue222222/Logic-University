@@ -1,0 +1,35 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+}
+
+<div class="sixteen wide tablet twelve wide computer column">
+    <h5 class="ui header">Order View</h5>
+    <table class="ui celled table">
+        <thead>
+            <tr>
+                <th>Raised By</th>
+                <th>Requested Date</th>
+                <th>Total</th>
+                <th>Option</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (ViewData["PendingOrders"] != null)
+                {
+                    foreach (var pO in (List<PendingOrder>)ViewData["PendingOrders"])
+                    {
+                        <tr>
+                            <td>@pO.RaisedBy</td>
+                            <td>@pO.SubmittedTime.Date.ToString("dd/MM/yyyy")</td>
+                            <td>@pO.Total</td>
+                            <td><a class="ui basic primary outline button" href="http://localhost:50271/Orders/OrderDetail?orderId=@pO.OrderId">View</a></td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>

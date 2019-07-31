@@ -8,6 +8,7 @@ using System.Diagnostics;
 using WebApplication1.Utilities;
 using System.Diagnostics;
 using WebApplication1.DAOs;
+using WebApplication1.Filters;
 
 namespace WebApplication1.App_Start
 {
@@ -38,7 +39,27 @@ namespace WebApplication1.App_Start
                 HttpCookie cookie = new HttpCookie("token",token);
                 cookie.Expires = DateTime.Now.AddDays(1);
                 Response.Cookies.Add(cookie);
-                return RedirectToAction("Index", "Requisition");
+                
+                RedirectToRouteResult result = null;
+                switch (u.Rank)
+                {
+                    case (int)UserRank.Manager:
+                        result = RedirectToAction("Dashboard");
+                        break;
+
+                    case (int)UserRank.Employee:
+                        result = RedirectToAction("Index","Requisition");
+                        break;
+
+                    case (int)UserRank.Head:
+                        result = RedirectToAction("PendingRequisitions", "Requisition");
+                        break;
+                    case (int)UserRank.Clerk:
+                        result = RedirectToAction("Index", "Orders");
+                        break;
+                }
+
+                return result;
             }
            
             return View();
@@ -54,6 +75,12 @@ namespace WebApplication1.App_Start
                 Response.Cookies.Add(cookie);
             }
             return RedirectToAction("Index");
+        }
+
+        [AuthFilter]
+        public ActionResult Dashboard()
+        {
+            return View();
         }
     }
 }

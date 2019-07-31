@@ -17,37 +17,43 @@ namespace WebApplication1.DataAccessLayer
             {
                 Category = cat,
                 Description = "Clips Double 1 in",
-                UnitOfMeasure = uni
+                UnitOfMeasure = uni,
+                Price = 10
             };
             Item i2 = new Item()
             {
                 Category = cat,
                 Description = "Clips Double 2 in",
-                UnitOfMeasure = uni
+                UnitOfMeasure = uni,
+                Price = 10
             };
             Item i3 = new Item()
             {
                 Category = cat,
                 Description = "Clips Double 3/4 in",
-                UnitOfMeasure = uni
+                UnitOfMeasure = uni,
+                Price = 10
             };
             Item i4 = new Item()
             {
                 Category = cat,
                 Description = "Clips Paper Large",
-                UnitOfMeasure = "Box"
+                UnitOfMeasure = "Box",
+                Price = 10
             };
             Item i5 = new Item()
             {
                 Category = cat,
                 Description = "Clip Paper Medium",
-                UnitOfMeasure = "Box"
+                UnitOfMeasure = "Box",
+                Price = 10
             };
             Item i6 = new Item()
             {
                 Category = cat,
                 Description = "Clip Paper Small",
-                UnitOfMeasure = "Box"
+                UnitOfMeasure = "Box",
+                Price = 10
             };
 
 
@@ -85,7 +91,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Category = cat,
                     UnitOfMeasure = uni,
-                    Description = s
+                    Description = s,
+                    Price = 5
                 };
                 envelopes.Add(i);
             }
@@ -105,7 +112,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Category = cat,
                     UnitOfMeasure = uni,
-                    Description = s
+                    Description = s,
+                    Price = 6
                 };
                 erasers.Add(i);
             }
@@ -133,7 +141,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Category = cat,
                     UnitOfMeasure = uni,
-                    Description = s
+                    Description = s,
+                    Price = 7
                 };
                 exercises.Add(i);
             }
@@ -153,7 +162,8 @@ namespace WebApplication1.DataAccessLayer
             {
                 Category = cat,
                 Description = "File Separator",
-                UnitOfMeasure = "Set"
+                UnitOfMeasure = "Set",
+                Price = 11
             };
             files.Add(i1);
             string[] descriptions = {
@@ -174,7 +184,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Category = cat,
                     UnitOfMeasure = uni,
-                    Description = s
+                    Description = s,
+                    Price = 11
                 };
                 files.Add(i);
             }
@@ -193,7 +204,8 @@ namespace WebApplication1.DataAccessLayer
             {
                 Category = cat,
                 Description = "Pen Transparency Soluble",
-                UnitOfMeasure = "Packet"
+                UnitOfMeasure = "Packet",
+                Price = 6
             };
             pens.Add(i1);
             
@@ -224,7 +236,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Category = cat,
                     UnitOfMeasure = uni,
-                    Description = s
+                    Description = s,
+                    Price = 11
                 };
                 pens.Add(i);
             }
@@ -235,7 +248,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Category = cat,
                     UnitOfMeasure = un,
-                    Description = s
+                    Description = s,
+                    Price = 11
                 };
                 pens.Add(i);
             }
@@ -259,7 +273,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Category = cat,
                     UnitOfMeasure = uni,
-                    Description = d
+                    Description = d,
+                    Price = 5
                 };
                 punchers.Add(i);
             }
@@ -288,7 +303,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Description = s,
                     Category = cat,
-                    UnitOfMeasure = uni
+                    UnitOfMeasure = uni,
+                    Price = 4
                 };
 
                 pads.Add(i);
@@ -305,14 +321,16 @@ namespace WebApplication1.DataAccessLayer
             {
                 Category = "Paper",
                 Description = "Paper Photostat A3",
-                UnitOfMeasure = "Box"
+                UnitOfMeasure = "Box",
+                Price = 11
             };
 
             Item i2 = new Item()
             {
                 Category = "Paper",
                 Description = "Paper Photostat A4",
-                UnitOfMeasure = "Box"
+                UnitOfMeasure = "Box",
+                Price = 3
             };
 
             papers.Add(i1);
@@ -328,20 +346,23 @@ namespace WebApplication1.DataAccessLayer
             {
                 Description = "Ruler 12 in",
                 Category = "Ruler",
-                UnitOfMeasure = "Dozen"
+                UnitOfMeasure = "Dozen",
+                Price = 6
             };
 
             Item i2 = new Item()
             {
                 Description = "Ruler 6 in",
                 Category = "Ruler",
-                UnitOfMeasure = "Dozen"
+                UnitOfMeasure = "Dozen",
+                Price = 6
             };
             Item i3 = new Item()
             {
                 Category = "Scissors",
                 Description = "Scissors",
-                UnitOfMeasure = "Each"
+                UnitOfMeasure = "Each",
+                Price = 7
             };
 
             rulers.Add(i1);
@@ -358,6 +379,7 @@ namespace WebApplication1.DataAccessLayer
                 Category = "Tape",
                 Description = "Scotch Tape",
                 UnitOfMeasure = "Each",
+                Price = 5
             };
 
             Item i2 = new Item()
@@ -365,6 +387,7 @@ namespace WebApplication1.DataAccessLayer
                 Category = "Tape",
                 Description = "Scotch Tape Dispenser",
                 UnitOfMeasure = "Each",
+                Price = 5
             };
 
             Item i3 = new Item()
@@ -372,6 +395,7 @@ namespace WebApplication1.DataAccessLayer
                 Category = "Sharpener",
                 Description = "Sharpener",
                 UnitOfMeasure = "Each",
+                Price = 5
             };
             tapes.Add(i1);
             tapes.Add(i2);
@@ -398,7 +422,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Category = cat,
                     Description = s,
-                    UnitOfMeasure = uni
+                    UnitOfMeasure = uni,
+                    Price = 5
                 };
                 shorthands.Add(i);
             }
@@ -414,14 +439,16 @@ namespace WebApplication1.DataAccessLayer
             {
                 Category = "Stapler",
                 Description = "Stapler No. 28",
-                UnitOfMeasure = "Each"
+                UnitOfMeasure = "Each",
+                Price = 5
             };
 
             Item i2 = new Item()
             {
                 Category = "Stapler",
                 Description = "Stapler No. 36",
-                UnitOfMeasure = "Each"
+                UnitOfMeasure = "Each",
+                Price = 5
             };
 
 
@@ -429,14 +456,16 @@ namespace WebApplication1.DataAccessLayer
             {
                 Category = "Stapler",
                 Description = "Stapler No. 28",
-                UnitOfMeasure = "Box"
+                UnitOfMeasure = "Box",
+                Price = 5
             };
 
             Item i4 = new Item()
             {
                 Category = "Stapler",
                 Description = "Stapler No. 36",
-                UnitOfMeasure = "Box"
+                UnitOfMeasure = "Box",
+                Price = 5
             };
 
             staplers.Add(i1);
@@ -464,7 +493,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Category = cat,
                     UnitOfMeasure = uni,
-                    Description = s
+                    Description = s,
+                    Price = 9
                 };
                 tacks.Add(i);
             }
@@ -473,7 +503,8 @@ namespace WebApplication1.DataAccessLayer
             {
                 Category = "Tray",
                 Description = "Trays In/Out",
-                UnitOfMeasure = "Set"
+                UnitOfMeasure = "Set",
+                Price = 9
             };
 
             tacks.Add(i1);
@@ -501,7 +532,8 @@ namespace WebApplication1.DataAccessLayer
                 {
                     Description = s,
                     UnitOfMeasure = uni,
-                    Category = cat
+                    Category = cat,
+                    Price = 9
                 };
 
                 t.Add(i);

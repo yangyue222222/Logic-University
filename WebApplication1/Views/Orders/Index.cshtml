@@ -1,8 +1,9 @@
 ﻿@using WebApplication1.Models;
 @{
-    Layout = "~/Views/Shared/_DeptLayout.cshtml";
-    ViewBag.Title = "Requisition";
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    ViewBag.Title = "Order Items";
     var items = (Dictionary<string,List<Item>>) ViewData["Items"];
+    var suppliers = (List<Supplier>)ViewData["Suppliers"];
 }
     <div class="ui grid">
                 <div class="sixteen wide tablet six wide computer column">
@@ -16,7 +17,7 @@
                             <div class="content">
                                 @foreach(var i in e.Value)
                                 {
-                                    var param = i.ItemId + "*" + i.Description + "*" + i.UnitOfMeasure;
+                                    var param = i.ItemId + "*" + i.Description + "*" + i.UnitOfMeasure + "*" + i.Price;
                                     <button onclick="accordionItemClick('@param')" class="ui primary basic button" style="margin-top: 5px;">@i.Description</button>
                                 }
                             </div>
@@ -52,6 +53,8 @@
                                         <th style="background-color:#f2f2f2;">Name</th>
                                         <th style="background-color:#f2f2f2;">Qty</th>
                                         <th style="background-color:#f2f2f2;">UOM</th>
+                                        <th style="background-color:#f2f2f2;">Price</th>
+                                        <th style="background-color:#f2f2f2;">Total</th>
                                         <th style="background-color:#f2f2f2">Option</th>
                                     </tr>
                                 </thead>
@@ -59,6 +62,16 @@
                                 
                             </table>
                         </div>
+
+                        <div class="sixteen wide tablet right aligned column">
+                            <select class="ui dropdown" id="supplier">
+                                @foreach (var s in suppliers)
+                                {
+                                    <option value="@s.SupplierId">@s.SupplierCode</option>
+                                }
+                            </select>
+                        </div>
+
                         <div class="sixteen wide tablet right aligned column">
                             <button id="submit-item" class="ui button" style="background-color :#4285F4;color : white;">
                                 <i class="paper plane outline icon"></i>
@@ -87,14 +100,17 @@
     }
 
     function itemAdd() {
-        var totalCount = 0;
-        if (chosenItems[arr[0]]) {
-            totalCount = Number(chosenItems[arr[0]]['count']);
-        }
+        if (arr.length > 0) {
+            var totalCount = 0;
+            if (chosenItems[arr[0]]) {
+                totalCount = Number(chosenItems[arr[0]]['count']);
+            }
 
-        totalCount += Number(quantityBox.value);
-        chosenItems[arr[0]] = { count: totalCount, description: arr[1] ,uom : arr[2]}
-        generateTable();
+            totalCount += Number(quantityBox.value);
+            chosenItems[arr[0]] = { count: totalCount, description: arr[1], uom: arr[2], price: arr[3] }
+            generateTable();
+        }
+        
     }
 
     function removeItem(e) {
@@ -111,6 +127,7 @@
         }
 
         var keys = Object.keys(chosenItems);
+        var subTotal = 0;
         for (var i = 0; i < keys.length; i++) {
             var obj = chosenItems[keys[i]]
  
@@ -124,10 +141,21 @@
 
             var tdUom = document.createElement('td');
             var uomNode = document.createTextNode(obj.uom);
+
+            var tdPrice = document.createElement('td');
+            var priceNode = document.createTextNode("$"+obj.price);
+
+            var total = Number(obj.price) * Number(obj.count);
+            subTotal += total;
+
+            var tdTotal = document.createElement('td');
+            var totalNode = document.createTextNode("$"+total);
            
             tdDescription.appendChild(descriptionNode);
             tdCount.appendChild(countNode);
             tdUom.appendChild(uomNode);
+            tdPrice.appendChild(priceNode);
+            tdTotal.appendChild(totalNode);
 
             var tdButton = document.createElement('td');
             var button = document.createElement('button');
@@ -145,15 +173,42 @@
             tRow.appendChild(tdDescription);
             tRow.appendChild(tdCount);
             tRow.appendChild(tdUom);
+            tRow.appendChild(tdPrice);
+            tRow.appendChild(tdTotal);
             tRow.appendChild(tdButton);
 
             tBody.append(tRow);
-
+           
         }
+
+        var trLastRow = document.createElement('tr');
+        var tdOne = document.createElement('td');
+        tdOne.setAttribute('colspan', '4');
+        var tdOneText = document.createTextNode('SUBTOTAL');
+        tdOne.appendChild(tdOneText);
+
+        var tdTwo = document.createElement('td');
+        var tdTwoText = document.createTextNode("$"+subTotal);
+        tdTwo.appendChild(tdTwoText);
+
+        var tdThree = document.createElement('td');
+
+        trLastRow.appendChild(tdOne);
+        trLastRow.appendChild(tdTwo);
+        trLastRow.appendChild(tdThree);
+
+        tBody.append(trLastRow);
 
     }
 
     $(document).ready(function () {
+
+        var selectedSupplier = @suppliers[0].SupplierId
+
+        selectBox = $('#supplier').change(function () {
+            selectedSupplier = $(this).children("option:selected").val();
+        })
+
         $('#submit-item').click(function () {
 
             var keys = Object.keys(chosenItems);
@@ -170,10 +225,11 @@
                     });
                 }
 
-                console.log(items)
+                
+
 
                 $.ajax({
-                    url: 'http://localhost:50271/requisition/index',
+                    url: 'http://localhost:50271/orders/index?supplierId=' + selectedSupplier,
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(items),
@@ -205,6 +261,7 @@
 
         })
         $('#item-accordion').accordion();
+        $('.ui.dropdown').dropdown();
     });
 </script>
 

@@ -1,0 +1,31 @@
+﻿@using WebApplication1.Models
+
+@{
+    var representative = (User)ViewData["CurrentRepresentative"];
+}
+
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        <div class="field">
+            <h5 class="ui header">Choose Department Representative </h5>
+            <form method="POST" action="/Delegate/Representative">
+                <select class="ui selection dropdown" name="representativeId">
+                    @{
+                        foreach (var e in (List<User>)ViewData["Employees"])
+                        {
+                            <option value="@e.UserId">@e.Name</option>
+                        }
+                    }
+                </select>
+
+                <button type="submit" style="margin-left: 10px;" class="ui primary basic button">Choose as a Representative</button>
+            </form>
+            
+
+            <p style="margin-top: 10px;">
+                Current Representative : <b>@(representative == null ? "No one" : representative.Name)</b>
+            </p>
+        </div>
+    </div>
+</div>
+
