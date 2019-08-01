@@ -3,11 +3,9 @@
 @{
     Layout = "~/Views/Shared/_StoreLayout.cshtml";
     List<RetrievalItem> retrievalItems = null;
-    List<Item> inventory = null;
     if (ViewData["RetrievalItems"] != null)
     {
         retrievalItems = (List<RetrievalItem>)ViewData["RetrievalItems"];
-        inventory = (List<Item>)ViewData["Inventory"];
     }
 }
 
@@ -31,13 +29,7 @@
                             Requested Quantity
                         </th>
                         <th>
-                            Actual Quantity
-                        </th>
-                        <th>
-                            Delivered Quantity
-                        </th>
-                        <th>
-                            Reason
+                            Collected Quantity
                         </th>
                     </tr>
                 </thead>
@@ -52,24 +44,14 @@
                                     @retrievalItems[i].Description
                                 </td>
                                 <td>
-                                    @retrievalItems[i].Quantity
+                                    @retrievalItems[i].AllocatedQuantity
                                 </td>
                                 <td>
-                                    @inventory[i].Quantity
-                                    <input type="hidden" value="@inventory[i].Quantity" name="inventory[@i]" />
-                                </td>
-                                <td>
-                                    <input type="hidden" value="@retrievalItems[i].ItemId" name="[@i].ItemId"/>
+                                    <input type="hidden" value="@retrievalItems[i].ItemId" name="[@i].ItemId" />
+                                    <input type="hidden" value="@retrievalItems[i].AllocatedQuantity" name="[@i].AllocatedQuantity" />
                                     <div class="ui input" style="width : 100%">
-                                        <input type="number" min="0" max="@retrievalItems[i].Quantity" name="[@i].Quantity" />
+                                        <input type="number" min="0" max="@retrievalItems[i].AllocatedQuantity" name="[@i].ActualQuantity" />
                                     </div>
-                                </td>
-                                <td>
-                                    <select class="ui dropdown" id="select-box" name="reasons[@i]">
-                                        <option value="0"></option>
-                                        <option value="1">No stock</option>
-                                        <option value="2">Missing</option>
-                                    </select>
                                 </td>
                             </tr>
                         }

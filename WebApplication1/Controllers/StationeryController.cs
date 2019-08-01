@@ -14,21 +14,33 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public ActionResult Retrieval()
         {
-            List<Item> inventory = new List<Item>();
-            List<RetrievalItem> items = RequestDao.GetRequestDeailsByItems();
-            foreach(var i in items)
-            {
-                HttpCookie cookie = new HttpCookie(i.ItemId.ToString());
-                cookie.Value = i.Quantity.ToString();
-                cookie.Expires = DateTime.Now.AddHours(3);
-                Response.Cookies.Add(cookie);
-                Item add = ItemDao.getItemById(i.ItemId);
-                inventory.Add(add);
-            }
-            ViewData["Inventory"] = inventory;
+            List<RetrievalItem> items = DisbursementDao.GetAllItemsForRetrieval();
+
             ViewData["RetrievalItems"] = items;
             return View();
         }
+
+
+
+
+        //[HttpGet]
+        //public ActionResult Retrieval()
+        //{
+        //    List<Item> inventory = new List<Item>();
+        //    List<RetrievalItem> items = RequestDao.GetRequestDeailsByItems();
+        //    foreach(var i in items)
+        //    {
+        //        HttpCookie cookie = new HttpCookie(i.ItemId.ToString());
+        //        cookie.Value = i.Quantity.ToString();
+        //        cookie.Expires = DateTime.Now.AddHours(3);
+        //        Response.Cookies.Add(cookie);
+        //        Item add = ItemDao.getItemById(i.ItemId);
+        //        inventory.Add(add);
+        //    }
+        //    ViewData["Inventory"] = inventory;
+        //    ViewData["RetrievalItems"] = items;
+        //    return View();
+        //}
 
         
         //public JsonResult GetRequestDetails(int sortBy)

@@ -25,7 +25,7 @@
                             <td>@pO.RaisedBy</td>
                             <td>@pO.SubmittedTime.Date.ToString("dd/MM/yyyy")</td>
                             <td>@pO.Total</td>
-                            <td><a class="ui basic primary outline button" href="http://localhost:50271/Orders/OrderDetail?orderId=@pO.OrderId">View</a></td>
+                            <td><a class="ui basic primary outline button" href="http://localhost:50271/pendingorders/@pO.OrderId">View</a></td>
                         </tr>
                     }
                 }

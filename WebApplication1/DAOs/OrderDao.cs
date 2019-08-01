@@ -82,7 +82,8 @@ namespace WebApplication1.DAOs
             using (var ctx = new UniDBContext())
             {
                 Order order = ctx.Orders.Include("OrderDetails")
-                    .Include("OrderDetails.Item")
+                    .Include("Supplier").Include("Requestor")
+                    .Include("OrderDetails.Item").Include("ApprovedBy")
                     .Where(o => o.OrderId == orderId).SingleOrDefault();
 
                 return order;
@@ -100,6 +101,59 @@ namespace WebApplication1.DAOs
                 ctx.SaveChanges();
             }
         }
+
+        public static List<Order> GetApprovedOrders()
+        {
+            using (var ctx = new UniDBContext())
+            {
+                List<Order> approvedOrders = ctx.Orders.Include("Supplier").Include("OrderDetails").Include("OrderDetails.Item").Include("Requestor").Where(o => o.Status == (int)OrderStatus.Approved).ToList();
+                return approvedOrders;
+            }
+        }
+
+        public static void ReceiveStocks(List<OrderDetail> orderDetails,int orderId)
+        {
+            using (var ctx = new UniDBContext())
+            {
+                List<int> orderDetailsIds = orderDetails.Select(od => od.OrderDetailId).ToList();
+
+                Order order = ctx.Orders.Where(o => o.OrderId == orderId).SingleOrDefault();
+                order.Status = (int)OrderStatus.Delivered;
+
+                Dictionary<int, OrderDetail> details = ctx.OrderDetails.Where(od => orderDetailsIds.Contains(od.OrderDetailId)).ToDictionary(x => x.OrderDetailId);
+
+                foreach(var od in orderDetails)
+                {
+                    OrderDetail orderDetail = details[od.OrderDetailId];
+                    orderDetail.DeliveredQuantity = od.DeliveredQuantity;
+                    orderDetail.Order = order;
+                }
+                ctx.SaveChanges();
+            }
+        }
+
+        public static List<Order> GetAllOrders()
+        {
+            using(var ctx = new UniDBContext())
+            {
+                List<Order> orders = ctx.Orders.Include("Supplier").OrderByDescending(o => o.OrderId).ToList();
+                return orders;
+            }
+        }
+
+        public static void CancelOrderById(int orderId)
+        {
+            using (var ctx = new UniDBContext())
+            {
+                Order order = ctx.Orders.Where(o => o.OrderId == orderId && o.Status == (int)OrderStatus.Requested).SingleOrDefault();
+                if(order != null)
+                {
+                    order.Status = (int)OrderStatus.Cancelled;
+                    ctx.SaveChanges();
+                }
+            }
+        }
+
 
     }
 }

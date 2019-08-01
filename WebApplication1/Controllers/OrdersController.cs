@@ -7,26 +7,28 @@ using WebApplication1.DAOs;
 using WebApplication1.Models;
 using System.Diagnostics;
 using WebApplication1.Utilities;
+using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
+    [AuthFilter]
     public class OrdersController : Controller
     {
         // GET: Order
-        [HttpGet]
+        [HttpGet,Route("orderitems")]
         public ActionResult Index()
         {
-            ItemDao itemDao = new ItemDao();
-            Dictionary<string, List<Item>> items = itemDao.getItemsForRequisition();
+            Dictionary<string, List<Item>> items = ItemDao.getItemsForRequisition();
             List<Supplier> suppliers = SupplierDao.GetSuppliers();
 
             ViewData["Items"] = items;
             ViewData["Suppliers"] = suppliers;
-            return View();
+           
+            return View("OrderItems");
         }
 
-        [HttpPost]
-        public ActionResult Index(List<Item> items,int supplierId)
+        [HttpPost,Route("orderitems")]
+        public ActionResult Index(List<Item> items, int supplierId)
         {
 
             if (items != null)
@@ -62,7 +64,51 @@ namespace WebApplication1.Controllers
             return new HttpStatusCodeResult(400);
         }
 
-        [HttpGet]
+        [HttpGet,Route("orders")]
+        public ActionResult GetAllOrders()
+        {
+            List<Order> orders = OrderDao.GetAllOrders();
+
+            ViewData["Orders"] = orders;
+            return View("Orders");
+        }
+
+        [HttpGet,Route("orders/{orderId}")]
+        public ActionResult OrderDetail(int orderId)
+        {
+            Order order = OrderDao.GetOrderById(orderId);
+            if (order != null)
+            {
+                ViewData["Order"] = order;
+                return View("OrderDetail");
+            }
+            return RedirectToAction("GetAllOrders");
+        }
+
+        [HttpPost,Route("cancelorders/{orderId}")]
+        public ActionResult CancelOrder(int orderid)
+        {
+            OrderDao.CancelOrderById(orderid);
+            return RedirectToAction("GetAllOrders");
+        }
+        
+
+        [HttpGet,Route("approveorders")]
+        public ActionResult ApprovedOrders()
+        {
+            List<Order> orders = OrderDao.GetApprovedOrders();
+            ViewData["Orders"] = orders;
+            return View();
+        }
+
+        [HttpPost,Route("approveorders/{orderId}")]
+        public ActionResult ApprovedOrders(List<OrderDetail> orderDetails,int orderId)
+        {
+            OrderDao.ReceiveStocks(orderDetails,orderId);
+            return RedirectToAction("ApprovedOrders");
+        }
+
+        [HttpGet,Route("PendingOrders")]
         public ActionResult PendingOrders()
         {
             List<PendingOrder> pendingOrders = OrderDao.GetPendingOrders();
@@ -71,23 +117,24 @@ namespace WebApplication1.Controllers
                 ViewData["PendingOrders"] = pendingOrders;
 
             }
-
             return View();
         }
 
-        [HttpGet]
-        public ActionResult OrderDetail(int orderId)
+        [HttpGet,Route("PendingOrders/{orderId}")]
+        public ActionResult PendingOrder(int orderId)
         {
             Order order = OrderDao.GetOrderById(orderId);
-
-            ViewData["Order"] = order;
-            return View();
+            if(order != null)
+            {
+                ViewData["Order"] = order;
+                return View("PendingOrderDetail");
+            }
+            return RedirectToAction("PendingOrders");
         }
 
-        [HttpPost,Route("orders/pendingorders/{orderId}")]
+        [HttpPost,Route("pendingorders/{orderId}")]
         public ActionResult UpdateOrder(int orderId,string status)
         {
-
 
             string token = HttpContext.Request.Cookies["token"].Value;
             string decryptedToken = TokenUtility.Decrypt(token);

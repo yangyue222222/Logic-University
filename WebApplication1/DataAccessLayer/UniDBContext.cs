@@ -38,5 +38,8 @@ namespace WebApplication1.DataAccessLayer
 
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+
+        public DbSet<Adjustment> Adjustments { get; set; }
+        public DbSet<AdjustmentDetail> AdjustmentDetails { get; set; }
     }
 }

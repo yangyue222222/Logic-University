@@ -1,103 +1,56 @@
 ﻿@using WebApplication1.Models
-
-@{ 
+@{
     Layout = "~/Views/Shared/_StoreLayout.cshtml";
-    Order order = (Order)ViewData["Order"];
+    ViewBag.Title = "My Order";
+    Order o = (Order)ViewData["Order"];
+    var subtotal = 0;
 }
 
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        <h5 class="ui header">Requestor : @o.Requestor.Name</h5>
+        <h5 class="ui header">Submitted Date : @o.Date.ToString("dd/MM/yyyy")</h5>
+        <h5 class="ui header">Status : <span class=" @(o.Status == (int)OrderStatus.Rejected ? "redText": "")">@Enum.GetName(typeof(OrderStatus), o.Status)</span></h5>
+        @if (o.ApprovedBy != null)
+        {
+            <h5 class="ui header">Approved By : @o.ApprovedBy.Name</h5>
 
-
-<div class="twelve wide computer column sixteen wide table column">
-    <div class="ui grid">
-        <div class="sixteen wide tablet column">
-            <h5 class="ui header">Submitted Date : 11-11-2019</h5>
-            <h5 class="ui header">Raised By : Clerk Name</h5>
-            <h5 class="ui header">Supplier Name : ALPA</h5>
-        </div>
-        <div class="sixteen wide tablet column">
-            <table class="ui celled table">
-                <thead>
+        }
+    </div>
+    <div class="sixteen wide tablet column">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Order Quantity</th>
+                    <th>Delivered Quantity</th>
+                    <th>UOM</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var od in o.OrderDetails)
+                {
+                    var total = od.Item.Price * od.OrderQuantity;
+                    subtotal += total;
                     <tr>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Qty
-                        </th>
-                        <th>
-                            UOM
-                        </th>
-                        <th>
-                            Price
-                        </th>
-                        <th>
-                            Total
-                        </th>
-
+                        <td>@od.Item.Description</td>
+                        <td>@od.OrderQuantity</td>
+                        <td>@(od.DeliveredQuantity == 0 ? "-" : od.DeliveredQuantity.ToString())</td>
+                        <td>@od.Item.UnitOfMeasure</td>
+                        <td>$@od.Item.Price</td>
+                        <td>
+                            @total
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
 
-                    @foreach(var od in order.OrderDetails)
-                    {
-                        <tr>
-                            <td>
-                                @od.Item.Description
-                            </td>
-                            <td>
-                                @od.OrderQuantity
-                            </td>
-                            <td>
-                                @od.Item.UnitOfMeasure
-                            </td>
-                            <td>
-                                @od.Item.Price
-                            </td>
-                            <td>
-                                @(od.Item.Price * od.OrderQuantity)
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan="4">SUBTOTAL</th>
-                        <th>@{var sum = order.OrderDetails.Sum(od => od.OrderQuantity * od.Item.Price);} @sum</th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        <div class="sixteen wide tablet column">
-            <form id="form-request" method="post" action="http://localhost:50271/Orders/pendingorders/@order.OrderId">
-                <div class="ui grid">
-                    <div class="ten wide tablet column">
-                        <textarea rows="5" style="width : 100%"></textarea>
-                    </div>
-                    <div class="six wide table column" style="position : relative">
-                        <div style="position : absolute; bottom : 10px; right : 10px">
-                            <button onclick="submitClick('ACCEPT')" class="ui positive button">Approve</button>
-                            <button onclick="submitClick('REJECT')" class="ui negative button">Reject</button>
-                        </div>
-
-                    </div>
-                </div>
-            </form>
-        </div>
-
-
-
+                }
+                <tr>
+                    <td colspan="5" style="text-align : right">SUBTOTAL</td>
+                    <td>@subtotal</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
-
-
-<script>
-        var form = document.getElementById("form-request")
-        function submitClick(ans) {
-            var input = document.createElement("input");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("name", "status");
-            input.setAttribute("value", ans);
-            form.appendChild(input)
-            form.submit();
-        }
-</script>

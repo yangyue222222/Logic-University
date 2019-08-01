@@ -70,7 +70,7 @@ namespace WebApplication1.DAOs
             return details;
         }
 
-        public static void updateRequestStatus(Request request)
+        public static void ApproveRequest(Request request)
         {
             
             using (var ctx = new UniDBContext())
@@ -95,44 +95,52 @@ namespace WebApplication1.DAOs
                     {
                         Item i = itemsDictionary[rD.Item.ItemId];
                        
-                        if (rD.Quantity > i.Quantity)
-                        {
-                            //requested amount is more than current stock
-                            disbursement.Status = (int)DisbursementStatus.Allocated;
-                            req.Status = (int)RequestStatus.PartiallyAllocated;
-                            DisbursementDetail dd = new DisbursementDetail()
-                            {
-                                Item = i,
-                                Quantity = i.Quantity
-                            };
-                            rD.DeliveredQuantity = i.Quantity;
+                        if(i.Quantity != 0) {
 
-                            i.Quantity = 0;
-                            disbursementDetails.Add(dd);
-                        }else
-                        {
-                            DisbursementDetail dd = new DisbursementDetail()
+                            if (rD.Quantity > i.Quantity)
                             {
-                                Item = i,
-                                Quantity = rD.Quantity,
-                            };
+                                //requested amount is more than current stock
+                                disbursement.Status = (int)DisbursementStatus.Allocated;
+                                req.Status = (int)RequestStatus.PartiallyAllocated;
+                                DisbursementDetail dd = new DisbursementDetail()
+                                {
+                                    Item = i,
+                                    Quantity = i.Quantity
+                                };
 
-                            i.Quantity = i.Quantity - rD.Quantity;
-                            disbursementDetails.Add(dd);
+                                i.Quantity = 0;
+                                disbursementDetails.Add(dd);
+                            }
+                            else
+                            {
+                                DisbursementDetail dd = new DisbursementDetail()
+                                {
+                                    Item = i,
+                                    Quantity = rD.Quantity,
+                                };
+
+                                i.Quantity = i.Quantity - rD.Quantity;
+                                disbursementDetails.Add(dd);
+                            }
+                        }
+                        
+                    }
+
+                    if (disbursementDetails.Count > 0)
+                    {
+                        disbursement.DisbursementDetails = disbursementDetails;
+                        disbursement.Date = DateTime.Now.AddDays(-1);
+                        disbursement.Department = request.Department;
+                        disbursement.Request = req;
+                        ctx.Disbursements.Add(disbursement);
+                        ctx.DisbursementDetails.AddRange(disbursementDetails);
+
+                        if (req.Status != (int)RequestStatus.PartiallyAllocated)
+                        {
+                            req.Status = (int)RequestStatus.FullyAllocated;
                         }
                     }
-
-                    disbursement.DisbursementDetails = disbursementDetails;
-                    disbursement.Date = DateTime.Now;
-                    disbursement.Department = request.Department;
-                    disbursement.Request = req;
-                    ctx.Disbursements.Add(disbursement);
-                    ctx.DisbursementDetails.AddRange(disbursementDetails);
-
-                    if(req.Status != (int)RequestStatus.PartiallyAllocated)
-                    {
-                        req.Status = (int)RequestStatus.FullyAllocated;
-                    }
+                    
                 }
                 try
                 {
@@ -158,7 +166,7 @@ namespace WebApplication1.DAOs
                     .Select(r => new RetrievalItem
                     {
                         Description = r.Key.Description,
-                        Quantity = r.Sum(rq => rq.Quantity),
+                        AllocatedQuantity = r.Sum(rq => rq.Quantity),
                         ItemId = r.Key.ItemId
                     }).ToList();
 
@@ -174,6 +182,51 @@ namespace WebApplication1.DAOs
                 return requests;
             }
         }
-        
+
+        public static List<Request> GetMyRequests(User u)
+        {
+            using (var ctx = new UniDBContext())
+            {
+                List<Request> requests = ctx.Requests.Include("RequestDetails").Include("Department").Include("Requestor")
+                    .Where(r => r.Department.DepartmentId == u.Department.DepartmentId && r.Requestor.UserId == u.UserId)
+                    .OrderByDescending(r => r.RequestId).ToList();
+
+                return requests;
+            }
+        }
+
+       public static void CancelRequestById(int requestId,User u)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                Request request = ctx.Requests.Where(r => r.RequestId == requestId && r.Department.DepartmentId == u.Department.DepartmentId 
+                && r.Requestor.UserId == u.UserId && r.Status == (int)RequestStatus.Requested)
+                    .SingleOrDefault();
+                if (request != null)
+                {
+                    request.Status = (int)RequestStatus.Cancelled;
+                    ctx.SaveChanges();
+                }
+            }
+        }
+
+        public static Request GetRequestById(int requestId,User u)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                IQueryable<Request> query = ctx.Requests.Include("Requestor").Include("RequestDetails").Include("ApprovedBy").Include("Department").Include("RequestDetails.Item");
+                if(u.Rank == (int)UserRank.Clerk)
+                {
+                    query = query.Where(r => r.RequestId == requestId);
+                }
+                else
+                {
+                    query = query.Where(r => r.RequestId == requestId && r.Requestor.UserId == u.UserId && r.Department.DepartmentId == u.Department.DepartmentId);
+                }
+
+                return query.SingleOrDefault();
+            }
+        }
+
     }
 }

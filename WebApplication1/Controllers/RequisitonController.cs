@@ -31,8 +31,8 @@ namespace WebApplication1.Controllers
                 {
                     int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
                     int userId = Convert.ToInt32(RouteData.Values["userId"]);
-                    
-                    
+
+
                     Department d = new Department()
                     {
                         DepartmentId = Convert.ToInt32(departmentId)
@@ -55,14 +55,13 @@ namespace WebApplication1.Controllers
             {
                 return new HttpStatusCodeResult(400);
             }
-            
-            
+
+
         }
         [HttpGet]
         public ActionResult Index()
         {
-            ItemDao itemDao = new ItemDao();
-            Dictionary<string, List < Item >> items = itemDao.getItemsForRequisition();
+            Dictionary<string, List<Item>> items = ItemDao.getItemsForRequisition();
 
             ViewData["Items"] = items;
             return View();
@@ -83,17 +82,17 @@ namespace WebApplication1.Controllers
             return View("PendingRequisitions");
         }
 
-        [Route("Requisitions/{id}"),HttpGet]
+        [Route("Requisitions/{id}"), HttpGet]
         public JsonResult RequisitionById(int id)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
 
-            List<RequestDetail> requestDetails = RequestDao.getRequestDetailsByRequestId(id,departmentId);
-            return Json(requestDetails,JsonRequestBehavior.AllowGet);
+            List<RequestDetail> requestDetails = RequestDao.getRequestDetailsByRequestId(id, departmentId);
+            return Json(requestDetails, JsonRequestBehavior.AllowGet);
         }
 
         [Route("Requisitions/{id}"), HttpPost]
-        public ActionResult ApproveRequisition(int id,string status)
+        public ActionResult ApproveRequisition(int id, string status)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
@@ -115,13 +114,77 @@ namespace WebApplication1.Controllers
             if (status.Equals("ACCEPT"))
             {
                 request.Status = (int)RequestStatus.Approved;
-            }else
+            } else
             {
                 request.Status = (int)RequestStatus.Rejected;
             }
 
-            RequestDao.updateRequestStatus(request);
+            RequestDao.ApproveRequest(request);
             return RedirectToAction("PendingRequisitions");
+        }
+
+        [HttpGet]
+        public ActionResult MyRequisitions()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            User u = new User()
+            {
+                UserId = userId,
+                Department = new Department()
+                {
+                    DepartmentId = departmentId
+                }
+            };
+            List<Request> requests = RequestDao.GetMyRequests(u);
+
+            ViewData["Requests"] = requests;
+
+            return View();
+        }
+
+        [HttpGet,Route("myrequisitions/{requestId}")]
+        public ActionResult GetMyRequisition(int requestId)
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            int rank = Convert.ToInt32(RouteData.Values["rank"]);
+            User u = new User()
+            {
+                UserId = userId,
+                Department = new Department()
+                {
+                    DepartmentId = departmentId
+                },
+                Rank = rank
+            };
+            Request r = RequestDao.GetRequestById(requestId, u);
+            ViewData["Request"] = r;
+            if (r != null)
+            {
+                return View("MyRequest");
+            }
+            return RedirectToAction("myrequisitions");
+        }
+
+        [HttpPost,Route("cancelrequisitions/{requestId}")]
+        public ActionResult CancelMyRequisitions(int requestId)
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+
+            User u = new User()
+            {
+                UserId = userId,
+                Department = new Department()
+                {
+                    DepartmentId = departmentId
+                }
+            };
+
+            RequestDao.CancelRequestById(requestId, u);
+
+            return RedirectToAction("MyRequisitions");
         }
 
         

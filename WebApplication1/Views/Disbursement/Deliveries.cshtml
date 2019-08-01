@@ -1,0 +1,40 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    List<Disbursement> disbursements = null;
+    if (ViewData["Disbursements"] != null)
+    {
+        disbursements = (List<Disbursement>)ViewData["Disbursements"];
+    }
+
+}
+
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Department</th>
+                    <th>Pickup Point</th>
+                    <th>For Request</th>
+                    <th>View Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (disbursements != null)
+                {
+                    foreach (var d in disbursements)
+                    {
+                        <tr>
+                            <td>@d.Department.DepartmentName</td>
+                            <td>@d.Department.PickupPoint</td>
+                            <td><a href="http://localhost:50271/myrequisitions/@d.Request.RequestId">View Request</a></td>
+                            <td><a href="http://localhost:50271/disbursements/@d.DisbursementId">View Detail</a></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

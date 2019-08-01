@@ -7,7 +7,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DataAccessLayer
 {
-    public class DBInitializer : DropCreateDatabaseAlways<UniDBContext>
+    public class DBInitializer : DropCreateDatabaseIfModelChanges<UniDBContext>
     {
         protected override void Seed(UniDBContext context)
         {
@@ -27,6 +27,13 @@ namespace WebApplication1.DataAccessLayer
             context.Items.AddRange(p.getStaplers());
             context.Items.AddRange(p.getTackAndTrays());
             context.Items.AddRange(p.getTparency());
+            context.SaveChanges();
+
+            List<Item> items = context.Items.ToList();
+            foreach(var i in items)
+            {
+                i.Quantity = 100;
+            }
             context.SaveChanges();
 
             PopulateUser u = new PopulateUser();

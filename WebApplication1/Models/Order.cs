@@ -8,6 +8,7 @@ namespace WebApplication1.Models
     public enum OrderStatus
     {
         Requested,
+        Cancelled,
         Approved,
         Rejected,
         Delivered
@@ -20,6 +21,6 @@ namespace WebApplication1.Models
         public int Status { get; set; }
         public User ApprovedBy { get; set; }
         public Supplier Supplier { get; set; }
-        public ICollection<OrderDetail> OrderDetails { get; set; }
+        public List<OrderDetail> OrderDetails { get; set; }
     }
 }

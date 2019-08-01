@@ -10,7 +10,8 @@ namespace WebApplication1.Models
     public class RetrievalItem
     {
         public string Description { get; set; }
-        public int Quantity { get; set; }
+        public int AllocatedQuantity { get; set; }
+        public int ActualQuantity { get; set; }
         public int ItemId { get; set; }
     }
 }

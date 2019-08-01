@@ -151,6 +151,8 @@
     <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\RequisitonController.cs" />
     <Compile Include="Controllers\StationeryController.cs" />
+    <Compile Include="Controllers\StockController.cs" />
+    <Compile Include="DAOs\AdjustmentDao.cs" />
     <Compile Include="DAOs\DepartmentDao.cs" />
     <Compile Include="DAOs\DisbursementDao.cs" />
     <Compile Include="DAOs\ItemDao.cs" />
@@ -167,6 +169,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Adjustment.cs" />
+    <Compile Include="Models\AdjustmentDetail.cs" />
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Disbursement.cs" />
     <Compile Include="Models\DisbursementDetail.cs" />
@@ -219,18 +223,25 @@
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Requisition\PendingRequisitions.cshtml" />
     <Content Include="Views\Delegate\Index.cshtml" />
-    <Content Include="Views\Orders\Index.cshtml" />
+    <Content Include="Views\Orders\OrderItems.cshtml" />
     <Content Include="Views\Orders\PendingOrders.cshtml" />
-    <Content Include="Views\Orders\OrderDetail.cshtml" />
+    <Content Include="Views\Orders\PendingOrderDetail.cshtml" />
     <Content Include="Views\Shared\_BaseLayout.cshtml" />
     <Content Include="Views\Shared\_DeptLayout.cshtml" />
     <Content Include="Views\Shared\_StoreLayout.cshtml" />
     <Content Include="Views\Auth\Dashboard.cshtml" />
     <Content Include="Views\Stationery\Retrieval.cshtml" />
+    <Content Include="Views\Orders\ApprovedOrders.cshtml" />
+    <Content Include="Views\Requisition\MyRequisitions.cshtml" />
+    <Content Include="Views\Requisition\MyRequest.cshtml" />
+    <Content Include="Views\Orders\Orders.cshtml" />
+    <Content Include="Views\Orders\OrderDetail.cshtml" />
+    <Content Include="Views\Stock\StockOrders.cshtml" />
+    <Content Include="Views\Stock\StockOrderDetail.cshtml" />
+    <Content Include="Views\Disbursement\Deliveries.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Disbursement\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

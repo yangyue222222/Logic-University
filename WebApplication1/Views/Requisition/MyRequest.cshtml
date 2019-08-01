@@ -1,0 +1,50 @@
+﻿@using WebApplication1.Models
+@{
+    Layout = "~/Views/Shared/_DeptLayout.cshtml";
+    ViewBag.Title = "My Request";
+    Request r = (Request)ViewData["Request"];
+}
+
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        <h5 class="ui header">Requestor : @r.Requestor.Name</h5>
+        <h5 class="ui header">Submitted Date : @r.Date.ToString("dd/MM/yyyy")</h5>
+        <h5 class="ui header">Status : @Enum.GetName(typeof(RequestStatus), r.Status)</h5>
+        @if (r.ApprovedBy != null)
+        {
+            <h5 class="ui header">@r.ApprovedBy.Name</h5>
+
+        }
+    </div>
+    <div class="sixteen wide tablet column">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Requested Quantity</th>
+                    <th>Delivered Quantity</th>
+                    <th>UOM</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var rd in r.RequestDetails)
+                {
+                    <tr>
+                        <td>
+                            @rd.Item.Description
+                        </td>
+                        <td>
+                            @rd.Quantity
+                        </td>
+                        <td>
+                            @(rd.DeliveredQuantity == 0 ? "-" : rd.DeliveredQuantity.ToString())
+                        </td>
+                        <td>
+                            @rd.Item.UnitOfMeasure
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+﻿@using WebApplication1.Models
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    ViewBag.Title = "Approve Orders";
+    List<Order> orders = (List<Order>)ViewData["Orders"];
+}
+
+<div class="ui grid">
+    @{
+        if (orders != null)
+        {
+            foreach (var o in orders)
+            {
+                <div class="sixteen wide tablet column">
+                    <h5 class="ui header">Submitted Date : @o.Date.ToString("dd/mm/yyyy")</h5>
+                    <h5 class="ui header">Raised By : @o.Requestor.Name</h5>
+                    <h5 class="ui header">Supplier : @o.Supplier.SupplierCode</h5>
+                </div>
+                <div class="sixteen wide tablet column">
+                    <form action="http://localhost:50271/approveorders/@o.OrderId" method="POST">
+                        <table class="ui celled table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>UOM</th>
+                                    <th>Ordered Qty</th>
+                                    <th>Actual Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    List<OrderDetail> list = (List<OrderDetail>)o.OrderDetails;
+                                }
+                                @for (var i = 0; i < list.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            @list[i].Item.Description
+                                        </td>
+                                        <td>
+                                            @list[i].Item.UnitOfMeasure
+                                        </td>
+                                        <td>
+                                            @list[i].OrderQuantity
+                                        </td>
+                                        <td>
+                                            <input type="hidden" value="@list[i].OrderDetailId" name="[@i].OrderDetailId" />
+                                            <div class="ui input" style="width : 100%">
+                                                <input type="number" name="[@i].DeliveredQuantity" min="0" max="@list[i].OrderQuantity" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <button type="submit" class="ui primary button">Confirm Receipt</button>
+                    </form>
+                </div>
+            }
+            
+        }
+    }
+
+</div>

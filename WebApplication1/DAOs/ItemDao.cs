@@ -9,7 +9,7 @@ namespace WebApplication1.DAOs
 {
     public class ItemDao
     {
-        public Dictionary<string,List<Item>> getItemsForRequisition()
+        public static Dictionary<string,List<Item>> getItemsForRequisition()
         {
             Dictionary<string, List<Item>> ItemsList = new Dictionary<string,List<Item>>();
             using (var ctx = new UniDBContext())
@@ -28,5 +28,6 @@ namespace WebApplication1.DAOs
             }
             return item;
         }
+
     }
 }

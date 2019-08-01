@@ -4,52 +4,76 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebApplication1.Models;
+using WebApplication1.DAOs;
 using WebApplication1.DataAccessLayer;
 using System.Diagnostics;
+using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
+    [AuthFilter]
     public class DisbursementController : Controller
     {
 
-        public ActionResult Index()
+        [HttpGet,Route("deliveries/{id}")]
+        public ActionResult Disbursements(int id)
         {
+            Disbursement d = DisbursementDao.GetDisbursement(id);
             return View();
         }
 
-        [HttpPost]
-        public ActionResult Disbursements(List<Item> items, List<int> reasons, List<int> inventory)
+        [HttpGet,Route("deliveries")]
+        public ActionResult Deliveries()
         {
+            List<Disbursement> disbursements = DisbursementDao.GetPreparedDisbursements();
+            ViewData["Disbursements"] = disbursements;
+            return View("Deliveries");
+        }
 
-            string[] keys = Request.Cookies.AllKeys;
-            IDictionary<string, int> requestDetails = new Dictionary<string,int>();
-            foreach(var i in keys)
-            {
-                try
-                {
-                    string value = Request.Cookies[i].Value;
-                    int reqId = Convert.ToInt32(i);
-                    int requestedAmount = Convert.ToInt32(value);
-                    requestDetails.Add(i, requestedAmount);
 
-                }
-                catch(Exception e)
-                {
-                    continue;
-                }
-                
-            }
 
-            int count = 0;
+
+        //retrieving and preparing for delivery
+
+        [HttpPost]
+        public ActionResult Disbursements(List<RetrievalItem> items)
+        {
+            List<AdjustmentDetail> details = new List<AdjustmentDetail>();
             foreach (var i in items)
             {
-                if (reasons[count] == 2)
+                Debug.WriteLine(i.ItemId + " ------- " + i.ActualQuantity);
+                if (i.ActualQuantity < i.AllocatedQuantity)
                 {
-                    Debug.WriteLine("Raise adjustment: Item info: " + i.ItemId + " Shortfall: " + (inventory[count] - i.Quantity) + " Reason: " + reasons[count]);
+                    Item item = new Item()
+                    {
+                        ItemId = i.ItemId
+                    };
+                    AdjustmentDetail detail = new AdjustmentDetail()
+                    {
+                        Item = item,
+                        Count = i.AllocatedQuantity - i.ActualQuantity
+                    };
+
+                    details.Add(detail);
                 }
-                count++;
             }
-            return null;
+
+            if(details.Count > 0)
+            {
+                Debug.WriteLine("Passed details count");
+                int userId = Convert.ToInt32(RouteData.Values["userId"]);
+                User u = new User()
+                {
+                    UserId = userId
+                };
+                details = AdjustmentDao.InsertAdjustment(details, u);
+                DisbursementDao.UpdateDisbursementDetailsForItemMissing(details);
+            }else
+            {
+                DisbursementDao.UpdateDisbursementsStatus();
+            }
+
+            return RedirectToAction("");
         }
 
         

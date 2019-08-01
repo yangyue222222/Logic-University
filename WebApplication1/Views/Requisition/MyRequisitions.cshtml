@@ -1,0 +1,47 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_DeptLayout.cshtml";
+    List<Request> requests = (List<Request>)ViewData["Requests"];
+}
+
+<div class="ui grid">
+    <div class="sixteen wide table column">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Option</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (requests != null)
+                {
+                    foreach (var r in requests)
+                    {
+                        <tr>
+                            <td>@r.Date.ToString("dd/MM/yyyy")</td>
+                            <td>@Enum.GetName(typeof(RequestStatus), r.Status)</td>
+                            <td>
+                                @if (r.Status == (int)RequestStatus.Requested)
+                                {
+                                    <form action="http://localhost:50271/cancelrequisitions/@r.RequestId" method="POST">
+                                        <button type="submit" class="ui primary button">Cancel</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <b>-</b>
+                                }
+                            </td>
+                            <td><a href="http://localhost:50271/myrequisitions/@r.RequestId">View</a></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

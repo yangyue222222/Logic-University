@@ -1,0 +1,51 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    List<Order>
+    orders = (List<Order>)ViewData["Orders"];
+        
+}
+
+<div class="ui grid">
+    <div class="sixteen wide table column">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Supplier</th>
+                    <th>Option</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (orders != null)
+                {
+                foreach (var o in orders)
+                {
+                <tr>
+                    <td>@o.Date.ToString("dd/MM/yyyy")</td>
+                    <td><span class=" @(o.Status == (int)OrderStatus.Rejected ? "redText": "")">@Enum.GetName(typeof(OrderStatus), o.Status)</span></td>
+                    <td>@o.Supplier.SupplierCode</td>
+                    <td>
+                        @if (o.Status == (int)OrderStatus.Requested)
+                        {
+                            <form action="http://localhost:50271/cancelorders/@o.OrderId" method="POST">
+                                <button type="submit" class="ui primary button">Cancel</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <b>-</b>
+                        }
+                    </td>
+                    <td><a href="http://localhost:50271/orders/@o.OrderId">View</a></td>
+                </tr>
+                }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

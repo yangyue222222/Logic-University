@@ -28,7 +28,7 @@
                     <div class="ui grid">
                         <div class="sixteen wide tablet column">
                             <div class="ui input" style="width : 100%">
-                                <input id="searchbar" type="text" placeholder="Search..." />
+                                <input id="searchbar" type="text" placeholder="Search..." disabled/>
                             </div>
                         </div>
                         <div class="sixteen wide tablet column">
@@ -88,13 +88,16 @@
 
     function itemAdd() {
         var totalCount = 0;
-        if (chosenItems[arr[0]]) {
-            totalCount = Number(chosenItems[arr[0]]['count']);
-        }
+        if (Number(quantityBox.value) > 0) {
+            if (chosenItems[arr[0]]) {
+                totalCount = Number(chosenItems[arr[0]]['count']);
+            }
 
-        totalCount += Number(quantityBox.value);
-        chosenItems[arr[0]] = { count: totalCount, description: arr[1] ,uom : arr[2]}
-        generateTable();
+            totalCount += Number(quantityBox.value);
+            chosenItems[arr[0]] = { count: totalCount, description: arr[1], uom: arr[2] }
+            generateTable();
+        }
+        
     }
 
     function removeItem(e) {
@@ -173,7 +176,7 @@
                 console.log(items)
 
                 $.ajax({
-                    url: 'http://localhost:50271/requisition/index',
+                    url: 'http://localhost:50271/requisition/index?supplier',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(items),
@@ -181,6 +184,8 @@
                     success: function (data, textStatus, xhr) {
                         var notiBox = $('#noti-message');
                         var status = Number(xhr.status)
+                        chosenItems = {}
+                        arr=[]
                         console.log(status);
                         if (status === 200) {
                             console.log('Success')
@@ -188,7 +193,7 @@
                             notiBox.addClass('green')
                             notiBox.removeClass('red')
                             notiBox.css('display', 'block')
-                            console.log(notiBox)
+                            generateTable();
                         } else {
                             console.log("error")
                             notiBox.html('Fail to proceed')

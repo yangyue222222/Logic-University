@@ -1,0 +1,47 @@
+﻿@using WebApplication1.Models
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    ViewBag.Title = "Stock Order Detail";
+    Order o = (Order)ViewData["Order"];
+    List<OrderDetail> od = o.OrderDetails;
+}
+
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        <h5 class="ui header">Requestor : @o.Requestor.Name</h5>
+        <h5 class="ui header">Submitted Date : @o.Date.ToString("dd/MM/yyyy")</h5>
+        <h5 class="ui header">Supplier : @o.Supplier.SupplierCode</h5>
+        <h5 class="ui header">Status : @Enum.GetName(typeof(OrderStatus), o.Status)</h5>
+        <h5 class="ui header">Approved By : @o.ApprovedBy.Name</h5>
+    </div>
+
+    <div class="sixteen wide tablet column">
+        <form method="post" action="http://localhost:50271/receivestocks/@o.OrderId"> 
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Order Quantity</th>
+                        <th>Delivered Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < od.Count; i++)
+                    {
+                        <tr>
+                            <td>@od[i].Item.Description</td>
+                            <td>@od[i].OrderQuantity</td>
+                            <td>
+                                <input type="hidden" name="[@i].OrderDetailId" value="@od[i].OrderDetailId"/>
+                                <div class="ui input">
+                                    <input name="[@i].DeliveredQuantity" class="ui input" type="number" min="0"/>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button type="submit" class="ui primary button">Confirm Receipt</button>
+        </form>
+    </div>
+</div>
