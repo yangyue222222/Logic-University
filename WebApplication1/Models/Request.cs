@@ -13,9 +13,13 @@ namespace WebApplication1.Models
         Cancelled,
         Delivered,
         PartiallyDelivered,
-        FullyAllocated,
-        PartiallyAllocated
     }
+
+    public enum RequestRetrievalStatus {
+        Prepared,
+        NotPrepared
+    }
+
 
     public class Request
     {
@@ -25,6 +29,7 @@ namespace WebApplication1.Models
         public int Status { get; set; }
         public User ApprovedBy { get; set; }
         public Department Department { get; set; }
+        public int DisbursementStatus { get;set; }
         public ICollection<RequestDetail> RequestDetails { get; set; }
         public ICollection<Disbursement> Disbursements { get; set; }
     }

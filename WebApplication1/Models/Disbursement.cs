@@ -9,7 +9,6 @@ namespace WebApplication1.Models
 
     public enum DisbursementStatus
     {
-        Allocated,
         Prepared,
         Delivered
     }

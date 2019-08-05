@@ -115,20 +115,111 @@ namespace WebApplication1.DAOs
         {
             using (var ctx = new UniDBContext())
             {
-                List<int> orderDetailsIds = orderDetails.Select(od => od.OrderDetailId).ToList();
+                List<int> orderDetailIds = orderDetails.Select(od => od.OrderDetailId).ToList();
 
-                Order order = ctx.Orders.Where(o => o.OrderId == orderId).SingleOrDefault();
+                Order order= ctx.Orders.Include("OrderDetails").Include("OrderDetails.Item").Where(o => o.OrderId == orderId).SingleOrDefault();
+                Dictionary<int, OrderDetail> orderDetailDict = order.OrderDetails.ToDictionary(od => od.OrderDetailId);
                 order.Status = (int)OrderStatus.Delivered;
-
-                Dictionary<int, OrderDetail> details = ctx.OrderDetails.Where(od => orderDetailsIds.Contains(od.OrderDetailId)).ToDictionary(x => x.OrderDetailId);
-
                 foreach(var od in orderDetails)
                 {
-                    OrderDetail orderDetail = details[od.OrderDetailId];
+                    OrderDetail orderDetail = orderDetailDict[od.OrderDetailId];
                     orderDetail.DeliveredQuantity = od.DeliveredQuantity;
-                    orderDetail.Order = order;
+                    Item i = orderDetail.Item;
+                    i.Quantity += od.DeliveredQuantity;
                 }
+
                 ctx.SaveChanges();
+
+
+                //List<int> orderDetailsIds = orderDetails.Select(od => od.OrderDetailId).ToList();
+                //List<int> itemIds = ctx.OrderDetails.Include("Item").Where(od => orderDetailsIds.Contains(od.OrderDetailId)).Select(od => od.Item.ItemId).ToList();
+
+                //Order order = ctx.Orders.Where(o => o.OrderId == orderId).SingleOrDefault();
+                //order.Status = (int)OrderStatus.Delivered;
+
+                //Dictionary<int, OrderDetail> details = ctx.OrderDetails.Where(od => orderDetailsIds.Contains(od.OrderDetailId)).ToDictionary(x => x.OrderDetailId);
+               
+                ////allocate requests which got the delivered item and the status should be in partially delivered,partially allocated, approved
+                //Dictionary<int, bool> requestStatusDict = new Dictionary<int, bool> {
+                //    { (int)RequestStatus.Approved,true} ,
+                //    { (int)RequestStatus.PartiallyAllocated,true},
+                //    { (int)RequestStatus.PartiallyDelivered,true },
+                //};
+
+                //List<Disbursement> disbursement = new List<Disbursement>();
+
+                ////get dictionary with key of item and requestdetail
+                //Dictionary<int, List<RequestDetail>> requests = ctx.RequestDetails.Include("Request").Include("Item")
+                //        .Where(rd => requestStatusDict.ContainsKey(rd.Request.Status) && itemIds.Contains(rd.Item.ItemId)).GroupBy(rd => rd.Item.ItemId).ToDictionary(x => x.Key,x => x.ToList());
+
+                ////update orderdetail delivered quantity
+                //foreach (var od in orderDetails)
+                //{
+                //    OrderDetail orderDetail = details[od.OrderDetailId];
+                //    orderDetail.DeliveredQuantity = od.DeliveredQuantity;
+                //    orderDetail.Order = order;
+                //}
+                //ctx.SaveChanges();
+
+                //Order updatedOrder = ctx.Orders.Include("OrderDetails").Include("OrderDetails.Item").Where(o => o.OrderId == orderId).SingleOrDefault();
+
+                ////collect the allocated request
+                //HashSet<int> requestIds = new HashSet<int>();
+
+                ////request id as key and disbursement detail as value for generating disbursement
+                //Dictionary<int, List<DisbursementDetail>> disbursementDict = new Dictionary<int, List<DisbursementDetail>>();
+
+
+                //foreach(var od in updatedOrder.OrderDetails)
+                //{
+                //    int qty = od.DeliveredQuantity;
+                //    int itemId = od.Item.ItemId;
+                //    List<RequestDetail> rDetails = requests[itemId];
+                //    //iterate through request detail 
+                //    foreach (var rD in rDetails)
+                //    {
+                //        if(qty != 0)
+                //        {
+                //            if(rD.Request.Status == (int)RequestStatus.PartiallyDelivered)
+                //            {
+                //                //disbursement details for item
+                //                Request r = ctx.Requests.Include("Disbursements").Include("Disbursements.DisbursementDetails").Include("Disbursements.DisbursementDetails.Item")
+                //                    .Where(rdd => rdd.RequestId == rD.Request.RequestId).SingleOrDefault();
+
+                //                List<DisbursementDetail> sameItemDetail = new List<DisbursementDetail>();
+                //                foreach(var eachDisbursement in r.Disbursements)
+                //                {
+                //                    foreach(var ddetail in eachDisbursement.DisbursementDetails)
+                //                    {
+                //                        if(ddetail.Item.ItemId == itemId)
+                //                        {
+                //                            sameItemDetail.Add(ddetail);
+                //                            break;
+                //                        }
+                //                    }
+                //                }
+
+                //                int deliveredAmount = 0;
+                //                foreach(var ddetail in sameItemDetail)
+                //                {
+                //                    deliveredAmount += ddetail.Quantity;
+                //                }
+
+                //                var requiredAmount = 
+
+                                
+
+                //            }
+                //        }else
+                //        {
+                //            break;
+                //        }
+                //    }
+                    
+                //}
+
+
+
             }
         }
 

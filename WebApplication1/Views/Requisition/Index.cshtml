@@ -86,6 +86,12 @@
             
     }
 
+    function clearUiComponents() {
+        searchbar.setAttribute("value", "");
+        countLabel.innerHTML = `*Item Count By :`;
+        quantityBox.value = 0;
+    }
+
     function itemAdd() {
         var totalCount = 0;
         if (Number(quantityBox.value) > 0) {
@@ -194,6 +200,7 @@
                             notiBox.removeClass('red')
                             notiBox.css('display', 'block')
                             generateTable();
+                            clearUiComponents();
                         } else {
                             console.log("error")
                             notiBox.html('Fail to proceed')

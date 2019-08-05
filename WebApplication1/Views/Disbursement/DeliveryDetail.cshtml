@@ -1,0 +1,68 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    Disbursement d = (Disbursement)ViewData["Disbursement"];
+    List<DisbursementDetail> list = null;
+    if (d != null)
+    {
+        list = d.DisbursementDetails;
+    }
+}
+
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        @if (d != null)
+        {
+            <h5 class="ui header">Department Name : @d.Department.DepartmentName</h5>
+            <h5 class="ui header">Request Detail : <a href="http://localhost:50271/myrequisitions/@d.Request.RequestId">View Request Detail</a></h5>
+            <h5 class="ui header">
+                Department Representative : 
+                @if(d.Department.Representative != null)
+                {
+                    @d.Department.Representative.Name
+                }
+            </h5>
+        }
+
+        <form action="http://localhost:50271/deliveries/@d.DisbursementId" method="post">
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <th>Item Description</th>
+                        <th>UOM</th>
+                        <th>Quantity</th>
+                        <th>Actual Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (list != null)
+                    {
+
+                        for (var i = 0; i < list.Count; i++)
+                        {
+                            <tr>
+                                <td>@list[i].Item.Description</td>
+                                <td>@list[i].Item.UnitOfMeasure</td>
+                                <td>@list[i].Quantity</td>
+                                <td>
+                                    <input type="hidden" name="[@i].DisbursementDetailId" value="@list[i].DisbursementDetailId" />
+                                    <input type="hidden" name="[@i].Item.ItemId" value="@list[i].Item.ItemId" />
+                                    <div class="ui input" style="width : 100%">
+                                        <input type="number" max="@list[i].Quantity" min="0" name="[@i].Quantity" />
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            @if (list != null)
+            {
+                <button class="ui primary button" type="submit">Received</button>
+
+            }
+        </form>
+
+    </div>
+</div>

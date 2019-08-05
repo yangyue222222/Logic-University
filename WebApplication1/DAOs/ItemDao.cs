@@ -29,5 +29,22 @@ namespace WebApplication1.DAOs
             return item;
         }
 
+        public static void UpdateStockForAdjustment(List<AdjustmentDetail> details) 
+        {
+            using(var ctx = new UniDBContext())
+            {
+                List<int> itemIds = details.Select(de => de.Item.ItemId).ToList();
+                Dictionary<int, Item> itemDict = ctx.Items.Where(i => itemIds.Contains(i.ItemId)).ToDictionary(i => i.ItemId);
+                foreach (var d in details)
+                {
+                    Item item = itemDict[d.Item.ItemId];
+                    item.Quantity = (item.Quantity - d.Count); 
+
+                }
+
+                ctx.SaveChanges();
+            }
+        }
+
     }
 }

@@ -15,6 +15,8 @@ namespace WebApplication1.Controllers
     public class OrdersController : Controller
     {
         // GET: Order
+
+        //store man order item page
         [HttpGet,Route("orderitems")]
         public ActionResult Index()
         {
@@ -27,6 +29,7 @@ namespace WebApplication1.Controllers
             return View("OrderItems");
         }
 
+        //storeman order item page
         [HttpPost,Route("orderitems")]
         public ActionResult Index(List<Item> items, int supplierId)
         {
@@ -44,12 +47,10 @@ namespace WebApplication1.Controllers
 
                 try
                 {
-                    string token = HttpContext.Request.Cookies["token"].Value;
-                    string decryptedToken = TokenUtility.Decrypt(token);
-                    string[] arr = decryptedToken.Split(new string[] { "%" }, StringSplitOptions.None);
+                    int userId = Convert.ToInt32(RouteData.Values["userId"]);
                     User user = new User()
                     {
-                        UserId = Convert.ToInt32(arr[0])
+                        UserId = userId
                     };
 
                     OrderDao.InsertOrders(items, user, supplierId);
@@ -64,6 +65,7 @@ namespace WebApplication1.Controllers
             return new HttpStatusCodeResult(400);
         }
 
+        //get all orders
         [HttpGet,Route("orders")]
         public ActionResult GetAllOrders()
         {
@@ -72,7 +74,9 @@ namespace WebApplication1.Controllers
             ViewData["Orders"] = orders;
             return View("Orders");
         }
+        
 
+        //get a particular order
         [HttpGet,Route("orders/{orderId}")]
         public ActionResult OrderDetail(int orderId)
         {
@@ -93,6 +97,7 @@ namespace WebApplication1.Controllers
         }
         
 
+        //get all approved orders for receiving stock
         [HttpGet,Route("approveorders")]
         public ActionResult ApprovedOrders()
         {
@@ -101,6 +106,7 @@ namespace WebApplication1.Controllers
             return View();
         }
 
+        //post order for receiving stock
         [HttpPost,Route("approveorders/{orderId}")]
         public ActionResult ApprovedOrders(List<OrderDetail> orderDetails,int orderId)
         {
@@ -108,6 +114,8 @@ namespace WebApplication1.Controllers
             return RedirectToAction("ApprovedOrders");
         }
 
+
+        //for storemanager or store supervisor
         [HttpGet,Route("PendingOrders")]
         public ActionResult PendingOrders()
         {
@@ -120,6 +128,7 @@ namespace WebApplication1.Controllers
             return View();
         }
 
+        //for storemanager or store supervisor
         [HttpGet,Route("PendingOrders/{orderId}")]
         public ActionResult PendingOrder(int orderId)
         {
@@ -132,17 +141,16 @@ namespace WebApplication1.Controllers
             return RedirectToAction("PendingOrders");
         }
 
+        //for storemanager or store supervisor
         [HttpPost,Route("pendingorders/{orderId}")]
         public ActionResult UpdateOrder(int orderId,string status)
         {
 
-            string token = HttpContext.Request.Cookies["token"].Value;
-            string decryptedToken = TokenUtility.Decrypt(token);
-            string[] arr = decryptedToken.Split(new string[] { "%" }, StringSplitOptions.None);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
 
             User u = new User()
             {
-                UserId = Convert.ToInt32(arr[0])
+                UserId = Convert.ToInt32(userId)
             };
 
             Order order = new Order()

@@ -19,6 +19,7 @@ namespace WebApplication1.DAOs
                     Request req = new Request();
                     req.Requestor = u;
                     req.Department = u.Department;
+                    req.DisbursementStatus = (int)RequestRetrievalStatus.NotPrepared;
                     ICollection<RequestDetail> details = new List<RequestDetail>();
                     req.Date = DateTime.Now;
                     req.Status = (int)RequestStatus.Requested;
@@ -75,83 +76,104 @@ namespace WebApplication1.DAOs
             
             using (var ctx = new UniDBContext())
             {
-                var req = ctx.Requests.Include("RequestDetails").Include("RequestDetails.Item").Where(r => r.RequestId == request.RequestId && r.Department.DepartmentId == request.Department.DepartmentId).SingleOrDefault();
-                req.Status = request.Status;
-                req.ApprovedBy = request.ApprovedBy;
-                ctx.Users.Attach(req.ApprovedBy);
-                ctx.Departments.Attach(request.Department);
-
-                if(req.Status == (int)RequestStatus.Approved)
-                {
-                    //get list of item ids
-                    Disbursement disbursement = new Disbursement();
-                    List<int> itemIds = req.RequestDetails.Select(rd => rd.Item.ItemId).ToList();
-                    List<DisbursementDetail> disbursementDetails = new List<DisbursementDetail>();
-
-                    //get the current stock items 
-                    IDictionary<int, Item> itemsDictionary = ctx.Items.Where(i => itemIds.Contains(i.ItemId)).ToDictionary(i => i.ItemId, i => i);
-
-                    foreach(var rD in req.RequestDetails)
-                    {
-                        Item i = itemsDictionary[rD.Item.ItemId];
-                       
-                        if(i.Quantity != 0) {
-
-                            if (rD.Quantity > i.Quantity)
-                            {
-                                //requested amount is more than current stock
-                                disbursement.Status = (int)DisbursementStatus.Allocated;
-                                req.Status = (int)RequestStatus.PartiallyAllocated;
-                                DisbursementDetail dd = new DisbursementDetail()
-                                {
-                                    Item = i,
-                                    Quantity = i.Quantity
-                                };
-
-                                i.Quantity = 0;
-                                disbursementDetails.Add(dd);
-                            }
-                            else
-                            {
-                                DisbursementDetail dd = new DisbursementDetail()
-                                {
-                                    Item = i,
-                                    Quantity = rD.Quantity,
-                                };
-
-                                i.Quantity = i.Quantity - rD.Quantity;
-                                disbursementDetails.Add(dd);
-                            }
-                        }
-                        
-                    }
-
-                    if (disbursementDetails.Count > 0)
-                    {
-                        disbursement.DisbursementDetails = disbursementDetails;
-                        disbursement.Date = DateTime.Now.AddDays(-1);
-                        disbursement.Department = request.Department;
-                        disbursement.Request = req;
-                        ctx.Disbursements.Add(disbursement);
-                        ctx.DisbursementDetails.AddRange(disbursementDetails);
-
-                        if (req.Status != (int)RequestStatus.PartiallyAllocated)
-                        {
-                            req.Status = (int)RequestStatus.FullyAllocated;
-                        }
-                    }
-                    
-                }
                 try
                 {
+                    Request req = ctx.Requests.Where(r => r.RequestId == request.RequestId).SingleOrDefault();
+                    req.Status = request.Status;
+                    req.ApprovedBy = request.ApprovedBy;
+                    req.Date = DateTime.Now.AddDays(-1);
+                    ctx.Users.Attach(req.ApprovedBy);
                     ctx.SaveChanges();
-
-                }
+                }                
                 catch (Exception e)
                 {
                     Debug.WriteLine(e.InnerException.Message);
                     Debug.WriteLine(e.InnerException.StackTrace.ToString());
                 }
+
+                
+
+                //var req = ctx.Requests.Include("RequestDetails").Include("RequestDetails.Item").Where(r => r.RequestId == request.RequestId && r.Department.DepartmentId == request.Department.DepartmentId).SingleOrDefault();
+                //req.Status = request.Status;
+                //req.ApprovedBy = request.ApprovedBy;
+                //ctx.Users.Attach(req.ApprovedBy);
+                //ctx.Departments.Attach(request.Department);
+
+                //if(req.Status == (int)RequestStatus.Approved)
+                //{
+                //    //get list of item ids
+                //    Disbursement disbursement = new Disbursement();
+                //    List<int> itemIds = req.RequestDetails.Select(rd => rd.Item.ItemId).ToList();
+                //    List<DisbursementDetail> disbursementDetails = new List<DisbursementDetail>();
+
+                //    //get the current stock items 
+                //    IDictionary<int, Item> itemsDictionary = ctx.Items.Where(i => itemIds.Contains(i.ItemId)).ToDictionary(i => i.ItemId, i => i);
+
+                //    foreach(var rD in req.RequestDetails)
+                //    {
+                //        Item i = itemsDictionary[rD.Item.ItemId];
+                       
+                //        if(i.Quantity != 0) {
+
+                //            if (rD.Quantity > i.Quantity)
+                //            {
+                //                //requested amount is more than current stock
+                //                disbursement.Status = (int)DisbursementStatus.Allocated;
+                //                req.Status = (int)RequestStatus.PartiallyAllocated;
+                //                DisbursementDetail dd = new DisbursementDetail()
+                //                {
+                //                    Item = i,
+                //                    Quantity = i.Quantity
+                //                };
+
+                //                rD.DeliveredQuantity = i.Quantity;
+
+                //                i.Quantity = 0;
+                //                disbursementDetails.Add(dd);
+                //            }
+                //            else
+                //            {
+                //                DisbursementDetail dd = new DisbursementDetail()
+                //                {
+                //                    Item = i,
+                //                    Quantity = rD.Quantity,
+                //                };
+
+                //                rD.DeliveredQuantity = rD.Quantity;
+
+                //                i.Quantity = i.Quantity - rD.Quantity;
+                //                disbursementDetails.Add(dd);
+                //            }
+                //        }
+                        
+                //    }
+
+                //    if (disbursementDetails.Count > 0)
+                //    {
+                //        disbursement.DisbursementDetails = disbursementDetails;
+                //        disbursement.Date = DateTime.Now.AddDays(-1);
+                //        disbursement.Department = request.Department;
+                //        disbursement.Request = req;
+                //        ctx.Disbursements.Add(disbursement);
+                //        ctx.DisbursementDetails.AddRange(disbursementDetails);
+
+                //        if (req.Status != (int)RequestStatus.PartiallyAllocated)
+                //        {
+                //            req.Status = (int)RequestStatus.FullyAllocated;
+                //        }
+                //    }
+                    
+                //}
+                //try
+                //{
+                //    ctx.SaveChanges();
+
+                //}
+                //catch (Exception e)
+                //{
+                //    Debug.WriteLine(e.InnerException.Message);
+                //    Debug.WriteLine(e.InnerException.StackTrace.ToString());
+                //}
             }
         }
 
@@ -225,6 +247,60 @@ namespace WebApplication1.DAOs
                 }
 
                 return query.SingleOrDefault();
+            }
+        }
+
+
+        //update request for delivered qty,status,etc.
+        public static void UpdateRequestById(int requestId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                Request req = ctx.Requests.Include("RequestDetails").Include("RequestDetails.Item")
+                    .Where(r => r.RequestId == requestId).SingleOrDefault();
+                //delivered item amount dictionary 
+                //item key and total delivered qty value
+                Dictionary<int, int> deliveredItemDict = ctx.DisbursementDetails.Include("Disbursement").Include("Disbursement.Request").Include("Item")
+                    .Where(dd => dd.Disbursement.Request.RequestId == requestId)
+                    .GroupBy(dd => dd.Item.ItemId)
+                    .Select(c => new
+                    {
+                        ItemId = c.Key,
+                        Total = c.Sum(dd => dd.Quantity)
+                    })
+                    .ToDictionary(dd => dd.ItemId, dd => dd.Total);
+                bool fulfilRequest = true;
+                foreach(var rD in req.RequestDetails)
+                {
+                    if (deliveredItemDict.ContainsKey(rD.Item.ItemId))
+                    {
+                        int currentDeliveredQty = deliveredItemDict[rD.Item.ItemId];
+                        if (rD.Quantity == currentDeliveredQty)
+                        {
+                            rD.DeliveredQuantity = currentDeliveredQty;
+                        }
+                        else
+                        {
+                            int temp = deliveredItemDict[rD.Item.ItemId];
+                            int amountToIncrease = Math.Abs(rD.DeliveredQuantity - temp);
+                            rD.DeliveredQuantity += amountToIncrease;
+                            fulfilRequest = false;
+                        }
+                    }
+                    
+                    
+                }
+
+                if(fulfilRequest != true)
+                {
+                    req.Status = (int)RequestStatus.PartiallyDelivered;
+                }else
+                {
+                    req.Status = (int)RequestStatus.Delivered;
+                }
+                req.DisbursementStatus = (int)RequestRetrievalStatus.NotPrepared;
+                ctx.SaveChanges();
+
             }
         }
 
