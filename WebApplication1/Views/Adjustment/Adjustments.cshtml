@@ -1,0 +1,48 @@
+﻿@using WebApplication1.Models
+
+@{
+    ViewBag.Title = "Adjustments";
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    var urlName = "myadjustments";
+    if(ViewData["MyAdjustment"] == null)
+    {
+        urlName = "adjustments";
+    }
+}
+
+<div class="sixteen wide tablet twelve wide computer column">
+    <h5 class="ui header">Adjustments</h5>
+    <table class="ui celled table">
+        <thead>
+            <tr>
+                @if (ViewData["MyAdjustment"] == null)
+                {
+                    <th>Raised By</th>
+                }
+                <th>Raised Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Option</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (ViewData["Adjustments"] != null)
+                {
+                    foreach (var ad in (List<Adjustment>)ViewData["Adjustments"])
+                    {
+                        <tr>
+                            @if(ViewData["MyAdjustment"] == null){
+                                <td>@ad.Requestor.Name</td>
+                            }
+                            <td>@ad.RaisedTime.ToString("dd/MM/yyyy")</td>
+                            <td>@ad.Total</td>
+                            <td>@Enum.GetName(typeof(AdjustmentStatus),ad.Status)</td>
+                            <td><a class="ui basic primary outline button" href="http://localhost:50271/@urlName/@ad.AdjustmentId">View Detail</a></td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>

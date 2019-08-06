@@ -59,7 +59,8 @@ namespace WebApplication1.Controllers
                 {
                     UserId = userId
                 };
-                AdjustmentDao.InsertAdjustment(adjustmentDetails, u);
+                Adjustment ad = AdjustmentDao.InsertAdjustment(adjustmentDetails, u);
+                AdjustmentDao.CalculateAdjustmentCost(ad);
             }
 
 
@@ -71,7 +72,7 @@ namespace WebApplication1.Controllers
         }
 
 
-        [HttpGet,Route("deliveries")]
+        [HttpGet,Route("deliveries",Name = "deliveries")]
         public ActionResult Deliveries()
         {
             List<Disbursement> disbursements = DisbursementDao.GetPreparedDisbursements();
@@ -97,7 +98,7 @@ namespace WebApplication1.Controllers
                 {
                     AdjustmentDetail detail = new AdjustmentDetail()
                     {
-                        Count = (i.AllocatedQuantity - i.ActualQuantity),
+                        Count = (i.StockQuantity - i.ActualQuantity),
                         Item = new Item()
                         {
                             ItemId = i.ItemId
@@ -123,12 +124,12 @@ namespace WebApplication1.Controllers
                     {
                         UserId = userId
                     };
-                    AdjustmentDao.InsertAdjustment(adjustmentDetails, u);
+                    Adjustment ad = AdjustmentDao.InsertAdjustment(adjustmentDetails, u);
+                    AdjustmentDao.CalculateAdjustmentCost(ad);
                     ItemDao.UpdateStockForAdjustment(adjustmentDetails);
                 }
 
                 DisbursementDao.GenerateDisbursements(items);
-
 
             }
             else

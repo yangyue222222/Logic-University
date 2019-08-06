@@ -1,0 +1,84 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    Adjustment ad = (Adjustment)ViewData["Adjustment"];
+}
+
+
+
+<div class="twelve wide computer column sixteen wide table column">
+    <div class="ui grid">
+        <div class="sixteen wide tablet column">
+            <h5 class="ui header">Raised Date : @ad.RaisedTime.ToString("dd/MM/yyyy")</h5>
+            <h5 class="ui header">Raised By : @ad.Requestor.Name</h5>
+            <h5 class="ui header">Status : @Enum.GetName(typeof(AdjustmentStatus), ad.Status) </h5>
+        </div>
+        <div class="sixteen wide tablet column">
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Qty
+                        </th>
+                        <th>
+                            UOM
+                        </th>
+                        <th>
+                            Price
+                        </th>
+                        <th>
+                            Total
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var add in ad.AdjustmentDetails)
+                    {
+                        <tr>
+                            <td>
+                                @add.Item.Description
+                            </td>
+                            <td>
+                                @add.Count
+                            </td>
+                            <td>
+                                @add.Item.UnitOfMeasure
+                            </td>
+                            <td>
+                                @add.Item.Price
+                            </td>
+                            <td>
+                                @(add.Item.Price * add.Count)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="4">SUBTOTAL</th>
+                        <th>@{var sum = ad.AdjustmentDetails.Sum(add => add.Count * add.Item.Price);} @sum</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        @if (ViewData["MyAdjustment"] == null)
+        {
+            <div class="sixteen wide tablet column">
+                <form id="form-request" method="post" action="http://localhost:50271/adjustments/@ad.AdjustmentId">
+                    <div class="ui grid">
+                        <div class="sixteen wide tablet right aligned column">
+                            <button type="submit" class="ui positive button">Checked</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        }
+
+    </div>
+</div>

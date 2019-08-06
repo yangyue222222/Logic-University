@@ -7,23 +7,33 @@
 <div class="ui grid">
     <div class="four wide computer column" id="sidebar">
         <div class="ui secondary vertical pointing fluid menu">
-            <a class="item @(pgName == "Index" ? "activeLink" : "")" href="@Url.Action("Index", "Requisition")"> <span>Item Requisition</span>
+            <a class="item @(pgName == "Index" ? "activeLink" : "")" href="@Url.Action("Index", "Requisition")">
+                <span>Item Requisition</span>
                 <i class="file alternate icon"></i>
             </a>
 
-            <a class="item @(pgName == "PendingRequisitions" ? "activeLink" : "")" href="@Url.Action("PendingRequisitions", "Requisition")"> <span>Pending Requisitions</span>
+            <a class="item @(pgName == "PendingRequisitions" ? "activeLink" : "")" href="@Url.Action("PendingRequisitions", "Requisition")">
+                <span>Pending Requisitions</span>
                 <i class="icon clone"></i>
             </a>
 
-            <a class="item" href="@Url.Action("PickUpForm", "Department")"> <span>Items Pick-up </span>
+            <a class="item @(pgName == "Index" ? "activeLink" : "")" href="@Url.Action("Index", "Requisition")">
+                <span>My Requisition</span>
+                <i class="file icon"></i>
+            </a>
+
+            <a class="item" href="@Url.Action("PickUpForm", "Department")">
+                <span>Items Pick-up </span>
                 <i class="briefcase icon"></i>
             </a>
 
-            <a class="item" href="@Url.Action("Delegate", "Department")"> <span>Delegate Functions</span>
+            <a class="item" href="@Url.Action("Delegate", "Department")">
+                <span>Delegate Functions</span>
                 <i class="street view icon"></i>
             </a>
 
-            <a class="item" href="@Url.Action("History", "Department")"> <span>History</span>
+            <a class="item" href="@Url.Action("History", "Department")">
+                <span>History</span>
                 <i class="file alternate icon"></i>
             </a>
         </div>
