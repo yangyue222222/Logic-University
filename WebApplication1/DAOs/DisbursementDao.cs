@@ -328,7 +328,16 @@ namespace WebApplication1.DAOs
                 return disbursements;
             }
         }
+        public static List<Disbursement> getPreparedDisbursementsForMobile()
+        {
+            using (var ctx = new UniDBContext())
+            {
+                List<Disbursement> disbursements = ctx.Disbursements.Include("Department").Include("Department.Representative").Include("DisbursementDetails").Include("DisbursementDetails.Item")
+                    .Where(d => d.Status == (int)DisbursementStatus.Prepared).ToList();
 
+                return disbursements;
+            }
+        }
         public static Disbursement GetDisbursement(int id)
         {
             using(var ctx = new UniDBContext())

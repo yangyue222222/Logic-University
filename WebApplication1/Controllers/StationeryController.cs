@@ -6,9 +6,11 @@ using System.Web.Mvc;
 using WebApplication1.DAOs;
 using WebApplication1.Models;
 using System.Diagnostics;
+using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
+    [AuthFilter]
     public class StationeryController : Controller
     {
         [HttpGet]
@@ -20,7 +22,12 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-
+        [HttpGet]
+        public ActionResult RetrievalMobile()
+        {
+            List<RetrievalItem> items = DisbursementDao.GetAllItemsForRetrieval();
+            return Json(items, JsonRequestBehavior.AllowGet);
+        }
 
 
         //[HttpGet]
@@ -42,7 +49,7 @@ namespace WebApplication1.Controllers
         //    return View();
         //}
 
-        
+
         //public JsonResult GetRequestDetails(int sortBy)
         //{
         //    Debug.WriteLine("Request Details");

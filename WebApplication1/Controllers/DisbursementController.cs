@@ -79,7 +79,33 @@ namespace WebApplication1.Controllers
             return View("Deliveries");
         }
 
-        
+        public ActionResult DeliveriesMobile()
+        {
+            List<Disbursement> retrievedList = DisbursementDao.getPreparedDisbursementsForMobile();
+            List<object> disbursementList = new List<object>();
+            foreach (Disbursement d in retrievedList)
+            {
+                List<object> dDetailsList = new List<object>();
+                foreach (var disbursementDetail in d.DisbursementDetails)
+                {
+                    dDetailsList.Add(new
+                    {
+                        ItemName = disbursementDetail.Item.Description,
+                        ItemId = disbursementDetail.Item.ItemId,
+                        Quantity = disbursementDetail.Quantity
+                    });
+                }
+                var temp = new
+                {
+                    DisbursementId = d.DisbursementId,
+                    Representative = d.Department.Representative.Name,
+                    DepartmentName = d.Department.DepartmentName,
+                    DisbursementDetails = dDetailsList
+                };
+                disbursementList.Add(temp);
+            }
+            return Json(disbursementList, JsonRequestBehavior.AllowGet);
+        }
 
 
 
@@ -97,7 +123,7 @@ namespace WebApplication1.Controllers
                 {
                     AdjustmentDetail detail = new AdjustmentDetail()
                     {
-                        Count = (i.AllocatedQuantity - i.ActualQuantity),
+                        Count = (i.StockQuantity - i.ActualQuantity),
                         Item = new Item()
                         {
                             ItemId = i.ItemId
@@ -177,6 +203,11 @@ namespace WebApplication1.Controllers
             return RedirectToAction("");
         }
 
-        
+        [HttpPost]
+        public ActionResult DisbursementsMobile(List<RetrievalItem> list)
+        {
+            ActionResult ar = Disbursements(list);
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
     }
 }
