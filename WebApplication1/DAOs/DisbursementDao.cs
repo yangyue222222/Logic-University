@@ -392,6 +392,66 @@ namespace WebApplication1.DAOs
             }
         }
 
+        public static List<Disbursement> GetDisbursementsByDepartmentAndMonth(int departmentId,int month,int disbursementStatus) {
+            using(var ctx = new UniDBContext())
+            {
+                List<Disbursement> disbursements = ctx.Disbursements.Include("Department").Include("DisbursementDetails").Include("DisbursementDetails.Item")
+                    .Where(d => d.Department.DepartmentId == departmentId && d.Date.Year == DateTime.Now.Year && d.Date.Month == month && d.Status == disbursementStatus)
+                    .ToList();
+
+                return disbursements;
+            }
+        }
+
+        public static void GenerateInvoiceByDepartmentAndMonth(int departmentId, int month)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                List<Disbursement> disbursements = ctx.Disbursements.Include("Department")
+                    .Where(d => d.Department.DepartmentId == departmentId && d.Date.Year == DateTime.Now.Year && d.Date.Month == month && d.Status == (int)DisbursementStatus.Delivered)
+                    .ToList();
+
+                if(disbursements != null)
+                {
+                    foreach(var d in disbursements)
+                    {
+                        d.Status = (int)DisbursementStatus.InvoiceGenerated;
+                    }
+                    ctx.SaveChanges();
+                }
+            }
+        }
+
+        public static Disbursement GetDeliveredDisbursementById(int disbursementId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                Disbursement disbursement = ctx.Disbursements.Include("DisbursementDetails").Include("DisbursementDetails.Item").Include("ApprovedBy")
+                    .Include("Department")
+                    .Where(d => d.DisbursementId == disbursementId && d.Status == (int)DisbursementStatus.Approved)
+                    .SingleOrDefault();
+                return disbursement;
+            }
+        }
+
+        public static void ApproveDisubrsementById(User u , int disbursementId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                Disbursement dis = ctx.Disbursements.Include("Department")
+                    .Where(d => d.Department.DepartmentId == u.Department.DepartmentId && d.DisbursementId == disbursementId && d.Status == (int)DisbursementStatus.Delivered)
+                    .SingleOrDefault();
+                User user = new User()
+                {
+                    UserId = u.UserId
+                };
+                dis.ApprovedBy = user;
+                dis.Status = (int)DisbursementStatus.Approved;
+                ctx.Users.Attach(user);
+                ctx.SaveChanges();
+            }
+        }
+
 
     }
 }

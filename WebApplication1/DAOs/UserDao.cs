@@ -45,6 +45,18 @@ namespace WebApplication1.DAOs
             }
         }
 
+        public async static Task<User> GetTemporaryHeadByDepartment(int departmentId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                User u = ctx.Users.Include("Department").Where(user => user.Department.DepartmentId == departmentId &&
+                user.Rank == (int)UserRank.TemporaryHead).SingleOrDefault();
+
+                return u;
+            }
+        }
+
+
         public static User GetUserProfile(User user)
         {
             using (var ctx = new UniDBContext())

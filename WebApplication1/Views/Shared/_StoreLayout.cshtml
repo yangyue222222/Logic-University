@@ -32,11 +32,12 @@
                 <i class="briefcase icon"></i>
             </a>
 
-            <a class="item" href="@Url.Action("OrderItem", "Store")">
+            <a class="item  @(pgName == "Inventory" ? "activeLink" : "")" href="@Url.RouteUrl("instocks")">
                 <span>Inventory</span>
                 <i class="file alternate icon"></i>
             </a>
 
+            
             <a class="item @(pgName == "ApprovedOrders" ? "activeLink" : "")" href="@Url.RouteUrl("approveorders")">
                 <span>Receive Stocks</span>
                 <i class="icon plus square"></i>
@@ -64,11 +65,10 @@
                 <i class="file alternate icon"></i>
             </a>
 
-            <a class="item" href="@Url.Action("OrderItem", "Store")">
-                <span> Invoicing</span>
+            <a class="item @(pgName == "GenerateInvoices" ? "activeLink" : "")" href="@Url.RouteUrl("invoices")">
+                <span>Generate Invoices</span>
                 <i class="icon dollar sign"></i>
             </a>
-
 
 
         </div>

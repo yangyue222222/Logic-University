@@ -46,5 +46,14 @@ namespace WebApplication1.DAOs
             }
         }
 
+        public static List<Item> GetAllItems()
+        {
+            using(var ctx = new UniDBContext())
+            {
+                List<Item> items = ctx.Items.ToList();
+                return items;
+            }
+        }
+
     }
 }

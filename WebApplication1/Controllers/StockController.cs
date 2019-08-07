@@ -45,5 +45,13 @@ namespace WebApplication1.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpGet, Route("instocks",Name = "instocks")]
+        public ActionResult Inventory()
+        {
+            ViewData["Items"] = ItemDao.GetAllItems();
+            return View("Inventory");
+        }
+
     }
 }

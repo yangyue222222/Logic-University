@@ -70,11 +70,8 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public ActionResult PendingRequisitions()
         {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
 
-            string token = HttpContext.Request.Cookies["token"].Value;
-            string decodedToken = TokenUtility.Decrypt(token);
-            string[] arr = decodedToken.Split(new string[] { "%" }, StringSplitOptions.None);
-            int departmentId = Convert.ToInt32(arr[2]);
             List<Request> requests = RequestDao.getRequestsByDepartment(departmentId);
 
             ViewData["Requests"] = requests;
@@ -128,6 +125,7 @@ namespace WebApplication1.Controllers
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
+
             User u = new User()
             {
                 UserId = userId,

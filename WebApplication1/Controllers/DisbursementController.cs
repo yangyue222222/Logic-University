@@ -24,6 +24,53 @@ namespace WebApplication1.Controllers
             return View("DeliveryDetail");
         }
 
+        //for employee to get delivered disbursement and approve it
+        [HttpGet,Route("delivereddisbursements",Name = "delivereddisbursements")]
+        public ActionResult GetDeliveredDisbursements()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(departmentId, DateTime.Now.Month,(int)DisbursementStatus.Delivered);
+            ViewData["Disbursements"] = disbursements;
+            return View("DeliveredDisbursements");
+        }
+
+        [HttpGet, Route("delivereddisbursements/{disbursementId}")]
+        public ActionResult GetDeliveredDisbursementDetailById(int disbursementId)
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            Disbursement d = DisbursementDao.GetDeliveredDisbursementById(disbursementId);
+            ViewData["Disbursement"] = d;
+            return View("DisbursementDetail");
+        }
+
+
+        //approve disbursement by employee
+        [HttpGet,Route("approvedisbursements/{disbursementId}")]
+        public ActionResult ApproveDisbursementById(int disbursementId)
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+
+            Department d = new Department()
+            {
+                DepartmentId = departmentId
+            };
+            User u = new User()
+            {
+                UserId = userId
+            };
+
+            u.Department = d;
+
+            DisbursementDao.ApproveDisubrsementById(u, disbursementId);
+
+            return RedirectToAction("GetDeliveredDisbursements");
+
+        }
+
+
+
+        //when reach to the collection point and storeman will click received to the particular disbursement id
         [HttpPost, Route("deliveries/{id}")]
         public ActionResult ReceiveItemsByDepartment(List<DisbursementDetail> details,int id)
         {
@@ -68,10 +115,11 @@ namespace WebApplication1.Controllers
             //need to update the request such as status, delivered Qty
             RequestDao.UpdateRequestById(dis.Request.RequestId);
 
-            return View();
+            return RedirectToAction("Deliveries");
         }
 
 
+        //storeman will get all of the prepared disbursements
         [HttpGet,Route("deliveries",Name = "deliveries")]
         public ActionResult Deliveries()
         {
@@ -79,9 +127,6 @@ namespace WebApplication1.Controllers
             ViewData["Disbursements"] = disbursements;
             return View("Deliveries");
         }
-
-        
-
 
 
         //retrieving and preparing for delivery
@@ -130,53 +175,70 @@ namespace WebApplication1.Controllers
                 }
 
                 DisbursementDao.GenerateDisbursements(items);
-
+                return RedirectToAction("Retrieval", "Stationery");
             }
             else
             {
                 return RedirectToAction("Retrieval", "Stationery");
             }
-            
 
-
-
-            //List<AdjustmentDetail> details = new List<AdjustmentDetail>();
-            //foreach (var i in items)
-            //{
-            //    Debug.WriteLine(i.ItemId + " ------- " + i.ActualQuantity);
-            //    if (i.ActualQuantity < i.AllocatedQuantity)
-            //    {
-            //        Item item = new Item()
-            //        {
-            //            ItemId = i.ItemId
-            //        };
-            //        AdjustmentDetail detail = new AdjustmentDetail()
-            //        {
-            //            Item = item,
-            //            Count = i.AllocatedQuantity - i.ActualQuantity
-            //        };
-
-            //        details.Add(detail);
-            //    }
-            //}
-
-            //if(details.Count > 0)
-            //{
-            //    Debug.WriteLine("Passed details count");
-            //    int userId = Convert.ToInt32(RouteData.Values["userId"]);
-            //    User u = new User()
-            //    {
-            //        UserId = userId
-            //    };
-            //    details = AdjustmentDao.InsertAdjustment(details, u);
-            //    DisbursementDao.UpdateDisbursementDetailsForItemMissing(details);
-            //}else
-            //{
-            //    DisbursementDao.UpdateDisbursementsStatus();
-            //}
-
-            return RedirectToAction("");
         }
+
+        [HttpGet,Route("invoices",Name = "invoices")]
+        public ActionResult GenerateInvoices()
+        {
+            List<Department> departments = DepartmentDao.GetAllDepartments();
+            
+            Dictionary<int, string> monthDict = new Dictionary<int, string>();
+            foreach( var i in Enum.GetValues(typeof(Months))){
+                monthDict.Add((int)i, i.ToString());
+            }
+            ViewData["Departments"] = departments;
+            ViewData["MonthDict"] = monthDict;
+            return View("Invoices");
+        }
+
+        [HttpGet,Route("disbursements")]
+        public ActionResult GetDisbursementListWithMonth(int departmentId,int month)
+        {
+            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(departmentId, month,(int)DisbursementStatus.Approved);
+            List<object> data = new List<object>();
+            if(disbursements != null)
+            {
+                foreach(var d in disbursements)
+                {
+                    data.Add(new
+                    {
+                        DisbursementId = d.DisbursementId,
+                        Total = d.DisbursementDetails.Sum(dd => dd.Item.Price * dd.Quantity )
+                });
+                }
+                
+            }
+
+            return Json(new {results = data },JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet,Route("generateinvoice")]
+        public ActionResult GenerateInvoice(int departmentId,int month) {
+            try
+            {
+                DisbursementDao.GenerateInvoiceByDepartmentAndMonth(departmentId, month);
+                return RedirectToAction("GenerateInvoices");
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("GenerateInvoices");
+            }
+        }
+
+        //[HttpGet,Route("delivereddisbursements")]
+        //public ActionResult GetDeliveredDisbursementById(int disbursementId)
+        //{
+        //    Disbursement d = DisbursementDao.GetDeliveredDisbursementById(disbursementId);
+        //    ViewData["Disbursement"] = d;
+        //    return View("DisbursementDetail");
+        //}
 
         
     }

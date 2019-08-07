@@ -244,6 +244,10 @@
     <Content Include="Views\Adjustment\MakeAdjustment.cshtml" />
     <Content Include="Views\Adjustment\Adjustments.cshtml" />
     <Content Include="Views\Adjustment\AdjustmentDetail.cshtml" />
+    <Content Include="Views\Stock\Inventory.cshtml" />
+    <Content Include="Views\Disbursement\Invoices.cshtml" />
+    <Content Include="Views\Disbursement\DisbursementDetail.cshtml" />
+    <Content Include="Views\Disbursement\DeliveredDisbursements.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
