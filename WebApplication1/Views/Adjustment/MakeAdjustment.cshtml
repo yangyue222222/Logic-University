@@ -1,0 +1,262 @@
+﻿@using WebApplication1.Models;
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    ViewBag.Title = "Adjustments";
+    var items = (Dictionary<string, List<Item>>)ViewData["Items"];
+}
+<div class="ui grid">
+    <div class="sixteen wide tablet six wide computer column">
+        <div class="ui styled accordion" id="item-accordion" style="max-height: 550px;overflow-y: scroll;width: 100%">
+            @foreach (KeyValuePair<string, List<Item>> e in items)
+            {
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    @e.Key
+                </div>
+                <div class="content">
+                    @foreach (var i in e.Value)
+                    {
+                        var param = i.ItemId + "*" + i.Description + "*" + i.UnitOfMeasure + "*" + i.Price;
+                        <button onclick="accordionItemClick('@param')" class="ui primary basic button" style="margin-top: 5px;">@i.Description</button>
+                    }
+                </div>
+            }
+
+        </div>
+    </div>
+    <div class="sixteen wide tablet ten wide computer column">
+        <div class="ui grid">
+            <div class="sixteen wide tablet column">
+                <div class="ui input" style="width : 100%">
+                    <input id="searchbar" type="text" placeholder="Item Description..." disabled />
+                </div>
+            </div>
+            <div class="sixteen wide tablet column">
+                <div class="field" style="color: grey;">
+                    <div class="ui input" style="width : 100px;">
+                        <input id="quantity-box" type="number" placeholder="Qty..." min="1" />
+                    </div>
+                    <label id="count-label">*Item Count by :</label>
+
+                    <button class="ui button" onclick="itemAdd()" style="background-color :#4285F4;color : white;margin-left: 20px">
+                        <i class="plus square outline icon"></i>
+                        Add
+                    </button>
+                </div>
+
+            </div>
+            <div class="sixteen wide tablet column" style="max-height: 400px;overflow-y:scroll;">
+                <table class="ui celled table" id="item-table">
+                    <thead>
+                        <tr>
+                            <th style="background-color:#f2f2f2;">Name</th>
+                            <th style="background-color:#f2f2f2;">Qty</th>
+                            <th style="background-color:#f2f2f2;">UOM</th>
+                            <th style="background-color:#f2f2f2;">Price</th>
+                            <th style="background-color:#f2f2f2;">Total</th>
+                            <th style="background-color:#f2f2f2">Option</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-table-body"></tbody>
+
+                </table>
+            </div>
+
+            <div class="sixteen wide tablet right aligned column">
+                <button id="submit-item" class="ui button" style="background-color :#4285F4;color : white;" disabled>
+                    <i class="paper plane outline icon"></i>
+                    Submit For Adjustment
+                </button>
+                <div class="ui red message" id="noti-message" style="display : none">Red</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var searchbar = document.getElementById("searchbar");
+    var countLabel = document.getElementById("count-label");
+    var quantityBox = document.getElementById("quantity-box");
+    var tBody = document.getElementById("order-table-body");
+    var submitBtn = document.getElementById("submit-item");
+    var chosenItems = {};
+    var arr = [];
+    function accordionItemClick(param) {
+        arr = param.split("*");
+        searchbar.setAttribute("value", arr[1]);
+        countLabel.innerHTML = `*Item Count By : ${arr[2]}`;
+
+    }
+
+    function itemAdd() {
+        if (arr.length > 0) {
+            var totalCount = 0;
+            if (Number(quantityBox.value) > 0) {
+                if (chosenItems[arr[0]]) {
+                    totalCount = Number(chosenItems[arr[0]]['count']);
+                }
+
+                totalCount += Number(quantityBox.value);
+                chosenItems[arr[0]] = { count: totalCount, description: arr[1], uom: arr[2], price: arr[3] }
+                generateTable();
+                submitBtn.disabled = false;
+            }
+
+        }
+
+    }
+
+    function removeItem(e) {
+        delete chosenItems[e.target.id];
+        generateTable();
+        if (Object.keys(chosenItems).length == 0) {
+            submitBtn.disabled = true;
+        }
+    }
+
+    function generateTable() {
+
+        var table = document.getElementById("item-table");
+
+        for (var i = table.rows.length - 1; i > 0; i--) {
+            table.deleteRow(i);
+        }
+
+        var keys = Object.keys(chosenItems);
+        var subTotal = 0;
+        for (var i = 0; i < keys.length; i++) {
+            var obj = chosenItems[keys[i]]
+
+            var tRow = document.createElement('tr');
+
+            var tdDescription = document.createElement('td');
+            var descriptionNode = document.createTextNode(obj.description);
+
+            var tdCount = document.createElement('td');
+            var countNode = document.createTextNode(obj.count);
+
+            var tdUom = document.createElement('td');
+            var uomNode = document.createTextNode(obj.uom);
+
+            var tdPrice = document.createElement('td');
+            var priceNode = document.createTextNode("$"+obj.price);
+
+            var total = Number(obj.price) * Number(obj.count);
+            subTotal += total;
+
+            var tdTotal = document.createElement('td');
+            var totalNode = document.createTextNode("$"+total);
+
+            tdDescription.appendChild(descriptionNode);
+            tdCount.appendChild(countNode);
+            tdUom.appendChild(uomNode);
+            tdPrice.appendChild(priceNode);
+            tdTotal.appendChild(totalNode);
+
+            var tdButton = document.createElement('td');
+            var button = document.createElement('button');
+            button.setAttribute('class', "negative compact icon ui button");
+            button.setAttribute('id', keys[i]);
+
+            var tdTrashIcon = document.createElement('i');
+            tdTrashIcon.setAttribute('class', 'trash alternate icon');
+            tdTrashIcon.setAttribute('id', keys[i]);
+
+            button.appendChild(tdTrashIcon);
+            button.onclick = removeItem;
+
+            tdButton.appendChild(button);
+            tRow.appendChild(tdDescription);
+            tRow.appendChild(tdCount);
+            tRow.appendChild(tdUom);
+            tRow.appendChild(tdPrice);
+            tRow.appendChild(tdTotal);
+            tRow.appendChild(tdButton);
+
+            tBody.append(tRow);
+
+        }
+
+        var trLastRow = document.createElement('tr');
+        var tdOne = document.createElement('td');
+        tdOne.setAttribute('colspan', '4');
+        var tdOneText = document.createTextNode('SUBTOTAL');
+        tdOne.appendChild(tdOneText);
+
+        var tdTwo = document.createElement('td');
+        var tdTwoText = document.createTextNode("$"+subTotal);
+        tdTwo.appendChild(tdTwoText);
+
+        var tdThree = document.createElement('td');
+
+        trLastRow.appendChild(tdOne);
+        trLastRow.appendChild(tdTwo);
+        trLastRow.appendChild(tdThree);
+
+        tBody.append(trLastRow);
+
+    }
+
+    $(document).ready(function () {
+
+        $('#submit-item').click(function () {
+
+            var keys = Object.keys(chosenItems);
+            if (keys.length > 0) {
+                var btn = $('#submit-item')
+                btn.prop('disabled', true)
+                var items = [];
+                for (var i = 0; i < keys.length; i++) {
+                    var itemId = keys[i];
+                    var quantity = chosenItems[itemId].count;
+                    items.push({
+                        ItemId: itemId,
+                        Quantity: quantity
+                    });
+                }
+
+
+
+
+                $.ajax({
+                    url: 'http://localhost:50271/adjustments',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(items),
+                    xhrFields: { withCredentials: true },
+                    success: function (data, textStatus, xhr) {
+                        var notiBox = $('#noti-message');
+                        var status = Number(xhr.status)
+                        console.log(status);
+                        if (status === 200) {
+                            console.log('Success')
+                            notiBox.html('Request is successful')
+                            notiBox.addClass('green')
+                            notiBox.removeClass('red')
+                            notiBox.css('display', 'block')
+                            chosenItems = {};
+                            arr = [];
+                            generateTable();
+                        } else {
+                            console.log("error")
+                            notiBox.html('Fail to proceed')
+                            notiBox.addClass('red')
+                            notiBox.removeClass('green')
+                            notiBox.css('display', 'block')
+                        }
+
+                        btn.prop('disabled', false);
+                    }
+                })
+            }
+
+
+        })
+        $('#item-accordion').accordion();
+        $('.ui.dropdown').dropdown();
+    });
+</script>
+
+

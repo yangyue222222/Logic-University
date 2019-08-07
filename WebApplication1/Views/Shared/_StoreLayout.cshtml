@@ -1,50 +1,75 @@
 ﻿
 @{ 
     Layout = "~/Views/Shared/_BaseLayout.cshtml";
-    var pgName = ViewContext.RouteData.Values["Action"].ToString();
-    }
+    var pgName = ViewContext.RouteData.Values["Action"].ToString(); 
+}
 <div class="ui grid">
     <div class="four wide computer column" id="sidebar">
         <div class="ui secondary vertical pointing fluid menu">
 
-            <a class="item @(pgName == "Dashboard" ? "activeLink" : "")" href="@Url.Action("Dashboard", "Store")"> <span>Dashboard</span>
-            <i class="icon dashcube"></i>
+            <a class="item @(pgName == "Dashboard" ? "activeLink" : "")" href="@Url.Action("Dashboard", "Auth")">
+                <span>Dashboard</span>
+                <i class="icon dashcube"></i>
             </a>
 
-            <a class="item" href="@Url.Action("OrderItem", "Store")"> <span>Requests</span>
-            <i class="icon clone"></i>
+            <a class="item  @(pgName == "Index" ? "activeLink" : "")" href="@Url.RouteUrl("orderitems")">
+                <span>Order Items</span>
+                <i class="icon clone"></i>
             </a>
 
-            <a class="item" href="@Url.Action("OrderItem", "Store")"> <span>Request Details</span>
-            <i class="briefcase icon"></i>
+            <a class="item  @(pgName == "PendingOrders" ? "activeLink" : "")" href="@Url.RouteUrl("PendingOrders")">
+                <span>Pending Orders</span>
+                <i class="icon clone outline"></i>
             </a>
 
-            <a class="item" href="@Url.Action("OrderItem", "Store")"> <span>Inventory</span>
-            <i class="file alternate icon"></i>
+            <a class="item @(pgName == "GetAllOrders" ? "activeLink" : "")" href="@Url.Action("GetAllOrders", "Orders")">
+                <span>My Orders</span>
+                <i class="briefcase icon"></i>
             </a>
 
-            <a class="item" href="@Url.Action("OrderItem", "Store")"> <span>Receive Stocks</span>
-            <i class="icon plus square"></i>
+            <a class="item @(pgName == "Deliveries" ? "activeLink" : "")" href="@Url.RouteUrl("deliveries")">
+                <span>Deliveries</span>
+                <i class="briefcase icon"></i>
             </a>
 
-            <a class="item  @(pgName == "Index" ? "activeLink" : "")" href="@Url.Action("Index", "Orders")" ><span>Order Items</span>
-                        <i class="icon clone"></i>
+            <a class="item" href="@Url.Action("OrderItem", "Store")">
+                <span>Inventory</span>
+                <i class="file alternate icon"></i>
             </a>
 
-            <a class="item" href="@Url.Action("Adjustment", "Store")"> <span>Adjustments</span>
-                        <i class="briefcase icon"></i>
-            </a>
-            <a class="item @(pgName == "Retrieval" ? "activeLink" : "")" href="@Url.Action("Retrieval", "Stationery")"> <span> Stationary Retrieval Form</span>
-            <i class="file alternate icon"></i>
+            <a class="item @(pgName == "ApprovedOrders" ? "activeLink" : "")" href="@Url.RouteUrl("approveorders")">
+                <span>Receive Stocks</span>
+                <i class="icon plus square"></i>
             </a>
 
-            <a class="item" href="@Url.Action("OrderItem", "Store")"> <span> Invoicing</span>
-            <i class="icon dollar sign"></i>
+
+
+            <a class="item @(pgName == "MakeAdjustments" ? "activeLink" : "")" href="@Url.RouteUrl("makeadjustments")">
+                <span>Make Adjustments</span>
+                <i class="briefcase icon"></i>
             </a>
 
-            <a class="item  @(pgName == "PendingOrders" ? "activeLink" : "")" href="@Url.Action("PendingOrders", "Orders")"> <span>Pending Orders</span>
-            <i class="icon clone"></i>
+            <a class="item @(pgName == "PendingAdjustments" ? "activeLink" : "")" href="@Url.RouteUrl("adjustments")">
+                <span>Adjustments</span>
+                <i class="briefcase icon"></i>
             </a>
+
+            <a class="item @(pgName == "GetAdjustmentsByClerk" ? "activeLink" : "")" href="@Url.RouteUrl("myadjustments")">
+                <span>My Adjustments</span>
+                <i class="briefcase icon"></i>
+            </a>
+
+            <a class="item @(pgName == "Retrieval" ? "activeLink" : "")" href="@Url.Action("Retrieval", "Stationery")">
+                <span>Item Retrievals</span>
+                <i class="file alternate icon"></i>
+            </a>
+
+            <a class="item" href="@Url.Action("OrderItem", "Store")">
+                <span> Invoicing</span>
+                <i class="icon dollar sign"></i>
+            </a>
+
+
 
         </div>
     </div>

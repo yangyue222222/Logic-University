@@ -141,6 +141,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\AdjustmentController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -240,6 +241,9 @@
     <Content Include="Views\Stock\StockOrderDetail.cshtml" />
     <Content Include="Views\Disbursement\Deliveries.cshtml" />
     <Content Include="Views\Disbursement\DeliveryDetail.cshtml" />
+    <Content Include="Views\Adjustment\MakeAdjustment.cshtml" />
+    <Content Include="Views\Adjustment\Adjustments.cshtml" />
+    <Content Include="Views\Adjustment\AdjustmentDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

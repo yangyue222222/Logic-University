@@ -17,7 +17,7 @@ namespace WebApplication1.Controllers
         // GET: Order
 
         //store man order item page
-        [HttpGet,Route("orderitems")]
+        [HttpGet,Route("orderitems",Name = "orderitems")]
         public ActionResult Index()
         {
             Dictionary<string, List<Item>> items = ItemDao.getItemsForRequisition();
@@ -98,7 +98,7 @@ namespace WebApplication1.Controllers
         
 
         //get all approved orders for receiving stock
-        [HttpGet,Route("approveorders")]
+        [HttpGet,Route("approveorders",Name = "approveorders")]
         public ActionResult ApprovedOrders()
         {
             List<Order> orders = OrderDao.GetApprovedOrders();
@@ -116,7 +116,7 @@ namespace WebApplication1.Controllers
 
 
         //for storemanager or store supervisor
-        [HttpGet,Route("PendingOrders")]
+        [HttpGet,Route("PendingOrders",Name = "PendingOrders" )]
         public ActionResult PendingOrders()
         {
             List<PendingOrder> pendingOrders = OrderDao.GetPendingOrders();
