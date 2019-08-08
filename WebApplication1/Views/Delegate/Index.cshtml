@@ -1,7 +1,10 @@
 ﻿@using WebApplication1.Models
 
 @{
+    Layout = "~/Views/Shared/_DeptLayout.cshtml";
     var representative = (User)ViewData["CurrentRepresentative"];
+    var employees = (List<User>)ViewData["Employees"];
+    ViewBag.Title = "Delegate";
 }
 
 <div class="ui grid">
@@ -11,9 +14,12 @@
             <form method="POST" action="/Delegate/Representative">
                 <select class="ui selection dropdown" name="representativeId">
                     @{
-                        foreach (var e in (List<User>)ViewData["Employees"])
+                        foreach (var e in employees)
                         {
-                            <option value="@e.UserId">@e.Name</option>
+                            if (e.Rank != (int)UserRank.Head)
+                            {
+                                <option value="@e.UserId">@e.Name</option>
+                            }
                         }
                     }
                 </select>
@@ -26,6 +32,42 @@
                 Current Representative : <b>@(representative == null ? "No one" : representative.Name)</b>
             </p>
         </div>
+    </div>
+    <div class="sixteen wide tablet column">
+        <h5 class="ui header">Delegate Temporary Authority</h5>
+        <h5 class="ui header">Current Temporary Head : @(ViewData["TemporaryHead"] == null ? "No one" : ((User)ViewData["TemporaryHead"]).Name)</h5>
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Employee Rank</th>
+                    <th>Delegate Authority</th>
+                    <th>Temporary Authority Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in employees)
+                {
+                    if (e.Rank != (int)UserRank.Head)
+                    {
+                        <tr>
+                            <td>@e.Name</td>
+                            <td>@Enum.GetName(typeof(UserRank), e.Rank)</td>
+                            @if (e.Rank != (int)UserRank.TemporaryHead)
+                            {
+                                <td><a href="http://localhost:50271/delegateauthority?delegateAuthority=1&userId=@e.UserId">Assign</a></td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>@(e.Rank == (int)UserRank.TemporaryHead ? "Active" : "-")</td>
+                        </tr>
+                    }
+
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 

@@ -12,7 +12,8 @@ namespace WebApplication1.Models
         Employee,
         Supervisor,
         Manager,
-        Clerk
+        Clerk,
+        TemporaryHead
     }
 
     public class User

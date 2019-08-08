@@ -1,0 +1,80 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    List<Department> departments = (List<Department>)ViewData["Departments"];
+    Dictionary<int, string> monthDict = (Dictionary<int, string>)ViewData["MonthDict"];
+}
+
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        <h3 class="ui header">Invoices</h3>
+    </div>
+    <div class="sixteen wide tablet column">
+        <select class="ui dropdown" id="department-dropdown">
+            <option value="default">Select Department</option>
+            @foreach (var d in departments)
+            {
+                if (d.DepartmentName != "Store")
+                {
+                    <option value="@d.DepartmentId">@d.DepartmentName</option>
+                }
+            }
+        </select>
+
+        <select class="ui dropdown" id="month-dropdown" style="margin-left : 10px;">
+            <option value="default">Select Month</option>
+            @foreach (KeyValuePair<int, string> entry in monthDict)
+            {
+                <option value="@entry.Key">@entry.Value</option>
+            }
+        </select>
+
+        <button onclick="GetDisbursements()" class="ui positive button" style="margin-left : 10px;">Show Disbursements</button>
+    </div>
+
+    <div class="sixteen wide tablet column" id="table-div">
+       
+    </div>
+</div>
+
+<script>
+    var departmentDropdown = document.getElementById("department-dropdown")
+    var monthDropdown = document.getElementById("month-dropdown")
+    function GetDisbursements() {
+        var departmentId = departmentDropdown.value;
+        var month = monthDropdown.value;
+        if (departmentId != "default" && month != "default") {
+            $.ajax({
+                url: `http://localhost:50271/disbursements?departmentId=${departmentId}&month=${month}`,
+                success: function (data) {
+                    console.log(data.results);
+                    if (data.results.length > 0) {
+                        GenerateTable(data.results)
+                    } else {
+                        noDataFound()
+                    }
+                }
+            });
+        }
+    }
+    function noDataFound() {
+        var div = document.getElementById("table-div")
+        var departmentName = departmentDropdown.options[departmentDropdown.selectedIndex].innerHTML;
+        var monthName = monthDropdown.options[monthDropdown.selectedIndex].innerHTML;
+        div.innerHTML = `No disbursement found for ${departmentName} in ${monthName}.`
+    }
+
+    function GenerateTable(data) {
+        var departmentName = departmentDropdown.options[departmentDropdown.selectedIndex].innerHTML;
+        var div = document.getElementById("table-div")
+        var tableText = `<table class="ui celled table"><thead><tr><th>Department Name</th><th>Total Cost</th><th>Option</th></tr></thead><tbody>`;
+        for (var i = 0; i < data.length; i++) {
+            console.log(data[i])
+            tableText += `<tr><td>${departmentName}</td><td>${data[i].Total}</td><td><a href="http://localhost:50271/delivereddisbursements/${data[i].DisbursementId}">View Detail</a></td></tr>`
+        }
+
+        tableText += `</tbody></table><a href="http://localhost:50271/generateinvoice?departmentId=${departmentDropdown.value}&month=${monthDropdown.value}" class="ui primary button">Generate Invoice</a>`
+        div.innerHTML = tableText;
+    }
+</script>

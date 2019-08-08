@@ -1,0 +1,52 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_DeptLayout.cshtml";
+    ViewBag.Title = "Delivered Disbursements";
+    List<Disbursement> disbursements = null;
+    if (ViewData["Disbursements"] != null)
+    {
+        disbursements = (List<Disbursement>)ViewData["Disbursements"];
+    }
+
+}
+
+<div class="ui grid">
+    @if(disbursements != null && disbursements.Count > 0)
+    {
+        <div class="sixteen wide tablet column">
+            <h5 class="ui header">Department Name : @disbursements[0].Department.DepartmentName</h5>
+        </div>
+        foreach(var d in disbursements)
+        {
+        <div class="sixteen wide tablet column">
+
+            
+                <table class="ui celled table">
+                    <thead>
+                        <tr>
+                            <th>Item Description</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var dd in d.DisbursementDetails)
+                        {
+                            <tr>
+                                <td>@dd.Item.Description</td>
+                                <td>@dd.Quantity</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="2" style="text-align : right">
+                                <a href="http://localhost:50271/approvedisbursements/@d.DisbursementId" class="ui positive button">Approve Disbursement</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+        </div>
+            
+        }
+    }
+   
+</div>

@@ -27,11 +27,16 @@
                 <i class="briefcase icon"></i>
             </a>
 
-            <a class="item" href="@Url.Action("Delegate", "Department")">
+            <a class="item" href="@Url.RouteUrl("Delegate")">
                 <span>Delegate Functions</span>
                 <i class="street view icon"></i>
             </a>
+            
 
+            <a class="item" href="@Url.RouteUrl("delivereddisbursements")">
+                <span>Delivered Disbursements</span>
+                <i class="file alternate icon"></i>
+            </a>
             <a class="item" href="@Url.Action("History", "Department")">
                 <span>History</span>
                 <i class="file alternate icon"></i>
