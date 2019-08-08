@@ -338,6 +338,17 @@ namespace WebApplication1.DAOs
                 return disbursements;
             }
         }
+        public static Disbursement getDisbursementByDetailId(int id)
+        {
+            using (var ctx = new UniDBContext())
+            {
+                DisbursementDetail dd = ctx.DisbursementDetails.Include("Disbursement").Include("Item")
+                    .Where(d => d.DisbursementDetailId == id).FirstOrDefault();
+                Disbursement disbursement = dd.Disbursement;
+                return disbursement;
+            }
+        }
+
         public static Disbursement GetDisbursement(int id)
         {
             using(var ctx = new UniDBContext())

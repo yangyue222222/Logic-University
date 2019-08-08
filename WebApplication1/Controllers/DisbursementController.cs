@@ -71,6 +71,32 @@ namespace WebApplication1.Controllers
             return View();
         }
 
+        [HttpPost]
+        public ActionResult ReceivingMobile(List<DisbursementDetail> details)
+        {
+            int ddid = details[0].DisbursementDetailId;
+            int id = DisbursementDao.getDisbursementByDetailId(ddid).DisbursementId;
+
+            Disbursement d = DisbursementDao.GetDisbursement(id);
+            foreach(var item in d.DisbursementDetails)
+            {
+                foreach(var detail in details)
+                {
+                    Console.WriteLine("Before: " + item.DisbursementDetailId + "----" + item.Quantity);
+                    if (detail.DisbursementDetailId == item.DisbursementDetailId)
+                    {
+                        
+                        item.Quantity = detail.Quantity;
+                        
+                    }
+                    Console.WriteLine("After: " + item.DisbursementDetailId + "----" + item.Quantity);
+                } 
+            }
+
+            ReceiveItemsByDepartment(d.DisbursementDetails, d.DisbursementId);
+
+            return Json(details, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpGet,Route("deliveries",Name = "deliveries")]
         public ActionResult Deliveries()
@@ -91,6 +117,7 @@ namespace WebApplication1.Controllers
                 {
                     dDetailsList.Add(new
                     {
+                        DisbursementDetailId = disbursementDetail.DisbursementDetailId,
                         ItemName = disbursementDetail.Item.Description,
                         ItemId = disbursementDetail.Item.ItemId,
                         Quantity = disbursementDetail.Quantity

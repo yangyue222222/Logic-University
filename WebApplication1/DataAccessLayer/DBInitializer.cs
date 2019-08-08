@@ -42,6 +42,9 @@ namespace WebApplication1.DataAccessLayer
             PopulateSupplier sup = new PopulateSupplier();
             sup.populateSuppliers(context);
 
+            SetRepresentatives sr = new SetRepresentatives();
+            sr.setReps(context);
+
             base.Seed(context);
         }
     }

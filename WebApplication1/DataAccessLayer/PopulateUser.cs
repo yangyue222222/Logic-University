@@ -21,7 +21,7 @@ namespace WebApplication1.DataAccessLayer
 
             User e2 = new User()
             {
-                Name = "CS Employee 1",
+                Name = "CS Employee 2",
                 Username = "cse2",
                 Password = "cse2",
                 Rank = (int)UserRank.Employee
@@ -46,8 +46,8 @@ namespace WebApplication1.DataAccessLayer
 
             User e4 = new User()
             {
-                Name = "English Employee 1",
-                Username = "enge1",
+                Name = "English Employee 2",
+                Username = "enge2",
                 Password = "enge2",
                 Rank = (int)UserRank.Employee
             };
@@ -126,8 +126,8 @@ namespace WebApplication1.DataAccessLayer
             ctx.Users.Add(storeSupervisor);
             ctx.Users.Add(storeManager);
             ctx.Departments.Add(stored);
-
             ctx.SaveChanges();
+
 
         }
     }

@@ -82,10 +82,18 @@ namespace WebApplication1.App_Start
 
                 string token = TokenUtility.Encrypt(u);
                 Response.Cookies["token"].Value = token;
+                Response.Cookies["token"].Expires = DateTime.Now.AddDays(1);
 
-                return Json(token,JsonRequestBehavior.AllowGet);
+                var login = new
+                {
+                    Department = u.Department.DepartmentId,
+                    UserId = u.UserId,
+                    Name = u.Name,
+                    Rank = u.Rank,
+                };
+                return Json(login,JsonRequestBehavior.AllowGet);
             }
-            return Json("test", JsonRequestBehavior.AllowGet);
+            return Json(null, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet,Route("logout")]
