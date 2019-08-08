@@ -71,12 +71,16 @@ namespace WebApplication1.Controllers
         public ActionResult PendingRequisitions()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
-
             List<Request> requests = RequestDao.getRequestsByDepartment(departmentId);
-
             ViewData["Requests"] = requests;
-
             return View("PendingRequisitions");
+        }
+
+        public ActionResult PendingMobile()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            List<Request> requests = RequestDao.getRequestsByDepartment(departmentId);
+            return Json(requests,JsonRequestBehavior.AllowGet);
         }
 
         [Route("Requisitions/{id}"), HttpGet]
@@ -118,6 +122,14 @@ namespace WebApplication1.Controllers
 
             RequestDao.ApproveRequest(request);
             return RedirectToAction("PendingRequisitions");
+        }
+        [Route("Requisitions/{id}/{status}")]
+        public ActionResult ApproveMobile(int id, string status)
+        {
+            ApproveRequisition(id, status);
+            List<object> response = new List<object>();
+            response.Add("success");
+            return Json(response,JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

@@ -8,9 +8,9 @@ namespace WebApplication1.DataAccessLayer
 {
     public class SetRepresentatives
     {
-        public void setReps(UniDBContext ctx)
+        public void setReps()
         {
-            using (ctx)
+            using (var ctx = new UniDBContext())
             {
                 User e2 = ctx.Users.Where(u => u.Username == "cse2").FirstOrDefault();
                 Department csd = ctx.Departments.Where(d => d.DepartmentName == "CS").FirstOrDefault();

@@ -43,7 +43,7 @@ namespace WebApplication1.DataAccessLayer
             sup.populateSuppliers(context);
 
             SetRepresentatives sr = new SetRepresentatives();
-            sr.setReps(context);
+            sr.setReps();
 
             base.Seed(context);
         }

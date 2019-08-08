@@ -35,10 +35,9 @@ namespace WebApplication1.App_Start
                 Debug.WriteLine(u.Department.DepartmentName);
 
                 string token = TokenUtility.Encrypt(u);
-                //HttpCookie cookie = new HttpCookie("token",token);
-                //cookie.Expires = DateTime.Now.AddDays(1);
-                //Response.Cookies.Add(cookie);
-                Response.Cookies["token"].Value = token;
+                HttpCookie cookie = new HttpCookie("token",token);
+                cookie.Expires = DateTime.Now.AddDays(1);
+                Response.Cookies.Add(cookie);
                 
                 RedirectToRouteResult result = null;
                 switch (u.Rank)
@@ -54,6 +53,9 @@ namespace WebApplication1.App_Start
                     case (int)UserRank.Head:
                         result = RedirectToAction("PendingRequisitions", "Requisition");
                         break;
+                    case (int)UserRank.Supervisor:
+                        result = RedirectToAction("Dashboard");
+                        break;
                     case (int)UserRank.Clerk:
                         result = RedirectToAction("Index", "Orders");
                         break;
@@ -67,14 +69,17 @@ namespace WebApplication1.App_Start
         [HttpPost]
         public ActionResult LoginMobile(User user)
         {
+            var failLogin = new
+            {
+                Rank = 99,
+            };
             //fetch from database
             if (ModelState.IsValid)
             {
                 User u = UserDao.GetUser(user);
                 if (u == null)
                 {
-                    ViewData["Error"] = "Username or Password is wrong.";
-                    return View();
+                    return Json(failLogin, JsonRequestBehavior.AllowGet);
                 }
 
                 Debug.WriteLine(u.Department.DepartmentId);
@@ -93,7 +98,7 @@ namespace WebApplication1.App_Start
                 };
                 return Json(login,JsonRequestBehavior.AllowGet);
             }
-            return Json(null, JsonRequestBehavior.AllowGet);
+            return Json(failLogin, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet,Route("logout")]
@@ -106,6 +111,16 @@ namespace WebApplication1.App_Start
                 Response.Cookies.Add(cookie);
             }
             return RedirectToAction("Index");
+        }
+
+        public ActionResult LogoutMobile()
+        {
+            if (HttpContext.Request.Cookies["token"] != null)
+            {
+                Response.Cookies["token"].Expires = DateTime.Now.AddDays(-1);
+            }
+            var logout = new { status = 1 };
+            return Json(logout, JsonRequestBehavior.AllowGet);
         }
 
         [AuthFilter]
