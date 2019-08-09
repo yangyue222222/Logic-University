@@ -35,7 +35,9 @@
     </div>
     <div class="sixteen wide tablet column">
         <h5 class="ui header">Delegate Temporary Authority</h5>
-        <h5 class="ui header">Current Temporary Head : @(ViewData["TemporaryHead"] == null ? "No one" : ((User)ViewData["TemporaryHead"]).Name)</h5>
+        <p style="margin-top: 10px;">
+            Current Temporary Head : @(ViewData["TemporaryHead"] == null ? "No one" : ((User)ViewData["TemporaryHead"]).Name)
+        </p>
         <table class="ui celled table">
             <thead>
                 <tr>
@@ -50,19 +52,19 @@
                 {
                     if (e.Rank != (int)UserRank.Head)
                     {
-                        <tr>
-                            <td>@e.Name</td>
-                            <td>@Enum.GetName(typeof(UserRank), e.Rank)</td>
-                            @if (e.Rank != (int)UserRank.TemporaryHead)
-                            {
-                                <td><a href="http://localhost:50271/delegateauthority?delegateAuthority=1&userId=@e.UserId">Assign</a></td>
-                            }
-                            else
-                            {
-                                <td></td>
-                            }
-                            <td>@(e.Rank == (int)UserRank.TemporaryHead ? "Active" : "-")</td>
-                        </tr>
+                <tr>
+                    <td>@e.Name</td>
+                    <td>@Enum.GetName(typeof(UserRank), e.Rank)</td>
+                    @if (e.Rank != (int)UserRank.TemporaryHead)
+                    {
+                        <td><a href="http://localhost:50271/delegateauthority?delegateAuthority=1&userId=@e.UserId">Assign</a></td>
+                    }
+                    else
+                    {
+                        <td><a href="http://localhost:50271/delegateauthority?delegateAuthority=2&userId=@e.UserId">Cancel</a></td>
+                    }
+                    <td>@(e.Rank == (int)UserRank.TemporaryHead ? "Active" : "-")</td>
+                </tr>
                     }
 
                 }

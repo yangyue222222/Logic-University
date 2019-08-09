@@ -24,7 +24,7 @@ namespace WebApplication1.DAOs
             }
         }
 
-        public static void DelegateAuthority(int departmentId,int userId)
+        public static void AssignTemporaryHead(int departmentId,int userId)
         {
             using(var ctx = new UniDBContext())
             {
@@ -43,6 +43,19 @@ namespace WebApplication1.DAOs
                     }
                 }
 
+            }
+        }
+
+        public static void CancelTemporaryHead(int departmentId, int userId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                User user = ctx.Users.Include("Department")
+                    .Where(u => u.Department.DepartmentId == departmentId && u.Rank == (int)UserRank.TemporaryHead && u.UserId == userId)
+                    .SingleOrDefault();
+                user.Rank = (int)UserRank.Employee;
+
+                ctx.SaveChanges();
             }
         }
 

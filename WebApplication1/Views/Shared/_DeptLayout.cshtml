@@ -17,8 +17,8 @@
                 <i class="icon clone"></i>
             </a>
 
-            <a class="item @(pgName == "Index" ? "activeLink" : "")" href="@Url.Action("Index", "Requisition")">
-                <span>My Requisition</span>
+            <a class="item @(pgName == "MyRequisitions" ? "activeLink" : "")" href="@Url.RouteUrl("myrequisitions")">
+                <span>My Requisitions</span>
                 <i class="file icon"></i>
             </a>
 
@@ -27,13 +27,18 @@
                 <i class="briefcase icon"></i>
             </a>
 
-            <a class="item" href="@Url.RouteUrl("Delegate")">
+            <a class="item @(pgName == "Delegate" ? "activeLink" : "")" href="@Url.RouteUrl("Delegate")">
                 <span>Delegate Functions</span>
                 <i class="street view icon"></i>
             </a>
-            
 
-            <a class="item" href="@Url.RouteUrl("delivereddisbursements")">
+
+            <a class="item  @(pgName == "GetAllDisbursementByDepartment" ? "activeLink" : "")" href="@Url.RouteUrl("departmentdisbursements")">
+                <span>Disbursements</span>
+                <i class="street view icon"></i>
+            </a>
+
+            <a class="item @(pgName == "GetDeliveredDisbursements" ? "activeLink" : "")" href="@Url.RouteUrl("delivereddisbursements")">
                 <span>Delivered Disbursements</span>
                 <i class="file alternate icon"></i>
             </a>

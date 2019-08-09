@@ -329,6 +329,19 @@ namespace WebApplication1.DAOs
             }
         }
 
+        public static List<Disbursement> GetAllDisbursementsByDepartment(int departmentId)
+        {
+            using (var ctx = new UniDBContext())
+            {
+                List<Disbursement> disbursements = ctx.Disbursements.Include("Request").Include("Department").Include("ApprovedBy")
+                    .OrderByDescending(d => d.DisbursementId)
+                    .Where(d => d.Department.DepartmentId == departmentId).ToList();
+
+                return disbursements;
+            }
+        }
+
+
         public static Disbursement GetDisbursement(int id)
         {
             using(var ctx = new UniDBContext())
@@ -446,9 +459,21 @@ namespace WebApplication1.DAOs
                     UserId = u.UserId
                 };
                 dis.ApprovedBy = user;
+                dis.Date = DateTime.Now;
                 dis.Status = (int)DisbursementStatus.Approved;
                 ctx.Users.Attach(user);
                 ctx.SaveChanges();
+            }
+        }
+
+        public static Disbursement GetDisbursementDetailById(int disbursementId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                Disbursement dis = ctx.Disbursements.Include("Department").Include("DisbursementDetails").Include("DisbursementDetails.Item")
+                    .Include("ApprovedBy").OrderByDescending(d => d.DisbursementId)
+                    .Where(d => d.DisbursementId == disbursementId).SingleOrDefault();
+                return dis;
             }
         }
 

@@ -1,0 +1,100 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_DeptLayout.cshtml";
+    ViewBag.Title = "Department Disbursements";
+    List<Disbursement> disbursements = (List<Disbursement>)ViewData["Disbursements"];
+}
+
+<div class="ui grid">
+    @if (disbursements != null && disbursements.Count > 0)
+    {
+        <div class="sixteen wide tablet column">
+            <h5 class="ui header">Department Name : @disbursements[0].Department.DepartmentName</h5>
+        </div>
+        <div class="sixteen wide tablet column">
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Approved By</th>
+                        <th>View Request Detail</th>
+                        <th>View Disbursement Detail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in disbursements)
+                    {
+                        <tr>
+                            <td>@Enum.GetName(typeof(DisbursementStatus), d.Status)</td>
+                            @if (d.ApprovedBy != null)
+                            {
+                                <td>@d.ApprovedBy.Name</td>
+                            }
+                            else
+                            {
+                                <td>-</td>
+                            }
+                            <td><button class="ui primary button" onclick="viewOrder('@d.Request.RequestId*@d.Request.Date.ToString("dd/MM/yyyy")')">View Request Detail</button></td>
+                            <td><a href="http://localhost:50271/departmentdisbursements/@d.DisbursementId">View Disbursement Detail</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    }
+    else
+    {
+        <div class="sixteen wide tablet column">
+            <h5 class="ui header">No Disbursement.</h5>
+        </div>
+    }
+
+    <div class="ui modal">
+        <div class="header" id="request-date">Requested Date : </div>
+        <div class="content">
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <th style="background-color:#f2f2f2;">Name</th>
+                        <th style="background-color:#f2f2f2;">Qty</th>
+                        <th style="background-color:#f2f2f2;">Delivered Qty</th>
+                    </tr>
+                </thead>
+                <tbody id="tBody"></tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var tBody = document.getElementById("tBody");
+    var dateLabel = document.getElementById("request-date");
+    var modal = $('.ui.modal');
+    function viewOrder(data) {
+        var arr = data.split('*');
+        var requestId = arr[0];
+        var date = arr[1];
+        $.ajax({
+            url: 'http://localhost:50271/requisitions/' + requestId,
+            type: 'GET',
+            contentType: 'application/json',
+            xhrFields: { withCredentials: true },
+            success: function (data, textStatus, xhr) {
+
+                var rowsString = "";
+                for (var i = 0; i < data.length; i++) {
+                    rowsString += `<tr><td>${data[i].Item.Description}</td><td>${data[i].Quantity}</td><td>${data[i].DeliveredQuantity}</td></tr>`
+                }
+                tBody.innerHTML = rowsString;
+                dateLabel.innerHTML = "Requested Date : "+date;
+                modal.modal('show');
+
+            }
+        })
+    }
+
+</script>

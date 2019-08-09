@@ -21,7 +21,7 @@ namespace WebApplication1.DataAccessLayer
 
             User e2 = new User()
             {
-                Name = "CS Employee 1",
+                Name = "CS Employee 2",
                 Username = "cse2",
                 Password = "cse2",
                 Rank = (int)UserRank.Employee

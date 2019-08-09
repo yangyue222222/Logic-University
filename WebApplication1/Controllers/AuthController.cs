@@ -47,6 +47,10 @@ namespace WebApplication1.App_Start
                         result = RedirectToAction("Dashboard");
                         break;
 
+                    case (int)UserRank.Supervisor:
+                        result = RedirectToAction("Dashboard");
+                        break;
+
                     case (int)UserRank.Employee:
                         result = RedirectToAction("Index","Requisition");
                         break;
@@ -54,6 +58,7 @@ namespace WebApplication1.App_Start
                     case (int)UserRank.Head:
                         result = RedirectToAction("PendingRequisitions", "Requisition");
                         break;
+
                     case (int)UserRank.Clerk:
                         result = RedirectToAction("Index", "Orders");
                         break;

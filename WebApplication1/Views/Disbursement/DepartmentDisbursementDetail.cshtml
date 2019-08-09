@@ -1,0 +1,47 @@
+﻿@using WebApplication1.Models
+
+@{
+    ViewBag.Title = "Disbursement Detail";
+    Layout = "~/Views/Shared/_DeptLayout.cshtml";
+    Disbursement disbursement = (Disbursement)ViewData["Disbursement"];
+}
+
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        <h5 class="ui header">Department Name : @disbursement.Department.DepartmentName</h5>
+        <h5 class="ui header">Date : @disbursement.Date.ToString("dd/MM/yyyy")</h5>
+        <h5 class="ui header">Status : @Enum.GetName(typeof(DisbursementStatus),disbursement.Status)</h5>
+        @if (disbursement.ApprovedBy != null)
+        {
+            <h5 class="">Approved By : @disbursement.ApprovedBy.Name</h5>
+        }
+    </div>
+    <div class="sixteen wide tablet column">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Item Description</th>
+                    <th>Item Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var dd in disbursement.DisbursementDetails)
+                {
+                    <tr>
+                        <td>@dd.Item.Description</td>
+                        <td>@dd.Item.Price</td>
+                        <td>@dd.Quantity</td>
+                        <td>@(dd.Item.Price * dd.Quantity)</td>
+                    </tr>
+                }
+
+                <tr>
+                    <td colspan="3" style="text-align : right">SUBTOTAL</td>
+                    <td>@disbursement.DisbursementDetails.Sum(dd => dd.Item.Price * dd.Quantity)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

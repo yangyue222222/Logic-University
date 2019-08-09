@@ -12,16 +12,16 @@
 }
 
 <div class="ui grid">
-    @if(disbursements != null && disbursements.Count > 0)
+    @if (disbursements != null && disbursements.Count > 0)
     {
         <div class="sixteen wide tablet column">
             <h5 class="ui header">Department Name : @disbursements[0].Department.DepartmentName</h5>
         </div>
-        foreach(var d in disbursements)
+        foreach (var d in disbursements)
         {
-        <div class="sixteen wide tablet column">
+            <div class="sixteen wide tablet column">
 
-            
+
                 <table class="ui celled table">
                     <thead>
                         <tr>
@@ -44,9 +44,14 @@
                         </tr>
                     </tbody>
                 </table>
-        </div>
-            
+            </div>
+
         }
     }
-   
+    else
+    {
+        <div class="sixteen wide tablet column">
+            <h5 class="ui header">No Deliverd Disbursement.</h5>
+        </div>
+    }
 </div>

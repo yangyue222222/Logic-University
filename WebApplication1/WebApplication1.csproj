@@ -248,6 +248,8 @@
     <Content Include="Views\Disbursement\Invoices.cshtml" />
     <Content Include="Views\Disbursement\DisbursementDetail.cshtml" />
     <Content Include="Views\Disbursement\DeliveredDisbursements.cshtml" />
+    <Content Include="Views\Disbursement\DepartmentDisbursements.cshtml" />
+    <Content Include="Views\Disbursement\DepartmentDisbursementDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

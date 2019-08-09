@@ -1,6 +1,6 @@
 ﻿@using WebApplication1.Models
 @{
-    Layout = "~/Views/Shared/_DeptLayout.cshtml";
+    Layout = "~/Views/Shared/"+ViewData["LayoutName"].ToString();
     ViewBag.Title = "My Request";
     Request r = (Request)ViewData["Request"];
 }
@@ -12,7 +12,7 @@
         <h5 class="ui header">Status : @Enum.GetName(typeof(RequestStatus), r.Status)</h5>
         @if (r.ApprovedBy != null)
         {
-            <h5 class="ui header">@r.ApprovedBy.Name</h5>
+            <h5 class="ui header">Approved By : @r.ApprovedBy.Name</h5>
 
         }
     </div>

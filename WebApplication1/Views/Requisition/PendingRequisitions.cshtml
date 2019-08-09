@@ -1,35 +1,41 @@
 ﻿@{
     Layout = "~/Views/Shared/_DeptLayout.cshtml";
+    List<Request> requests = (List<Request>)ViewData["Requests"];
 }
 
 @using WebApplication1.Models
 
 <div class="sixteen wide tablet twelve wide computer column">
-    <h5 class="ui header">Order View</h5>
-    <table class="ui celled table">
-        <thead>
-            <tr>
-                <th>Employee Name</th>
-                <th>Requested Date</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @{
-                if (ViewData["Requests"] != null)
+    @if (requests != null && requests.Count > 0)
+    {
+        <h5 class="ui header">Order View</h5>
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Requested Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var r in (List<Request>)ViewData["Requests"])
                 {
-                    foreach (var r in (List<Request>)ViewData["Requests"])
-                    {
-                        <tr>
-                            <td>@r.Requestor.Name</td>
-                            <td>@r.Date.Date</td>
-                            <td><button class="ui basic primary outline button" onclick="viewOrder('@r.RequestId-@r.Requestor.Name')">View</button></td>
-                        </tr>
-                    }
+                    <tr>
+                        <td>@r.Requestor.Name</td>
+                        <td>@r.Date.Date</td>
+                        <td><button class="ui basic primary outline button" onclick="viewOrder('@r.RequestId-@r.Requestor.Name')">View</button></td>
+                    </tr>
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="sixteen wide tablet column">
+            <h5 class="ui header">No Pending Requisition.</h5>
+        </div>
+    }
 </div>
 
 <div class="ui modal">

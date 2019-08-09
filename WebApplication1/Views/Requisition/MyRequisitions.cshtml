@@ -7,19 +7,19 @@
 
 <div class="ui grid">
     <div class="sixteen wide table column">
-        <table class="ui celled table">
-            <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Status</th>
-                    <th>Option</th>
-                    <th>View</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (requests != null)
-                {
-                    foreach (var r in requests)
+        @if (requests != null && requests.Count > 0)
+        {
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Option</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in requests)
                     {
                         <tr>
                             <td>@r.Date.ToString("dd/MM/yyyy")</td>
@@ -39,9 +39,13 @@
                             <td><a href="http://localhost:50271/myrequisitions/@r.RequestId">View</a></td>
                         </tr>
                     }
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <h5 class="ui header">No Requisition.</h5>
+        }
     </div>
 </div>
 

@@ -232,14 +232,24 @@ namespace WebApplication1.Controllers
             }
         }
 
-        //[HttpGet,Route("delivereddisbursements")]
-        //public ActionResult GetDeliveredDisbursementById(int disbursementId)
-        //{
-        //    Disbursement d = DisbursementDao.GetDeliveredDisbursementById(disbursementId);
-        //    ViewData["Disbursement"] = d;
-        //    return View("DisbursementDetail");
-        //}
+        //employee can watch disbursements by department
+        [HttpGet,Route("departmentdisbursements", Name = "departmentdisbursements")]
+        public ActionResult GetAllDisbursementByDepartment()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            List<Disbursement> disbursements = DisbursementDao.GetAllDisbursementsByDepartment(departmentId);
+            ViewData["Disbursements"] = disbursements;
+            return View("DepartmentDisbursements");
+        }
 
-        
+        //department disbursement detail
+        [HttpGet, Route("departmentdisbursements/{disbursementId}")]
+        public ActionResult GetDisbursementDetailByDepartment(int disbursementId)
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            Disbursement d = DisbursementDao.GetDisbursementDetailById(departmentId);
+            ViewData["Disbursement"] = d;
+            return View("DepartmentDisbursementDetail");
+        }
     }
 }
