@@ -318,14 +318,30 @@ namespace WebApplication1.DAOs
         //    }
         //}
 
-        public static List<Disbursement> GetPreparedDisbursements()
+        public static List<Disbursement> GetPreparedDisbursements(int userId)
         {
             using(var ctx = new UniDBContext())
             {
-                List<Disbursement> disbursements = ctx.Disbursements.Include("Request").Include("Department")
-                    .Where(d => d.Status == (int)DisbursementStatus.Prepared).ToList();
+                List<Disbursement> disbursements = ctx.Disbursements.Include("Request").Include("Department").Include("Department.PickupPoint").Include("Department.PickupPoint.StoreClerk")
+                    .Where(d => d.Status == (int)DisbursementStatus.Prepared && d.Department.PickupPoint != null)
+                    .Where(d => d.Department.PickupPoint.StoreClerk.UserId == userId)
+                    .ToList();
 
                 return disbursements;
+            }
+        }
+
+        public static List<Disbursement> GetPreparedDisbursements(int departmentId, int userId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                List<Disbursement> disbursements = ctx.Disbursements.Include("Department").Include("DisbursementDetails").Include("DisbursementDetails.Item")
+                    .Include("Department.PickupPoint").Include("Department.Representative")
+                    .Where(d => d.Department.DepartmentId == departmentId && d.Department.Representative != null)
+                    .Where(d => d.Department.Representative.UserId == userId).ToList();
+
+                return disbursements;
+                    
             }
         }
 
@@ -402,6 +418,20 @@ namespace WebApplication1.DAOs
 
                 ctx.SaveChanges();
                 return d;
+            }
+        }
+
+        public static List<Disbursement> GetDisbursementsByDepartmentAndMonth(int userId, int departmentId, int month, int disbursementStatus)
+        {
+            using (var ctx = new UniDBContext())
+            {
+                List<Disbursement> disbursements = ctx.Disbursements.Include("Department").Include("Department.Representative").Include("DisbursementDetails").Include("DisbursementDetails.Item")
+                    .Where(d => d.Department.DepartmentId == departmentId && d.Date.Year == DateTime.Now.Year && d.Date.Month == month 
+                    && d.Status == disbursementStatus && d.Department.Representative != null)
+                    .Where(d => d.Department.Representative.UserId == userId)
+                    .ToList();
+
+                return disbursements;
             }
         }
 

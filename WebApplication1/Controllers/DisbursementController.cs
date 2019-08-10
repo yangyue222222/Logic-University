@@ -24,12 +24,13 @@ namespace WebApplication1.Controllers
             return View("DeliveryDetail");
         }
 
-        //for employee to get delivered disbursement and approve it
+        //for representative employee to get delivered disbursement and approve it
         [HttpGet,Route("delivereddisbursements",Name = "delivereddisbursements")]
         public ActionResult GetDeliveredDisbursements()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
-            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(departmentId, DateTime.Now.Month,(int)DisbursementStatus.Delivered);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(userId,departmentId, DateTime.Now.Month,(int)DisbursementStatus.Delivered);
             ViewData["Disbursements"] = disbursements;
             return View("DeliveredDisbursements");
         }
@@ -123,7 +124,8 @@ namespace WebApplication1.Controllers
         [HttpGet,Route("deliveries",Name = "deliveries")]
         public ActionResult Deliveries()
         {
-            List<Disbursement> disbursements = DisbursementDao.GetPreparedDisbursements();
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Disbursement> disbursements = DisbursementDao.GetPreparedDisbursements(userId);
             ViewData["Disbursements"] = disbursements;
             return View("Deliveries");
         }
@@ -250,6 +252,17 @@ namespace WebApplication1.Controllers
             Disbursement d = DisbursementDao.GetDisbursementDetailById(departmentId);
             ViewData["Disbursement"] = d;
             return View("DepartmentDisbursementDetail");
+        }
+
+        [HttpGet,Route("prepareddisbursements",Name = "prepareddisbursements")]
+        public ActionResult GetPreparedDisbursementsByDepartment()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Disbursement> disbursements = DisbursementDao.GetPreparedDisbursements(departmentId, userId);
+            ViewData["Disbursements"] = disbursements;
+            return View("PickUpDisbursements");
+            
         }
     }
 }

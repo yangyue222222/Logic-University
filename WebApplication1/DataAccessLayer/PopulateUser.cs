@@ -60,13 +60,30 @@ namespace WebApplication1.DataAccessLayer
                 Rank = (int)UserRank.Head
             };
 
-            User storeClerk = new User()
+            User storeClerk1 = new User()
             {
-                Name = "Store Clerk",
-                Username = "storeclerk",
-                Password = "storeclerk",
+                Name = "Store Clerk 1",
+                Username = "storeclerk1",
+                Password = "storeclerk1",
                 Rank = (int)UserRank.Clerk
             };
+
+            User storeClerk2= new User()
+            {
+                Name = "Store Clerk 2",
+                Username = "storeclerk2",
+                Password = "storeclerk2",
+                Rank = (int)UserRank.Clerk
+            };
+
+            User storeClerk3 = new User()
+            {
+                Name = "Store Clerk 3",
+                Username = "storeclerk3",
+                Password = "storeclerk3",
+                Rank = (int)UserRank.Clerk
+            };
+
 
             User storeManager = new User()
             {
@@ -108,7 +125,9 @@ namespace WebApplication1.DataAccessLayer
             engHead.Department = engd;
 
             storeManager.Department = stored;
-            storeClerk.Department = stored;
+            storeClerk1.Department = stored;
+            storeClerk2.Department = stored;
+            storeClerk3.Department = stored;
             storeSupervisor.Department = stored;
 
             ctx.Users.Add(e1);
@@ -122,7 +141,9 @@ namespace WebApplication1.DataAccessLayer
             ctx.Users.Add(engHead);
             ctx.Departments.Add(engd);
 
-            ctx.Users.Add(storeClerk);
+            ctx.Users.Add(storeClerk1);
+            ctx.Users.Add(storeClerk2);
+            ctx.Users.Add(storeClerk3);
             ctx.Users.Add(storeSupervisor);
             ctx.Users.Add(storeManager);
             ctx.Departments.Add(stored);

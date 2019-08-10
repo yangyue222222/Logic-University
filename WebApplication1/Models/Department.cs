@@ -11,6 +11,6 @@ namespace WebApplication1.Models
         public User Representative { get; set; }
         public string DepartmentName { get; set; }
         public ICollection<User> Users { get; set; }
-        public string PickupPoint { get; set; }
+        public PickUpPoint PickupPoint { get; set; }
     }
 }

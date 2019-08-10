@@ -23,7 +23,7 @@
                 {
                     <tr>
                         <td>@r.Requestor.Name</td>
-                        <td>@r.Date.Date</td>
+                        <td>@r.Date.Date.ToString("dd/MM/yyyy")</td>
                         <td><button class="ui basic primary outline button" onclick="viewOrder('@r.RequestId-@r.Requestor.Name')">View</button></td>
                     </tr>
                 }

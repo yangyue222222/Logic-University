@@ -158,11 +158,13 @@
     <Compile Include="DAOs\DisbursementDao.cs" />
     <Compile Include="DAOs\ItemDao.cs" />
     <Compile Include="DAOs\OrderDao.cs" />
+    <Compile Include="DAOs\PickUpPointDao.cs" />
     <Compile Include="DAOs\RequestDao.cs" />
     <Compile Include="DAOs\SupplierDao.cs" />
     <Compile Include="DAOs\UserDao.cs" />
     <Compile Include="DataAccessLayer\DBInitializer.cs" />
     <Compile Include="DataAccessLayer\Populate.cs" />
+    <Compile Include="DataAccessLayer\PopulatePickUpPoint.cs" />
     <Compile Include="DataAccessLayer\PopulateSupplier.cs" />
     <Compile Include="DataAccessLayer\PopulateUser.cs" />
     <Compile Include="DataAccessLayer\UniDBContext.cs" />
@@ -179,6 +181,7 @@
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\PendingOrder.cs" />
+    <Compile Include="Models\PickUpPoint.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="Models\RequestDetail.cs" />
     <Compile Include="Models\RetrievalItem.cs" />
@@ -250,6 +253,7 @@
     <Content Include="Views\Disbursement\DeliveredDisbursements.cshtml" />
     <Content Include="Views\Disbursement\DepartmentDisbursements.cshtml" />
     <Content Include="Views\Disbursement\DepartmentDisbursementDetail.cshtml" />
+    <Content Include="Views\Disbursement\PickUpDisbursements.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

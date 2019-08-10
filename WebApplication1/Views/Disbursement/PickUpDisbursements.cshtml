@@ -1,0 +1,52 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_DeptLayout.cshtml";
+    ViewBag.Title = "PickUp Disbursements";
+    List<Disbursement> disbursements = disbursements = (List<Disbursement>)ViewData["Disbursements"];
+
+}
+
+<div class="ui grid">
+    @if (disbursements != null && disbursements.Count > 0)
+    {
+    <div class="sixteen wide tablet column">
+        <h5 class="ui header"><span style="font-weight : 100 !important">Department Name : </span>@disbursements[0].Department.DepartmentName</h5>
+        @if (disbursements[0].Department.PickupPoint != null)
+        {
+            <h5 class="ui header"><span style="font-weight : 100 !important">PickUp Point : </span>@disbursements[0].Department.PickupPoint.Location - @disbursements[0].Department.PickupPoint.PickUpTime</h5>
+        }
+        <h5 class="ui header"><span style="font-weight : 100 !important">Representative : </span>@disbursements[0].Department.Representative.Name</h5>
+    </div>
+        foreach (var d in disbursements)
+        {
+            <div class="sixteen wide tablet column">
+
+                <table class="ui celled table">
+                    <thead>
+                        <tr>
+                            <th>Item Description</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var dd in d.DisbursementDetails)
+                        {
+                            <tr>
+                                <td>@dd.Item.Description</td>
+                                <td>@dd.Quantity</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        }
+    }
+    else
+    {
+        <div class="sixteen wide tablet column">
+            <h5 class="ui header">No Prepared Disbursement.</h5>
+        </div>
+    }
+</div>

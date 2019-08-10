@@ -19,7 +19,10 @@ namespace WebApplication1.DataAccessLayer
             modelBuilder.Entity<User>()
                 .HasRequired<Department>(s => s.Department)
                 .WithMany(d => d.Users);
-            
+
+            modelBuilder.Entity<PickUpPoint>()
+                .HasOptional(pi => pi.StoreClerk)
+                .WithMany(u => u.PickUpPoints);
         }
 
         public DbSet<User> Users { get; set; }
@@ -41,5 +44,6 @@ namespace WebApplication1.DataAccessLayer
 
         public DbSet<Adjustment> Adjustments { get; set; }
         public DbSet<AdjustmentDetail> AdjustmentDetails { get; set; }
+        public DbSet<PickUpPoint> PickUpPoints { get; set; }
     }
 }

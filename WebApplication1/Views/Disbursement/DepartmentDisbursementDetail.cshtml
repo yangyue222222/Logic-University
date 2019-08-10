@@ -31,15 +31,15 @@
                 {
                     <tr>
                         <td>@dd.Item.Description</td>
-                        <td>@dd.Item.Price</td>
+                        <td>$@dd.Item.Price</td>
                         <td>@dd.Quantity</td>
-                        <td>@(dd.Item.Price * dd.Quantity)</td>
+                        <td>$@(dd.Item.Price * dd.Quantity)</td>
                     </tr>
                 }
 
                 <tr>
                     <td colspan="3" style="text-align : right">SUBTOTAL</td>
-                    <td>@disbursement.DisbursementDetails.Sum(dd => dd.Item.Price * dd.Quantity)</td>
+                    <td>$@disbursement.DisbursementDetails.Sum(dd => dd.Item.Price * dd.Quantity)</td>
                 </tr>
             </tbody>
         </table>

@@ -66,5 +66,23 @@ namespace WebApplication1.DAOs
                 return departments;
             }
         }
+
+        public static void UpdatePickUpPoint(int departmentId, int pickupPointId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                Department d = ctx.Departments.Where(de => de.DepartmentId == departmentId).SingleOrDefault();
+                if(d != null)
+                {
+                    d.PickupPoint = new PickUpPoint()
+                    {
+                        PickUpPointId = pickupPointId
+                    };
+
+                    ctx.PickUpPoints.Attach(d.PickupPoint);
+                    ctx.SaveChanges();
+                }
+            }
+        }
     }
 }
