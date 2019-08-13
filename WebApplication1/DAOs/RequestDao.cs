@@ -324,16 +324,57 @@ namespace WebApplication1.DAOs
             }
         }
 
-        public static List<Request> getRequestsByMonth(int month)
+        public static List<RetrievalItem> getRequestedItemsByMonth(int deptId, int month)
         {
             try
             {
                 using (var ctx = new UniDBContext())
                 {
-                    List<Request> requests = ctx.Requests.Include("Department").Include("RequestDetails").Include("RequestDetails.Item")
+                    List<Request> requestList = ctx.Requests.Include("Department").Include("RequestDetails").Include("RequestDetails.Item")
                         .Where(r => r.Date.Year == DateTime.Now.Year && r.Date.Month == month && r.Status != (int)RequestStatus.Requested && r.Status != (int)RequestStatus.Rejected && r.Status != (int)RequestStatus.Cancelled)
                         .ToList();
-                    return requests;
+                    if(deptId != 0)
+                    {
+                        requestList = requestList.Where(r => r.Department.DepartmentId == deptId).ToList();
+                    }
+                    Dictionary<int, int> itemInfo = new Dictionary<int, int>();
+
+                    foreach (var r in requestList)
+                    {
+                        foreach (var rD in r.RequestDetails)
+                        {
+                            var requiredAmount = rD.Quantity;
+                            if (itemInfo.ContainsKey(rD.Item.ItemId))
+                            {
+                                requiredAmount += itemInfo[rD.Item.ItemId];
+                                itemInfo[rD.Item.ItemId] = requiredAmount;
+                            }
+                            else
+                            {
+                                itemInfo.Add(rD.Item.ItemId, requiredAmount);
+                            }
+                        }
+                    }
+
+                    List<int> itemIds = itemInfo.Keys.ToList();
+                    Dictionary<int, Item> stockDict = ctx.Items.Where(i => itemIds.Contains(i.ItemId)).ToDictionary(i => i.ItemId);
+                    List<RetrievalItem> retrievalItems = new List<RetrievalItem>();
+                    foreach (var itemId in itemIds)
+                    {
+                        int requestedNumber = itemInfo[itemId];
+                        Item i = stockDict[itemId];
+
+                        RetrievalItem retrieval = new RetrievalItem()
+                        {
+                            AllocatedQuantity = requestedNumber,
+                            Description = i.Description,
+                            ItemId = i.ItemId,
+                        };
+
+                        retrievalItems.Add(retrieval);
+
+                    }
+                    return retrievalItems;
                 }
             }
             catch (Exception e)

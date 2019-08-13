@@ -62,6 +62,14 @@ namespace WebApplication1.DataAccessLayer
 
             storeclerk3.PickUpPoints = pts3;
 
+            Department cs = context.Departments.Where(d => d.DepartmentName == "CS").SingleOrDefault();
+            PickUpPoint p1 = context.PickUpPoints.Where(pi => pi.PickUpPointId == 1).SingleOrDefault();
+            cs.PickupPoint = p1;
+
+            Department english = context.Departments.Where(d => d.DepartmentName == "English").SingleOrDefault();
+            PickUpPoint p2 = context.PickUpPoints.Where(pi => pi.PickUpPointId == 2).SingleOrDefault();
+            english.PickupPoint = p2;
+
             base.Seed(context);
         }
 

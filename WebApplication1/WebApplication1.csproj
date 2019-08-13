@@ -256,6 +256,7 @@
     <Content Include="Views\Disbursement\DepartmentDisbursementDetail.cshtml" />
     <Content Include="Views\Disbursement\PickUpDisbursements.cshtml" />
     <Content Include="Views\Requisition\RequisitionHistory.cshtml" />
+    <Content Include="Views\Requisition\ReqReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

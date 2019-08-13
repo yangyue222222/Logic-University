@@ -96,11 +96,43 @@ namespace WebApplication1.Controllers
             }
         
         }
+        public async Task<ActionResult> PickUpPointMobile()
+        {
+            List<object> result = new List<object>();
+            int rank = Convert.ToInt32(RouteData.Values["rank"]);
+            if (rank == 0 || rank == 5)
+            {
+                int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+                Task<List<PickUpPoint>> pickUpPointsTask = PickUpPointDao.GetAllPickupPoints();
+                Task<PickUpPoint> getCurrentPickupTask = PickUpPointDao.GetPickupPointByDepartment(departmentId);
+                List<PickUpPoint> points = await pickUpPointsTask;
+                PickUpPoint point = await getCurrentPickupTask;
+                points.Add(point);
 
+
+                return Json(points, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                var failAuth = new { result = 0 };
+                result.Add(failAuth);
+                return Json(result, JsonRequestBehavior.AllowGet);
+            }
+        }
         [Route("DelegateAuthMobile/{id}/{delegateAuthority}")]
         public ActionResult DelegateAuthMobile(int delegateAuthority, int id)
         {
             DelegateAuthority(delegateAuthority, id);
+            List<object> response = new List<object>();
+            response.Add("Success");
+            return Json(response, JsonRequestBehavior.AllowGet);
+        }
+
+        [Route("PickUpPointMobile/{pickupPointId}")]
+        public ActionResult SetPickUpPointMobile(int pickupPointId)
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            DepartmentDao.UpdatePickUpPoint(departmentId, pickupPointId);
             List<object> response = new List<object>();
             response.Add("Success");
             return Json(response, JsonRequestBehavior.AllowGet);
