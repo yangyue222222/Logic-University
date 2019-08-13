@@ -245,6 +245,23 @@ namespace WebApplication1.DAOs
             }
         }
 
+        public static List<Order> getOrdersByMonth(int month)
+        {
+            try
+            {
+                using (var ctx = new UniDBContext())
+                {
+                    List<Order> orders = ctx.Orders.Include("Supplier").Include("OrderDetails").Include("OrderDetails.Item")
+                        .Where(r => r.Date.Year == DateTime.Now.Year && r.Date.Month == month && r.Status == (int)OrderStatus.Delivered)
+                        .ToList();
+                    return orders;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
 
     }
 }

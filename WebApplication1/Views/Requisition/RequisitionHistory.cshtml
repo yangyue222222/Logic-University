@@ -1,0 +1,84 @@
+﻿@{
+    Layout = "~/Views/Shared/_DeptLayout.cshtml";
+    List<Request> requests = (List<Request>)ViewData["History"];
+}
+
+@using WebApplication1.Models
+
+<div class="sixteen wide tablet twelve wide computer column">
+    @if (requests != null && requests.Count > 0)
+    {
+        <h5 class="ui header">Order View</h5>
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Requested Date</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var r in (List<Request>)ViewData["History"])
+                {
+                <tr>
+                    <td>@r.Requestor.Name</td>
+                    <td>@r.Date.Date.ToString("dd/MM/yyyy")</td>
+                    <td>@Enum.GetName(typeof(RequestStatus), r.Status)</td>
+                    <td><button class="ui basic primary outline button" onclick="viewOrder('@r.RequestId-@r.Requestor.Name')">View</button></td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="sixteen wide tablet column">
+            <h5 class="ui header">No Requisition History</h5>
+        </div>
+    }
+</div>
+
+<div class="ui modal">
+    <div class="header" id="requestor">Employee Name : Mr.XYZ</div>
+    <div class="content">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th style="background-color:#f2f2f2;">Name</th>
+                    <th style="background-color:#f2f2f2;">Qty</th>
+                </tr>
+            </thead>
+            <tbody id="tBody"></tbody>
+
+        </table>
+    </div>
+</div>
+<script>
+    var tBody = document.getElementById("tBody");
+    var requestorName = document.getElementById("requestor");
+    var modal = $('.ui.modal');
+    var requestId = null;
+    function viewOrder(msg) {
+        var arr = msg.split('-');
+        requestId = arr[0];
+        requestorName.innerHTML = `Employee Name : ${arr[1]}`
+        $.ajax({
+            url: 'http://localhost:50271/requisitions/' + arr[0],
+            type: 'GET',
+            contentType: 'application/json',
+            xhrFields: { withCredentials: true },
+            success: function (data, textStatus, xhr) {
+
+                var rowsString = "";
+                for (var i = 0; i < data.length; i++) {
+                    rowsString += `<tr><td>${data[i].Item.Description}</td><td>${data[i].Quantity}</td></tr>`
+                }
+                tBody.innerHTML = rowsString;
+                modal.modal('show');
+
+            }
+        })
+    }
+</script>

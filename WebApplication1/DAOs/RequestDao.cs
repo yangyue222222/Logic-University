@@ -60,6 +60,24 @@ namespace WebApplication1.DAOs
                 return null;
             }
         }
+        public static List<Request> getHistoricalRequestsByDepartment(int departmentId)
+        {
+            try
+            {
+                using (var ctx = new UniDBContext())
+                {
+                    List<Request> requests = ctx.Requests.Include("Requestor").Where(r => r.Requestor.Department.DepartmentId == departmentId && r.Status != (int)RequestStatus.Requested).ToList();
+
+                    return requests;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+
 
         public static List<RequestDetail> getRequestDetailsByRequestId(int id,int departmentId)
         {
@@ -70,6 +88,8 @@ namespace WebApplication1.DAOs
             }
             return details;
         }
+
+
 
         public static void ApproveRequest(Request request)
         {
@@ -304,5 +324,22 @@ namespace WebApplication1.DAOs
             }
         }
 
+        public static List<Request> getRequestsByMonth(int month)
+        {
+            try
+            {
+                using (var ctx = new UniDBContext())
+                {
+                    List<Request> requests = ctx.Requests.Include("Department").Include("RequestDetails").Include("RequestDetails.Item")
+                        .Where(r => r.Date.Year == DateTime.Now.Year && r.Date.Month == month && r.Status != (int)RequestStatus.Requested && r.Status != (int)RequestStatus.Rejected && r.Status != (int)RequestStatus.Cancelled)
+                        .ToList();
+                    return requests;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
     }
 }

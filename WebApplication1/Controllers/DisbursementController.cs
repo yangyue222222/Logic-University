@@ -332,7 +332,8 @@ namespace WebApplication1.Controllers
         public ActionResult GetDeliveredDisbursementsMobile()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
-            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(departmentId, DateTime.Now.Month, (int)DisbursementStatus.Delivered);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(userId, departmentId, DateTime.Now.Month, (int)DisbursementStatus.Delivered);
             List<object> disbursementList = new List<object>();
             foreach (Disbursement d in disbursements)
             {

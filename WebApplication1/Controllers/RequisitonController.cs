@@ -75,6 +75,14 @@ namespace WebApplication1.Controllers
             ViewData["Requests"] = requests;
             return View("PendingRequisitions");
         }
+        [HttpGet, Route("history", Name = "history")]
+        public ActionResult GetHistoricalRequisitions()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            List<Request> history = RequestDao.getHistoricalRequestsByDepartment(departmentId);
+            ViewData["History"] = history;
+            return View("RequisitionHistory");
+        }
 
         public ActionResult PendingMobile()
         {
