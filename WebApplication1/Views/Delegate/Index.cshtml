@@ -4,6 +4,8 @@
     Layout = "~/Views/Shared/_DeptLayout.cshtml";
     var representative = (User)ViewData["CurrentRepresentative"];
     var employees = (List<User>)ViewData["Employees"];
+    var currentPickup = (PickUpPoint)ViewData["CurrentPickUpPoint"];
+    var pickupPoints = (List<PickUpPoint>)ViewData["PickUpPoints"];
     ViewBag.Title = "Delegate";
 }
 
@@ -26,16 +28,46 @@
 
                 <button type="submit" style="margin-left: 10px;" class="ui primary basic button">Choose as a Representative</button>
             </form>
-            
+
 
             <p style="margin-top: 10px;">
-                Current Representative : <b>@(representative == null ? "No one" : representative.Name)</b>
+                Current Representative : <b>@(representative == null ? "No one." : representative.Name)</b>
             </p>
         </div>
     </div>
+
+    <div class="sixteen wide tablet column">
+        <div class="field">
+            <h5 class="ui header">Choose Department Pickup Point </h5>
+            <form method="POST" action="/Delegate/PickupPoint">
+                <select class="ui selection dropdown" name="pickupPointId">
+                    @{
+                        foreach (var p in pickupPoints)
+                        {
+                            <option value="@p.PickUpPointId">@p.Location-@p.PickUpTime</option>
+                        }
+                    }
+                </select>
+
+                <button type="submit" style="margin-left: 10px;" class="ui primary basic button">Choose as a collection point</button>
+            </form>
+
+
+            <p style="margin-top: 10px;">
+                Current CollectionPoint : <b>@(currentPickup == null ? "No Place Chosen." : currentPickup.Location+"-"+currentPickup.PickUpTime)</b>
+            </p>
+        </div>
+    </div>
+
+
+
+
+
     <div class="sixteen wide tablet column">
         <h5 class="ui header">Delegate Temporary Authority</h5>
-        <h5 class="ui header">Current Temporary Head : @(ViewData["TemporaryHead"] == null ? "No one" : ((User)ViewData["TemporaryHead"]).Name)</h5>
+        <p style="margin-top: 10px;">
+            Current Temporary Head : <b>@(ViewData["TemporaryHead"] == null ? "No one" : ((User)ViewData["TemporaryHead"]).Name)</b>
+        </p>
         <table class="ui celled table">
             <thead>
                 <tr>
@@ -59,7 +91,7 @@
                             }
                             else
                             {
-                                <td></td>
+                                <td><a href="http://localhost:50271/delegateauthority?delegateAuthority=2&userId=@e.UserId">Cancel</a></td>
                             }
                             <td>@(e.Rank == (int)UserRank.TemporaryHead ? "Active" : "-")</td>
                         </tr>

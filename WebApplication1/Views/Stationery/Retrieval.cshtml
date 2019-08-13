@@ -12,7 +12,7 @@
 <div class="ui grid">
 
     <div class=" sixteen wide tablet column" id="table">
-        <form method="POST" action="http://localhost:50271/disbursement/Disbursements">
+        <form onkeydown="return event.key != 'Enter';" id="retrieval-form" method="POST" action="http://localhost:50271/disbursement/Disbursements">
             <table class="ui celled table">
                 <thead>
                     <tr>
@@ -23,7 +23,7 @@
                             In Stock Quantity
                         </th>
                         <th>
-                            Requested Quantity
+                            Quantity to Retrieve
                         </th>
                         <th>
                             Collected Quantity
@@ -32,7 +32,7 @@
                 </thead>
                 <tbody>
 
-                    @if (retrievalItems != null)
+                    @if (retrievalItems != null && retrievalItems.Count > 0)
                     {
                         for (var i = 0; i < retrievalItems.Count; i++)
                         {
@@ -51,7 +51,7 @@
                                     <input type="hidden" value="@retrievalItems[i].StockQuantity" name="[@i].StockQuantity" />
                                     <input type="hidden" value="@retrievalItems[i].AllocatedQuantity" name="[@i].AllocatedQuantity" />
                                     <div class="ui input" style="width : 100%">
-                                        <input type="number" min="0" max="@retrievalItems[i].AllocatedQuantity" name="[@i].ActualQuantity" />
+                                        <input id="@retrievalItems[i].ItemId" type="number" min="0" max="@retrievalItems[i].AllocatedQuantity" name="[@i].ActualQuantity" />
                                     </div>
                                 </td>
                             </tr>
@@ -59,59 +59,77 @@
                     }
                 </tbody>
             </table>
-            <button type="submit" class="ui primary button">PREPARED</button>
+            @if (retrievalItems != null && retrievalItems.Count > 0)
+            {
+                <button type="button" onclick="formSubmitting()" class="ui primary button">PREPARED</button>
+
+            }
         </form>
 
     </div>
-    
 </div>
 
+<div  class="ui modal">
+    <div class="header" style="color : orange !important;">
+        Warning
+    </div>
+    <div class="content">
+        <p>
+            Since there is at least mistmatch between allocated quantity and actual quantity,submitting this form will automatically create Adjustment.
+            Would you like to continue?
+        </p>
+    </div>
+    <div class="actions">
+        <div class="ui red deny button">
+            No
+        </div>
+        <div class="ui positive button">
+            Yes
+        </div>
+    </div>
+    
+</div>
+@{ 
+    List<int> itemIds = new List<int>();
+    foreach(var i in retrievalItems)
+    {
+        itemIds.Add(i.ItemId);
+    }
+}
 <script>
-    //$(document).ready(function () {
-    //    //$('.ui.dropdown').dropdown();
-    //    var select = null;
-    //    var table = $('#table');
-    //    $('#select-box').change(function () {
-    //        select = $(this).children('option:selected').val();
-    //        $.ajax('http://localhost:50271/stationery/requestdetails?sortBy=' + select, {
-    //            dataType: 'json',
-    //            xhrFields: { withCredentials: true },
-    //            success: function (data, status, xhr) {
-    //                table.empty();
-    //                generateTable(data);
-    //            }
-    //        });
-    //    });
+    var itemInfo = {};
+    @foreach(var i in retrievalItems)
+    {
+        @:itemInfo["@i.ItemId"] = @i.AllocatedQuantity;
+    }
 
-    //    function generateTable(data) {
+    function formSubmitting() {
+        var keys = Object.keys(itemInfo);
+        var mismatch = false;
+        var overInput = false;
+        for (var i = 0; i < keys.length; i++) {
+            var actualInputAmount = Number($(`#${keys[i]}`).val());
+            var allocatedAmount = Number(itemInfo[keys[i]]);
+            if (actualInputAmount < allocatedAmount) {
+                mismatch = true;
+                break;
+            } else if (actualInputAmount > allocatedAmount) {
+                overInput = true;
+                break;
+            }
+        }
 
-    //        if (select == 0) {
-    //            var tableText = '<table class="ui celled table"><thead><tr><th>Item Description</th><th>Quantity</th></tr></thead><tbody>';
-    //            var rows = "";
-    //            data.forEach(x => {
-    //                rows += `<tr><td>${x.Description}</td><td>${x.Quantity}</td><tr/>`
-    //            });
-    //            tableText += rows;
-    //            tableText += "</tbody></table>"
-    //            table.html(tableText);
-    //        } else if (select == 1) {
-    //            var htmlText = "";
-    //            data.forEach(x => {
-    //                htmlText += `<div class="sixteen wide tablet column">${x.departmentname}</div>`
-    //                htmlText += `<table class="ui celled table"><thead><tr><th>Item Description</th><th>Quantity</th></tr></thead><tbody>`;
-    //                x.items.forEach(y => {
-    //                    htmlText += `<tr><td>${y.name}</td><td>${y.count}</td></tr>`
-    //                });
+        if (mismatch) {
+            $('.ui.modal').modal({
+                onApprove: function () {
+                    document.getElementById("retrieval-form").submit();
+                }
+            }).modal('show');
+        } else if (overInput) {
 
-    //                htmlText += '</tbody></table>';
-    //            });
-
-    //            table.html(htmlText);
-                
-    //        } 
-    //    }
+        } else {
+            document.getElementById("retrieval-form").submit();
+        }
+    }
         
-
-        
-    //});
 </script>

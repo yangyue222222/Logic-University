@@ -36,7 +36,7 @@
                                 <td>@ad.Requestor.Name</td>
                             }
                             <td>@ad.RaisedTime.ToString("dd/MM/yyyy")</td>
-                            <td>@ad.Total</td>
+                            <td>$@ad.Total</td>
                             <td>@Enum.GetName(typeof(AdjustmentStatus),ad.Status)</td>
                             <td><a class="ui basic primary outline button" href="http://localhost:50271/@urlName/@ad.AdjustmentId">View Detail</a></td>
                         </tr>

@@ -26,5 +26,6 @@ namespace WebApplication1.Models
         public string Password { get; set; }
         public int Rank { get; set; }
         public Department Department { get; set; }
+        public List<PickUpPoint> PickUpPoints { get; set; }
     }
 }

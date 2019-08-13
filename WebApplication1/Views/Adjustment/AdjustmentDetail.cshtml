@@ -51,23 +51,23 @@
                                 @add.Item.UnitOfMeasure
                             </td>
                             <td>
-                                @add.Item.Price
+                                $@add.Item.Price
                             </td>
                             <td>
-                                @(add.Item.Price * add.Count)
+                                $@(add.Item.Price * add.Count)
                             </td>
                         </tr>
                     }
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="4">SUBTOTAL</th>
-                        <th>@{var sum = ad.AdjustmentDetails.Sum(add => add.Count * add.Item.Price);} @sum</th>
+                        <th colspan="4" style="text-align : right">SUBTOTAL</th>
+                        <th>@{var sum = ad.AdjustmentDetails.Sum(add => add.Count * add.Item.Price);} $@sum</th>
                     </tr>
                 </tfoot>
             </table>
         </div>
-        @if (ViewData["MyAdjustment"] == null)
+        @if (ViewData["MyAdjustment"] != null)
         {
             <div class="sixteen wide tablet column">
                 <form id="form-request" method="post" action="http://localhost:50271/adjustments/@ad.AdjustmentId">

@@ -17,22 +17,28 @@ namespace WebApplication1.Controllers
     {
         // GET: Delegate
         [Route("Delegate",Name = "Delegate"),HttpGet]
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Delegate()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
 
             Task<User> representativeTask = UserDao.GetRepresentative(departmentId);
             Task<List<User>> allEmployeesTask = UserDao.GetAllEmployeesFromDepartment(departmentId);
             Task<User> temporaryHeadTask = UserDao.GetTemporaryHeadByDepartment(departmentId);
+            Task<List<PickUpPoint>> pickUpPointsTask = PickUpPointDao.GetAllPickupPoints();
+            Task<PickUpPoint> getCurrentPickupTask = PickUpPointDao.GetPickupPointByDepartment(departmentId);
 
             User user = await representativeTask;
             List<User> users = await allEmployeesTask ;
             User temporaryHead = await temporaryHeadTask;
+            List<PickUpPoint> points = await pickUpPointsTask;
+            PickUpPoint point = await getCurrentPickupTask;
 
             ViewData["Employees"] = users;
             ViewData["CurrentRepresentative"] = user;
             ViewData["TemporaryHead"] = temporaryHead;
-            return View();
+            ViewData["PickUpPoints"] = points;
+            ViewData["CurrentPickUpPoint"] = point;
+            return View("Index");
         }
 
         [HttpPost]
@@ -43,15 +49,31 @@ namespace WebApplication1.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public ActionResult PickupPoint(int pickupPointId)
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            DepartmentDao.UpdatePickUpPoint(departmentId, pickupPointId);
+            return RedirectToAction("Index");
+        }
+
+
+
         [HttpGet,Route("delegateauthority")]
         public ActionResult DelegateAuthority(int delegateAuthority, int userId) {
-            if(delegateAuthority == 1)
+            //1 means assign
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            if (delegateAuthority == 1)
             {
-                int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
-                DepartmentDao.DelegateAuthority(departmentId, userId);
+                DepartmentDao.AssignTemporaryHead(departmentId, userId);
+            }
+            //2 means cancel
+            else if (delegateAuthority == 2)
+            {
+                DepartmentDao.CancelTemporaryHead(departmentId, userId);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Delegate");
         }
     }
 }

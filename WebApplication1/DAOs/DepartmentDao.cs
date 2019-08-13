@@ -24,7 +24,7 @@ namespace WebApplication1.DAOs
             }
         }
 
-        public static void DelegateAuthority(int departmentId,int userId)
+        public static void AssignTemporaryHead(int departmentId,int userId)
         {
             using(var ctx = new UniDBContext())
             {
@@ -46,11 +46,42 @@ namespace WebApplication1.DAOs
             }
         }
 
+        public static void CancelTemporaryHead(int departmentId, int userId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                User user = ctx.Users.Include("Department")
+                    .Where(u => u.Department.DepartmentId == departmentId && u.Rank == (int)UserRank.TemporaryHead && u.UserId == userId)
+                    .SingleOrDefault();
+                user.Rank = (int)UserRank.Employee;
+
+                ctx.SaveChanges();
+            }
+        }
+
         public static List<Department> GetAllDepartments(){
             using(var ctx = new UniDBContext())
             {
                 List<Department> departments = ctx.Departments.ToList();
                 return departments;
+            }
+        }
+
+        public static void UpdatePickUpPoint(int departmentId, int pickupPointId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                Department d = ctx.Departments.Where(de => de.DepartmentId == departmentId).SingleOrDefault();
+                if(d != null)
+                {
+                    d.PickupPoint = new PickUpPoint()
+                    {
+                        PickUpPointId = pickupPointId
+                    };
+
+                    ctx.PickUpPoints.Attach(d.PickupPoint);
+                    ctx.SaveChanges();
+                }
             }
         }
     }

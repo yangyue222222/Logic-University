@@ -132,7 +132,7 @@ namespace WebApplication1.Controllers
             return Json(response,JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet]
+        [HttpGet,Route("myrequisitions",Name = "myrequisitions")]
         public ActionResult MyRequisitions()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -159,6 +159,14 @@ namespace WebApplication1.Controllers
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
             int rank = Convert.ToInt32(RouteData.Values["rank"]);
+            string layout = "";
+            if (rank == (int)UserRank.Clerk)
+            {
+                layout = "_StoreLayout.cshtml";
+            }else
+            {
+                layout = "_DeptLayout.cshtml";
+            }
             User u = new User()
             {
                 UserId = userId,
@@ -172,6 +180,7 @@ namespace WebApplication1.Controllers
             ViewData["Request"] = r;
             if (r != null)
             {
+                ViewData["LayoutName"] = layout;
                 return View("MyRequest");
             }
             return RedirectToAction("myrequisitions");

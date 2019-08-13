@@ -19,7 +19,6 @@ namespace WebApplication1.Controllers
                 var department = new Department()
                 {
                     DepartmentName = "English",
-                    PickupPoint = "ISS",
                 };
                 var user = new User()
                 {

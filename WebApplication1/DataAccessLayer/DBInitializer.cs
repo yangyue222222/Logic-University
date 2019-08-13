@@ -42,10 +42,27 @@ namespace WebApplication1.DataAccessLayer
             PopulateSupplier sup = new PopulateSupplier();
             sup.populateSuppliers(context);
 
-            SetRepresentatives sr = new SetRepresentatives();
-            sr.setReps();
+
+            PopulatePickUpPoint.PopulatePoints(context);
+
+            User storeclerk1 = context.Users.Where(us => us.Username == "storeclerk1").SingleOrDefault();
+            List<PickUpPoint> pts1 = context.PickUpPoints.Where(pi => pi.PickUpPointId == 1 || pi.PickUpPointId == 2).ToList();
+
+            storeclerk1.PickUpPoints = pts1;
+
+            User storeclerk2 = context.Users.Where(us => us.Username == "storeclerk2").SingleOrDefault();
+            List<PickUpPoint> pts2 = context.PickUpPoints.Where(pi => pi.PickUpPointId == 3 || pi.PickUpPointId == 4).ToList();
+
+            storeclerk2.PickUpPoints = pts2;
+
+            User storeclerk3 = context.Users.Where(us => us.Username == "storeclerk3").SingleOrDefault();
+            List<PickUpPoint> pts3 = context.PickUpPoints.Where(pi => pi.PickUpPointId == 5 || pi.PickUpPointId == 6).ToList();
+
+            storeclerk3.PickUpPoints = pts3;
 
             base.Seed(context);
         }
+
+
     }
 }

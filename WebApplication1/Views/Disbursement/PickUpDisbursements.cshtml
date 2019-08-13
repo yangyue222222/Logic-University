@@ -2,25 +2,25 @@
 
 @{
     Layout = "~/Views/Shared/_DeptLayout.cshtml";
-    ViewBag.Title = "Delivered Disbursements";
-    List<Disbursement> disbursements = null;
-    if (ViewData["Disbursements"] != null)
-    {
-        disbursements = (List<Disbursement>)ViewData["Disbursements"];
-    }
+    ViewBag.Title = "PickUp Disbursements";
+    List<Disbursement> disbursements = disbursements = (List<Disbursement>)ViewData["Disbursements"];
 
 }
 
 <div class="ui grid">
     @if (disbursements != null && disbursements.Count > 0)
     {
-        <div class="sixteen wide tablet column">
-            <h5 class="ui header">Department Name : @disbursements[0].Department.DepartmentName</h5>
-        </div>
+    <div class="sixteen wide tablet column">
+        <h5 class="ui header"><span style="font-weight : 100 !important">Department Name : </span>@disbursements[0].Department.DepartmentName</h5>
+        @if (disbursements[0].Department.PickupPoint != null)
+        {
+            <h5 class="ui header"><span style="font-weight : 100 !important">PickUp Point : </span>@disbursements[0].Department.PickupPoint.Location - @disbursements[0].Department.PickupPoint.PickUpTime</h5>
+        }
+        <h5 class="ui header"><span style="font-weight : 100 !important">Representative : </span>@disbursements[0].Department.Representative.Name</h5>
+    </div>
         foreach (var d in disbursements)
         {
             <div class="sixteen wide tablet column">
-
 
                 <table class="ui celled table">
                     <thead>
@@ -37,11 +37,6 @@
                                 <td>@dd.Quantity</td>
                             </tr>
                         }
-                        <tr>
-                            <td colspan="2" style="text-align : right">
-                                <a href="http://localhost:50271/approvedisbursements/@d.DisbursementId" class="ui positive button">Approve Disbursement</a>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -51,7 +46,7 @@
     else
     {
         <div class="sixteen wide tablet column">
-            <h5 class="ui header">No Deliverd Disbursement.</h5>
+            <h5 class="ui header">No Prepared Disbursement.</h5>
         </div>
     }
 </div>
