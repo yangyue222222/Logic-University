@@ -18,6 +18,7 @@ namespace WebApplication1.Controllers
 
         //store man order item page
         [HttpGet,Route("orderitems",Name = "orderitems")]
+        [AuthorizeFilter((int)UserRank.Clerk,(int)UserRank.Manager,(int)UserRank.Supervisor)]
         public ActionResult Index()
         {
             Dictionary<string, List<Item>> items = ItemDao.getItemsForRequisition();
@@ -31,6 +32,7 @@ namespace WebApplication1.Controllers
 
         //storeman order item page
         [HttpPost,Route("orderitems")]
+        [AuthorizeFilter((int)UserRank.Clerk,(int)UserRank.Manager, (int)UserRank.Supervisor)]
         public ActionResult Index(List<Item> items, int supplierId)
         {
 
@@ -67,9 +69,11 @@ namespace WebApplication1.Controllers
 
         //get all orders
         [HttpGet,Route("orders")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
         public ActionResult GetAllOrders()
         {
-            List<Order> orders = OrderDao.GetAllOrders();
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Order> orders = OrderDao.GetAllOrdersByUserId(userId);
 
             ViewData["Orders"] = orders;
             return View("Orders");
@@ -78,6 +82,7 @@ namespace WebApplication1.Controllers
 
         //get a particular order
         [HttpGet,Route("orders/{orderId}")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
         public ActionResult OrderDetail(int orderId)
         {
             Order order = OrderDao.GetOrderById(orderId);
@@ -90,33 +95,40 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost,Route("cancelorders/{orderId}")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
         public ActionResult CancelOrder(int orderid)
         {
-            OrderDao.CancelOrderById(orderid);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            OrderDao.CancelOrderById(userId, orderid);
             return RedirectToAction("GetAllOrders");
         }
         
 
         //get all approved orders for receiving stock
-        [HttpGet,Route("approveorders",Name = "approveorders")]
+        [HttpGet,Route("approvedorders",Name = "approvedorders")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
         public ActionResult ApprovedOrders()
         {
-            List<Order> orders = OrderDao.GetApprovedOrders();
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Order> orders = OrderDao.GetApprovedOrders(userId);
             ViewData["Orders"] = orders;
             return View();
         }
 
         //post order for receiving stock
         [HttpPost,Route("approveorders/{orderId}")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
         public ActionResult ApprovedOrders(List<OrderDetail> orderDetails,int orderId)
         {
-            OrderDao.ReceiveStocks(orderDetails,orderId);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            OrderDao.ReceiveStocks(userId, orderDetails, orderId);
             return RedirectToAction("ApprovedOrders");
         }
 
 
         //for storemanager or store supervisor
         [HttpGet,Route("PendingOrders",Name = "PendingOrders" )]
+        [AuthorizeFilter((int)UserRank.Manager,(int)UserRank.Supervisor)]
         public ActionResult PendingOrders()
         {
             List<PendingOrder> pendingOrders = OrderDao.GetPendingOrders();
@@ -130,6 +142,7 @@ namespace WebApplication1.Controllers
 
         //for storemanager or store supervisor
         [HttpGet,Route("PendingOrders/{orderId}")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor)]
         public ActionResult PendingOrder(int orderId)
         {
             Order order = OrderDao.GetOrderById(orderId);
@@ -141,8 +154,9 @@ namespace WebApplication1.Controllers
             return RedirectToAction("PendingOrders");
         }
 
-        //for storemanager or store supervisor
+        //for storemanager or store supervisor to approve orders
         [HttpPost,Route("pendingorders/{orderId}")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor)]
         public ActionResult UpdateOrder(int orderId,string status)
         {
 

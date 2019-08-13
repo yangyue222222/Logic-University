@@ -15,6 +15,7 @@ namespace WebApplication1.Controllers
     public class RequisitionController : Controller
     {
         [HttpPost]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee)]
         public ActionResult Index(List<Item> items)
         {
             if (items != null)
@@ -59,6 +60,7 @@ namespace WebApplication1.Controllers
 
         }
         [HttpGet]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee)]
         public ActionResult Index()
         {
             Dictionary<string, List<Item>> items = ItemDao.getItemsForRequisition();
@@ -68,6 +70,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead)]
         public ActionResult PendingRequisitions()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -80,6 +83,7 @@ namespace WebApplication1.Controllers
         }
 
         [Route("Requisitions/{id}"), HttpGet]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead)]
         public JsonResult RequisitionById(int id)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -89,6 +93,7 @@ namespace WebApplication1.Controllers
         }
 
         [Route("Requisitions/{id}"), HttpPost]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead)]
         public ActionResult ApproveRequisition(int id, string status)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -121,6 +126,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet,Route("myrequisitions",Name = "myrequisitions")]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee)]
         public ActionResult MyRequisitions()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -142,6 +148,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet,Route("myrequisitions/{requestId}")]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee,(int)UserRank.Manager,(int)UserRank.Supervisor,(int)UserRank.Clerk)]
         public ActionResult GetMyRequisition(int requestId)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -175,6 +182,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost,Route("cancelrequisitions/{requestId}")]
+        [AuthorizeFilter((int)UserRank.TemporaryHead, (int)UserRank.Employee,(int)UserRank.Head)]
         public ActionResult CancelMyRequisitions(int requestId)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);

@@ -6,9 +6,12 @@ using System.Web.Mvc;
 using WebApplication1.DAOs;
 using WebApplication1.Models;
 using System.Diagnostics;
+using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
+    [AuthFilter]
+    [AuthorizeFilter((int)UserRank.Clerk)]
     public class StationeryController : Controller
     {
         [HttpGet]

@@ -13,6 +13,7 @@ using WebApplication1.Filters;
 namespace WebApplication1.Controllers
 {
     [AuthFilter]
+    [AuthorizeFilter((int)UserRank.Head)]
     public class DelegateController : Controller
     {
         // GET: Delegate

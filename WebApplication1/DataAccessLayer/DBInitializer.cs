@@ -7,7 +7,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DataAccessLayer
 {
-    public class DBInitializer : DropCreateDatabaseAlways<UniDBContext>
+    public class DBInitializer : DropCreateDatabaseIfModelChanges<UniDBContext>
     {
         protected override void Seed(UniDBContext context)
         {

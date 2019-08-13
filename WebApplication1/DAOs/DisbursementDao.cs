@@ -501,7 +501,7 @@ namespace WebApplication1.DAOs
             using(var ctx = new UniDBContext())
             {
                 Disbursement dis = ctx.Disbursements.Include("Department").Include("DisbursementDetails").Include("DisbursementDetails.Item")
-                    .Include("ApprovedBy").OrderByDescending(d => d.DisbursementId)
+                    .Include("ApprovedBy")
                     .Where(d => d.DisbursementId == disbursementId).SingleOrDefault();
                 return dis;
             }

@@ -169,6 +169,7 @@
     <Compile Include="DataAccessLayer\PopulateUser.cs" />
     <Compile Include="DataAccessLayer\UniDBContext.cs" />
     <Compile Include="Filters\AuthFilter.cs" />
+    <Compile Include="Filters\AuthorizeFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -254,6 +255,7 @@
     <Content Include="Views\Disbursement\DepartmentDisbursements.cshtml" />
     <Content Include="Views\Disbursement\DepartmentDisbursementDetail.cshtml" />
     <Content Include="Views\Disbursement\PickUpDisbursements.cshtml" />
+    <Content Include="Views\Disbursement\ApprovedDisbursementDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -34,7 +34,7 @@
                         <div class="sixteen wide tablet column">
                             <div class="field" style="color: grey;">
                                 <div class="ui input" style="width : 100px;">
-                                    <input id="quantity-box" type="number" placeholder="Qty..." min="1" />
+                                    <input id="quantity-box" type="number" placeholder="Qty..." min="1" step="1"/>
                                 </div>
                                 <label id="count-label">*Item Count by :</label>
 
@@ -94,12 +94,12 @@
 
     function itemAdd() {
         var totalCount = 0;
-        if (Number(quantityBox.value) > 0) {
+        if (Number(quantityBox.value) > 0 && arr.length > 0) {
             if (chosenItems[arr[0]]) {
                 totalCount = Number(chosenItems[arr[0]]['count']);
             }
 
-            totalCount += Number(quantityBox.value);
+            totalCount += Math.round(Number(quantityBox.value));
             chosenItems[arr[0]] = { count: totalCount, description: arr[1], uom: arr[2] }
             generateTable();
         }
@@ -182,7 +182,7 @@
                 console.log(items)
 
                 $.ajax({
-                    url: 'http://localhost:50271/requisition/index?supplier',
+                    url: 'http://localhost:50271/requisition/index',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(items),

@@ -16,6 +16,7 @@ namespace WebApplication1.Controllers
     {
 
         [HttpGet,Route("deliveries/{id}")]
+        [AuthorizeFilter((int)UserRank.Manager,(int)UserRank.Supervisor,(int)UserRank.Clerk)]
         public ActionResult Disbursements(int id)
         {
             Disbursement d = DisbursementDao.GetDisbursement(id);
@@ -26,6 +27,7 @@ namespace WebApplication1.Controllers
 
         //for representative employee to get delivered disbursement and approve it
         [HttpGet,Route("delivereddisbursements",Name = "delivereddisbursements")]
+        [AuthorizeFilter((int)UserRank.Employee)]
         public ActionResult GetDeliveredDisbursements()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -73,6 +75,7 @@ namespace WebApplication1.Controllers
 
         //when reach to the collection point and storeman will click received to the particular disbursement id
         [HttpPost, Route("deliveries/{id}")]
+        [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult ReceiveItemsByDepartment(List<DisbursementDetail> details,int id)
         {
 
@@ -122,6 +125,7 @@ namespace WebApplication1.Controllers
 
         //storeman will get all of the prepared disbursements
         [HttpGet,Route("deliveries",Name = "deliveries")]
+        [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult Deliveries()
         {
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
@@ -132,8 +136,8 @@ namespace WebApplication1.Controllers
 
 
         //retrieving and preparing for delivery
-
         [HttpPost]
+        [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult Disbursements(List<RetrievalItem> items)
         {
 
@@ -187,6 +191,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet,Route("invoices",Name = "invoices")]
+        [AuthorizeFilter((int)UserRank.Manager,(int)UserRank.Supervisor,(int)UserRank.Clerk)]
         public ActionResult GenerateInvoices()
         {
             List<Department> departments = DepartmentDao.GetAllDepartments();
@@ -201,9 +206,10 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet,Route("disbursements")]
-        public ActionResult GetDisbursementListWithMonth(int departmentId,int month)
+        public ActionResult GetDisbursementListWithMonth(int requestedDepartmentId, int month)
         {
-            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(departmentId, month,(int)DisbursementStatus.Approved);
+            Debug.WriteLine("Department Id is " + requestedDepartmentId + " month is " + month);
+            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(requestedDepartmentId, month,(int)DisbursementStatus.Approved);
             List<object> data = new List<object>();
             if(disbursements != null)
             {
@@ -255,6 +261,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet,Route("prepareddisbursements",Name = "prepareddisbursements")]
+        [AuthorizeFilter((int)UserRank.Employee,(int)UserRank.Head)]
         public ActionResult GetPreparedDisbursementsByDepartment()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -263,6 +270,20 @@ namespace WebApplication1.Controllers
             ViewData["Disbursements"] = disbursements;
             return View("PickUpDisbursements");
             
+        }
+
+
+        //approved disbursements for invoice
+
+        [HttpGet, Route("approveddisbursements/{disbursementId}")]
+        [AuthorizeFilter((int)UserRank.Manager,(int)UserRank.Supervisor,(int)UserRank.Clerk)]
+        public ActionResult ApprovedDisbursements(int disbursementId)
+        {
+            Disbursement d = DisbursementDao.GetDisbursementDetailById(disbursementId);
+
+            ViewData["Disbursement"] = d;
+
+            return View("ApprovedDisbursementDetail");
         }
     }
 }
