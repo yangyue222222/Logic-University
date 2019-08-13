@@ -330,12 +330,14 @@ namespace WebApplication1.DAOs
                 return disbursements;
             }
         }
-        public static List<Disbursement> getPreparedDisbursementsForMobile()
+        public static List<Disbursement> getPreparedDisbursementsForMobile(int userId)
         {
             using (var ctx = new UniDBContext())
             {
                 List<Disbursement> disbursements = ctx.Disbursements.Include("Department").Include("Department.Representative").Include("DisbursementDetails").Include("DisbursementDetails.Item")
-                    .Where(d => d.Status == (int)DisbursementStatus.Prepared).ToList();
+                    .Where(d => d.Status == (int)DisbursementStatus.Prepared && d.Department.PickupPoint != null)
+                    .Where(d => d.Department.PickupPoint.StoreClerk.UserId == userId)
+                    .ToList();
 
                 return disbursements;
             }

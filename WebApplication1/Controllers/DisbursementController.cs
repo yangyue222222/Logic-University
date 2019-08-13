@@ -24,12 +24,13 @@ namespace WebApplication1.Controllers
             return View("DeliveryDetail");
         }
 
-        //for employee to get delivered disbursement and approve it
+        //for representative employee to get delivered disbursement and approve it
         [HttpGet, Route("delivereddisbursements", Name = "delivereddisbursements")]
         public ActionResult GetDeliveredDisbursements()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
-            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(departmentId, DateTime.Now.Month, (int)DisbursementStatus.Delivered);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(userId, departmentId, DateTime.Now.Month, (int)DisbursementStatus.Delivered);
             ViewData["Disbursements"] = disbursements;
             return View("DeliveredDisbursements");
         }
@@ -66,7 +67,7 @@ namespace WebApplication1.Controllers
             return RedirectToAction("GetDeliveredDisbursements");
 
         }
-
+        //when reach to the collection point and storeman will click received to the particular disbursement id
         [HttpPost, Route("deliveries/{id}")]
         public ActionResult ReceiveItemsByDepartment(List<DisbursementDetail> details,int id)
         {
@@ -115,10 +116,12 @@ namespace WebApplication1.Controllers
         }
 
 
-        [HttpGet,Route("deliveries",Name = "deliveries")]
+        //storeman will get all of the prepared disbursements
+        [HttpGet, Route("deliveries", Name = "deliveries")]
         public ActionResult Deliveries()
         {
-            List<Disbursement> disbursements = DisbursementDao.GetPreparedDisbursements();
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Disbursement> disbursements = DisbursementDao.GetPreparedDisbursements(userId);
             ViewData["Disbursements"] = disbursements;
             return View("Deliveries");
         }
@@ -211,6 +214,41 @@ namespace WebApplication1.Controllers
             return Json(new { results = data }, JsonRequestBehavior.AllowGet);
         }
 
+
+        //employee can watch disbursements by department
+        [HttpGet, Route("departmentdisbursements", Name = "departmentdisbursements")]
+        public ActionResult GetAllDisbursementByDepartment()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            List<Disbursement> disbursements = DisbursementDao.GetAllDisbursementsByDepartment(departmentId);
+            ViewData["Disbursements"] = disbursements;
+            return View("DepartmentDisbursements");
+        }
+
+        //department disbursement detail
+        [HttpGet, Route("departmentdisbursements/{disbursementId}")]
+        public ActionResult GetDisbursementDetailByDepartment(int disbursementId)
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            Disbursement d = DisbursementDao.GetDisbursementDetailById(departmentId);
+            ViewData["Disbursement"] = d;
+            return View("DepartmentDisbursementDetail");
+        }
+
+        [HttpGet, Route("prepareddisbursements", Name = "prepareddisbursements")]
+        public ActionResult GetPreparedDisbursementsByDepartment()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Disbursement> disbursements = DisbursementDao.GetPreparedDisbursements(departmentId, userId);
+            ViewData["Disbursements"] = disbursements;
+            return View("PickUpDisbursements");
+
+        }
+
+
+
+
         [HttpGet, Route("generateinvoice")]
         public ActionResult GenerateInvoice(int departmentId, int month)
         {
@@ -229,7 +267,8 @@ namespace WebApplication1.Controllers
 
         public ActionResult DeliveriesMobile()
         {
-            List<Disbursement> retrievedList = DisbursementDao.getPreparedDisbursementsForMobile();
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Disbursement> retrievedList = DisbursementDao.getPreparedDisbursementsForMobile(userId);
             List<object> disbursementList = new List<object>();
             foreach (Disbursement d in retrievedList)
             {

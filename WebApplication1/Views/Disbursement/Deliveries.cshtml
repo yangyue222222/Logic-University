@@ -28,7 +28,7 @@
                     {
                         <tr>
                             <td>@d.Department.DepartmentName</td>
-                            <td>@d.Department.PickupPoint</td>
+                            <td>@d.Department.PickupPoint.Location  @d.Department.PickupPoint.PickUpTime</td>
                             <td><a href="http://localhost:50271/myrequisitions/@d.Request.RequestId">View Request</a></td>
                             <td><a href="http://localhost:50271/deliveries/@d.DisbursementId">View Detail</a></td>
                         </tr>
