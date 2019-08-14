@@ -14,8 +14,8 @@ namespace WebApplication1.Controllers
     [AuthFilter]
     public class DisbursementController : Controller
     {
-
         [HttpGet,Route("deliveries/{id}")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
         public ActionResult Disbursements(int id)
         {
             Disbursement d = DisbursementDao.GetDisbursement(id);
@@ -25,17 +25,19 @@ namespace WebApplication1.Controllers
         }
 
         //for representative employee to get delivered disbursement and approve it
-        [HttpGet, Route("delivereddisbursements", Name = "delivereddisbursements")]
+        [HttpGet,Route("delivereddisbursements",Name = "delivereddisbursements")]
+        [AuthorizeFilter((int)UserRank.Employee)]
         public ActionResult GetDeliveredDisbursements()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
-            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(userId, departmentId, DateTime.Now.Month, (int)DisbursementStatus.Delivered);
+            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(userId,departmentId, DateTime.Now.Month,(int)DisbursementStatus.Delivered);
             ViewData["Disbursements"] = disbursements;
             return View("DeliveredDisbursements");
         }
 
-        [HttpGet, Route("delivereddisbursements/{disbursementId}")]
+
+        [HttpGet,Route("delivereddisbursements/{disbursementId}")]
         public ActionResult GetDeliveredDisbursementDetailById(int disbursementId)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -67,8 +69,12 @@ namespace WebApplication1.Controllers
             return RedirectToAction("GetDeliveredDisbursements");
 
         }
+
+
+
         //when reach to the collection point and storeman will click received to the particular disbursement id
         [HttpPost, Route("deliveries/{id}")]
+        [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult ReceiveItemsByDepartment(List<DisbursementDetail> details,int id)
         {
 
@@ -117,7 +123,8 @@ namespace WebApplication1.Controllers
 
 
         //storeman will get all of the prepared disbursements
-        [HttpGet, Route("deliveries", Name = "deliveries")]
+        [HttpGet,Route("deliveries",Name = "deliveries")]
+        [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult Deliveries()
         {
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
@@ -126,9 +133,10 @@ namespace WebApplication1.Controllers
             return View("Deliveries");
         }
 
-        //retrieving and preparing for delivery
 
+        //retrieving and preparing for delivery
         [HttpPost]
+        [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult Disbursements(List<RetrievalItem> items)
         {
 
@@ -178,14 +186,16 @@ namespace WebApplication1.Controllers
             {
                 return RedirectToAction("Retrieval", "Stationery");
             }
+
         }
-        [HttpGet, Route("invoices", Name = "invoices")]
+        [HttpGet,Route("invoices",Name = "invoices")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
         public ActionResult GenerateInvoices()
         {
             List<Department> departments = DepartmentDao.GetAllDepartments();
 
             Dictionary<int, string> monthDict = new Dictionary<int, string>();
-            foreach (var i in Enum.GetValues(typeof(Months)))
+            foreach( var i in Enum.GetValues(typeof(Months)))
             {
                 monthDict.Add((int)i, i.ToString());
             }
@@ -193,30 +203,45 @@ namespace WebApplication1.Controllers
             ViewData["MonthDict"] = monthDict;
             return View("Invoices");
         }
-        [HttpGet, Route("disbursements")]
-        public ActionResult GetDisbursementListWithMonth(int departmentId, int month)
+
+        [HttpGet,Route("disbursements")]
+        public ActionResult GetDisbursementListWithMonth(int requestedDepartmentId, int month)
         {
-            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(departmentId, month, (int)DisbursementStatus.Approved);
+            Debug.WriteLine("Department Id is " + requestedDepartmentId + " month is " + month);
+            List<Disbursement> disbursements = DisbursementDao.GetDisbursementsByDepartmentAndMonth(requestedDepartmentId, month,(int)DisbursementStatus.Approved);
             List<object> data = new List<object>();
-            if (disbursements != null)
+            if(disbursements != null)
             {
-                foreach (var d in disbursements)
+                foreach(var d in disbursements)
                 {
                     data.Add(new
                     {
                         DisbursementId = d.DisbursementId,
-                        Total = d.DisbursementDetails.Sum(dd => dd.Item.Price * dd.Quantity)
+                        Total = d.DisbursementDetails.Sum(dd => dd.Item.Price * dd.Quantity )
                     });
                 }
 
             }
 
-            return Json(new { results = data }, JsonRequestBehavior.AllowGet);
+            return Json(new {results = data },JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet, Route("generateinvoice")]
+        public ActionResult GenerateInvoice(int departmentId, int month)
+        {
+            try
+            {
+                DisbursementDao.GenerateInvoiceByDepartmentAndMonth(departmentId, month);
+                return RedirectToAction("GenerateInvoices");
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("GenerateInvoices");
+            }
+        }
 
         //employee can watch disbursements by department
-        [HttpGet, Route("departmentdisbursements", Name = "departmentdisbursements")]
+        [HttpGet,Route("departmentdisbursements", Name = "departmentdisbursements")]
         public ActionResult GetAllDisbursementByDepartment()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -235,7 +260,8 @@ namespace WebApplication1.Controllers
             return View("DepartmentDisbursementDetail");
         }
 
-        [HttpGet, Route("prepareddisbursements", Name = "prepareddisbursements")]
+        [HttpGet,Route("prepareddisbursements", Name = "prepareddisbursements")]
+        [AuthorizeFilter((int)UserRank.Employee, (int)UserRank.Head)]
         public ActionResult GetPreparedDisbursementsByDepartment()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -247,23 +273,20 @@ namespace WebApplication1.Controllers
         }
 
 
+        //approved disbursements for invoice
 
-
-        [HttpGet, Route("generateinvoice")]
-        public ActionResult GenerateInvoice(int departmentId, int month)
+        [HttpGet, Route("approveddisbursements/{disbursementId}")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
+        public ActionResult ApprovedDisbursements(int disbursementId)
         {
-            try
-            {
-                DisbursementDao.GenerateInvoiceByDepartmentAndMonth(departmentId, month);
-                return RedirectToAction("GenerateInvoices");
-            }
-            catch (Exception e)
-            {
-                return RedirectToAction("GenerateInvoices");
-            }
+            Disbursement d = DisbursementDao.GetDisbursementDetailById(disbursementId);
+
+            ViewData["Disbursement"] = d;
+
+            return View("ApprovedDisbursementDetail");
         }
 
-        
+
 
         public ActionResult DeliveriesMobile()
         {
