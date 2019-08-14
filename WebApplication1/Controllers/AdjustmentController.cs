@@ -14,6 +14,7 @@ namespace WebApplication1.Controllers
     public class AdjustmentController : Controller
     {
         [HttpGet,Route("makeadjustments",Name = "makeadjustments")]
+        [AuthorizeFilter((int)UserRank.Manager,(int)UserRank.Supervisor,(int)UserRank.Clerk)]
         public ActionResult MakeAdjustments()
         {
             Dictionary<string, List<Item>> items = ItemDao.getItemsForRequisition();
@@ -22,6 +23,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost,Route("adjustments")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
         public ActionResult Adjustments(List<Item> items)
         {
 
@@ -67,6 +69,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet, Route("adjustments", Name = "adjustments")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor)]
         public ActionResult PendingAdjustments()
         {
             int rank = Convert.ToInt32(RouteData.Values["rank"]);
@@ -76,6 +79,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet, Route("adjustments/{adjustmentId}")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor)]
         public ActionResult GetAdjustmentById(int adjustmentId)
         {
 
@@ -85,6 +89,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost, Route("adjustments/{adjustmentId}")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor)]
         public ActionResult UpdateAdjustmentStatus(int adjustmentId)
         {
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
@@ -97,6 +102,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet, Route("myadjustments",Name = "myadjustments")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor,(int)UserRank.Clerk)]
         public ActionResult GetAdjustmentsByClerk()
         {
             int rank = (int)UserRank.Clerk;
@@ -111,6 +117,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet, Route("myadjustments/{adjustmentId}")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
         public ActionResult GetMyAdjustmentDetailById(int adjustmentId)
         {
 

@@ -44,9 +44,11 @@
     function GetDisbursements() {
         var departmentId = departmentDropdown.value;
         var month = monthDropdown.value;
+        console.log(departmentId)
         if (departmentId != "default" && month != "default") {
+            console.log(`AJAX ${departmentId}`)
             $.ajax({
-                url: `http://localhost:50271/disbursements?departmentId=${departmentId}&month=${month}`,
+                url: `http://localhost:50271/disbursements?requestedDepartmentId=${departmentId}&month=${month}`,
                 success: function (data) {
                     console.log(data.results);
                     if (data.results.length > 0) {
@@ -71,7 +73,7 @@
         var tableText = `<table class="ui celled table"><thead><tr><th>Department Name</th><th>Total Cost</th><th>Option</th></tr></thead><tbody>`;
         for (var i = 0; i < data.length; i++) {
             console.log(data[i])
-            tableText += `<tr><td>${departmentName}</td><td>${data[i].Total}</td><td><a href="http://localhost:50271/delivereddisbursements/${data[i].DisbursementId}">View Detail</a></td></tr>`
+            tableText += `<tr><td>${departmentName}</td><td>${data[i].Total}</td><td><a href="http://localhost:50271/approveddisbursements/${data[i].DisbursementId}">View Detail</a></td></tr>`
         }
 
         tableText += `</tbody></table><a href="http://localhost:50271/generateinvoice?departmentId=${departmentDropdown.value}&month=${monthDropdown.value}" class="ui primary button">Generate Invoice</a>`

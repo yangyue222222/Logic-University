@@ -102,33 +102,41 @@ namespace WebApplication1.DAOs
             }
         }
 
-        public static List<Order> GetApprovedOrders()
+        public static List<Order> GetApprovedOrders(int userId)
         {
             using (var ctx = new UniDBContext())
             {
-                List<Order> approvedOrders = ctx.Orders.Include("Supplier").Include("OrderDetails").Include("OrderDetails.Item").Include("Requestor").Where(o => o.Status == (int)OrderStatus.Approved).ToList();
+                List<Order> approvedOrders = ctx.Orders.Include("Supplier").Include("OrderDetails").Include("OrderDetails.Item").Include("Requestor")
+                    .Where(o => o.Status == (int)OrderStatus.Approved && o.Requestor.UserId == userId)
+                    .ToList();
                 return approvedOrders;
             }
         }
 
-        public static void ReceiveStocks(List<OrderDetail> orderDetails,int orderId)
+        public static void ReceiveStocks(int userId, List<OrderDetail> orderDetails,int orderId)
         {
             using (var ctx = new UniDBContext())
             {
                 List<int> orderDetailIds = orderDetails.Select(od => od.OrderDetailId).ToList();
 
-                Order order= ctx.Orders.Include("OrderDetails").Include("OrderDetails.Item").Where(o => o.OrderId == orderId).SingleOrDefault();
-                Dictionary<int, OrderDetail> orderDetailDict = order.OrderDetails.ToDictionary(od => od.OrderDetailId);
-                order.Status = (int)OrderStatus.Delivered;
-                foreach(var od in orderDetails)
+                Order order= ctx.Orders.Include("Requestor").Include("OrderDetails").Include("OrderDetails.Item")
+                    .Where(o => o.OrderId == orderId && o.Requestor.UserId == userId)
+                    .SingleOrDefault();
+                if(order != null)
                 {
-                    OrderDetail orderDetail = orderDetailDict[od.OrderDetailId];
-                    orderDetail.DeliveredQuantity = od.DeliveredQuantity;
-                    Item i = orderDetail.Item;
-                    i.Quantity += od.DeliveredQuantity;
-                }
+                    Dictionary<int, OrderDetail> orderDetailDict = order.OrderDetails.ToDictionary(od => od.OrderDetailId);
+                    order.Status = (int)OrderStatus.Delivered;
+                    foreach (var od in orderDetails)
+                    {
+                        OrderDetail orderDetail = orderDetailDict[od.OrderDetailId];
+                        orderDetail.DeliveredQuantity = od.DeliveredQuantity;
+                        Item i = orderDetail.Item;
+                        i.Quantity += od.DeliveredQuantity;
+                    }
 
-                ctx.SaveChanges();
+                    ctx.SaveChanges();
+                }
+                
 
 
                 //List<int> orderDetailsIds = orderDetails.Select(od => od.OrderDetailId).ToList();
@@ -223,16 +231,18 @@ namespace WebApplication1.DAOs
             }
         }
 
-        public static List<Order> GetAllOrders()
+        public static List<Order> GetAllOrdersByUserId(int userId)
         {
             using(var ctx = new UniDBContext())
             {
-                List<Order> orders = ctx.Orders.Include("Supplier").OrderByDescending(o => o.OrderId).ToList();
+                List<Order> orders = ctx.Orders.Include("Requestor").Include("Supplier")
+                    .Where(o => o.Requestor.UserId == userId)
+                    .OrderByDescending(o => o.OrderId).ToList();
                 return orders;
             }
         }
 
-        public static void CancelOrderById(int orderId)
+        public static void CancelOrderById(int userId, int orderId)
         {
             using (var ctx = new UniDBContext())
             {

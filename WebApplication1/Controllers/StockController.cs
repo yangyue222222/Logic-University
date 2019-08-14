@@ -6,15 +6,18 @@ using System.Web.Mvc;
 using WebApplication1.DAOs;
 using WebApplication1.Models;
 using System.Diagnostics;
+using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
+    [AuthFilter]
     public class StockController : Controller
     {
         [HttpGet,Route("receivestocks")]
         public ActionResult Index()
         {
-            List<Order> orders = OrderDao.GetApprovedOrders();
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Order> orders = OrderDao.GetApprovedOrders(userId);
             ViewData["ApprovedOrders"] = orders;
             return View("StockOrders");
         }
@@ -47,6 +50,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet, Route("instocks",Name = "instocks")]
+        [AuthorizeFilter((int)UserRank.Manager,(int)UserRank.Supervisor,(int)UserRank.Clerk)]
         public ActionResult Inventory()
         {
             ViewData["Items"] = ItemDao.GetAllItems();

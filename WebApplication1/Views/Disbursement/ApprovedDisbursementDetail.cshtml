@@ -1,0 +1,45 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    ViewBag.Title = "Approved Disbursements";
+    Disbursement disbursement = (Disbursement)ViewData["Disbursement"];
+}
+
+<div class="ui grid">
+    @if (disbursement != null && disbursement.DisbursementDetails.Count > 0)
+    {
+        <div class="sixteen wide tablet column">
+            <h5 class="ui header">Department Name : @disbursement.Department.DepartmentName</h5>
+            <h5 class="ui header">Approved By : @disbursement.ApprovedBy.Name</h5>
+            <h5 class="ui header">Approved Date : @disbursement.Date.ToString("dd/MM/yyyy")</h5>
+        </div>
+
+            <div class="sixteen wide tablet column">
+                <table class="ui celled table">
+                    <thead>
+                        <tr>
+                            <th>Item Description</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var dd in disbursement.DisbursementDetails)
+                        {
+                            <tr>
+                                <td>@dd.Item.Description</td>
+                                <td>@dd.Quantity</td>
+                            </tr>
+                        }
+                        
+                    </tbody>
+                </table>
+            </div>
+    }
+    else
+    {
+        <div class="sixteen wide tablet column">
+            <h5 class="ui header">No Approved Disbursement.</h5>
+        </div>
+    }
+</div>
