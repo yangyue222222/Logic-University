@@ -102,7 +102,7 @@ namespace WebApplication1.Controllers
         [HttpGet, Route("reqhistory")]
         public ActionResult GetRequisitionByMonth(int deptId, int month)
         {
-            List<RetrievalItem> reqs = RequestDao.getRequestedItemsByMonth(deptId, month);
+            List<RetrievalItem> reqs = RequestDao.GetRequestedItemsByMonth(deptId, month);
 
             return Json(new { results = reqs }, JsonRequestBehavior.AllowGet);
         }

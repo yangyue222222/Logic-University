@@ -60,12 +60,15 @@
                 <span>Make Adjustments</span>
                 <i class="briefcase icon"></i>
             </a>
-
-            <a class="item @(pgName == "PendingAdjustments" ? "activeLink" : "")" href="@Url.RouteUrl("adjustments")">
-                <span>Adjustments</span>
-                <i class="briefcase icon"></i>
-            </a>
-
+            @{
+                if (rank == (int)UserRank.Manager || rank == (int)UserRank.Supervisor)
+                {
+                    <a class="item @(pgName == "PendingAdjustments" ? "activeLink" : "")" href="@Url.RouteUrl("adjustments")">
+                        <span>Adjustments</span>
+                        <i class="briefcase icon"></i>
+                    </a>
+                }
+            }
             <a class="item @(pgName == "GetAdjustmentsByClerk" ? "activeLink" : "")" href="@Url.RouteUrl("myadjustments")">
                 <span>My Adjustments</span>
                 <i class="briefcase icon"></i>
@@ -80,7 +83,14 @@
                 <span>Generate Invoices</span>
                 <i class="icon dollar sign"></i>
             </a>
-
+            <a class="item @(pgName == "GenerateRequisitionReport" ? "activeLink" : "")" href="@Url.Action("GenerateRequisitionReport", "Requisition")">
+                <span>Requisition Report</span>
+                <i class="file alternate icon"></i>
+            </a>
+            <a class="item @(pgName == "GenerateOrderReport" ? "activeLink" : "")" href="@Url.Action("Reporting", "Orders")">
+                <span>Order Report</span>
+                <i class="file alternate icon"></i>
+            </a>
 
         </div>
     </div>

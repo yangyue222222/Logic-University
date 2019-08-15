@@ -1,0 +1,74 @@
+﻿@using WebApplication1.Models
+
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    List<Supplier> suppliers = (List<Supplier>)ViewData["Suppliers"];
+    Dictionary<int, string> monthDict = (Dictionary<int, string>)ViewData["MonthDict"];
+}
+
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        <h3 class="ui header">Order Reporting</h3>
+    </div>
+    <div class="sixteen wide tablet column">
+        <select class="ui dropdown" id="supplier-dropdown">
+            <option value=0>All Suppliers</option>
+            @foreach (var s in suppliers)
+            {
+                <option value="@s.SupplierId">@s.SupplierName</option>
+            }
+        </select>
+        <select class="ui dropdown" id="month-dropdown" style="margin-left : 10px;">
+            <option value="default">Select Month</option>
+            @foreach (KeyValuePair<int, string> entry in monthDict)
+            {
+                <option value="@entry.Key">@entry.Value</option>
+            }
+        </select>
+
+        <button onclick="GetOrders()" class="ui positive button" style="margin-left : 10px;">Fetch Orders</button>
+    </div>
+
+    <div class="sixteen wide tablet column" id="table-div">
+
+    </div>
+</div>
+
+<script>
+    var supplierDropdown = document.getElementById("supplier-dropdown")
+    var monthDropdown = document.getElementById("month-dropdown")
+    function GetOrders() {
+        var supplier = supplierDropdown.value;
+        var month = monthDropdown.value;
+        if (month != "default") {
+            $.ajax({
+                url: `http://localhost:50271/orderhistory?month=${month}&supplierId=${supplier}`,
+                success: function (data) {
+                    console.log(data.results);
+                    if (data.results.length > 0) {
+                        GenerateTable(data.results)
+                    } else {
+                        noDataFound()
+                    }
+                }
+            });
+        }
+    }
+    function noDataFound() {
+        var div = document.getElementById("table-div")
+        var monthName = monthDropdown.options[monthDropdown.selectedIndex].innerHTML;
+        div.innerHTML = `No completed orders found for ${monthName}.`
+    }
+
+    function GenerateTable(data) {
+        var div = document.getElementById("table-div")
+        var tableText = `<table class="ui celled table"><thead><tr><th>Item Description</th><th>Total Received</th></tr></thead><tbody>`;
+        for (var i = 0; i < data.length; i++) {
+            console.log(data[i])
+            tableText += `<tr><td>${data[i].Description}</td><td>${data[i].ActualQuantity}</td></tr>`
+        }
+
+        tableText += `</tbody></table><a href="" class="ui primary button">Create Report</a>`
+        div.innerHTML = tableText;
+    }
+</script>

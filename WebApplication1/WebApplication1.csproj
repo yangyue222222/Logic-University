@@ -259,6 +259,7 @@
     <Content Include="Views\Requisition\RequisitionHistory.cshtml" />
     <Content Include="Views\Requisition\ReqReport.cshtml" />
     <Content Include="Views\Disbursement\ApprovedDisbursementDetail.cshtml" />
+    <Content Include="Views\Orders\OrderReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

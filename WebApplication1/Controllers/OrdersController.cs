@@ -182,5 +182,25 @@ namespace WebApplication1.Controllers
             OrderDao.UpdateOrderStatus(order);
             return RedirectToAction("PendingOrders");
         }
+        [HttpGet, Route("orders/reporting")]
+        public ActionResult GenerateOrderReport()
+        {
+            List<Supplier> suppliers = SupplierDao.GetSuppliers();
+            Dictionary<int, string> monthDict = new Dictionary<int, string>();
+            foreach (var i in Enum.GetValues(typeof(Months)))
+            {
+                monthDict.Add((int)i, i.ToString());
+            }
+            ViewData["Suppliers"] = suppliers;
+            ViewData["MonthDict"] = monthDict;
+            return View("OrderReport");
+        }
+        [HttpGet, Route("orderhistory")]
+        public ActionResult GetOrdersByMonth(int month, int supplierId)
+        {
+
+            List<RetrievalItem> monthlyorders = OrderDao.GetOrderedItemsByMonth(month, supplierId);
+            return Json(new { results = monthlyorders }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

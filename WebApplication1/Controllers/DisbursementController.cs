@@ -291,7 +291,7 @@ namespace WebApplication1.Controllers
         public ActionResult DeliveriesMobile()
         {
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
-            List<Disbursement> retrievedList = DisbursementDao.getPreparedDisbursementsForMobile(userId);
+            List<Disbursement> retrievedList = DisbursementDao.GetPreparedDisbursementsForMobile(userId);
             List<object> disbursementList = new List<object>();
             foreach (Disbursement d in retrievedList)
             {
@@ -328,7 +328,7 @@ namespace WebApplication1.Controllers
         public ActionResult ReceivingMobile(List<DisbursementDetail> details)
         {
             int ddid = details[0].DisbursementDetailId;
-            int id = DisbursementDao.getDisbursementByDetailId(ddid).DisbursementId;
+            int id = DisbursementDao.GetDisbursementByDetailId(ddid).DisbursementId;
 
             Disbursement d = DisbursementDao.GetDisbursement(id);
             foreach (var item in d.DisbursementDetails)

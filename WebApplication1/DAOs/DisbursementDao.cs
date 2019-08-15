@@ -330,7 +330,7 @@ namespace WebApplication1.DAOs
                 return disbursements;
             }
         }
-        public static List<Disbursement> getPreparedDisbursementsForMobile(int userId)
+        public static List<Disbursement> GetPreparedDisbursementsForMobile(int userId)
         {
             using (var ctx = new UniDBContext())
             {
@@ -342,7 +342,7 @@ namespace WebApplication1.DAOs
                 return disbursements;
             }
         }
-        public static Disbursement getDisbursementByDetailId(int id)
+        public static Disbursement GetDisbursementByDetailId(int id)
         {
             using (var ctx = new UniDBContext())
             {

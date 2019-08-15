@@ -60,23 +60,6 @@ namespace WebApplication1.DAOs
                 return null;
             }
         }
-        public static List<Request> getHistoricalRequestsByDepartment(int departmentId)
-        {
-            try
-            {
-                using (var ctx = new UniDBContext())
-                {
-                    List<Request> requests = ctx.Requests.Include("Requestor").Where(r => r.Requestor.Department.DepartmentId == departmentId && r.Status != (int)RequestStatus.Requested).ToList();
-
-                    return requests;
-                }
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
-
 
 
         public static List<RequestDetail> getRequestDetailsByRequestId(int id,int departmentId)
@@ -323,8 +306,25 @@ namespace WebApplication1.DAOs
 
             }
         }
+                
+        public static List<Request> getHistoricalRequestsByDepartment(int departmentId)
+        {
+            try
+            {
+                using (var ctx = new UniDBContext())
+                {
+                    List<Request> requests = ctx.Requests.Include("Requestor").Where(r => r.Requestor.Department.DepartmentId == departmentId && r.Status != (int)RequestStatus.Requested).ToList();
 
-        public static List<RetrievalItem> getRequestedItemsByMonth(int deptId, int month)
+                    return requests;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+               
+        public static List<RetrievalItem> GetRequestedItemsByMonth(int deptId, int month)
         {
             try
             {
