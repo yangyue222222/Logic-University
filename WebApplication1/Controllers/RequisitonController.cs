@@ -109,7 +109,7 @@ namespace WebApplication1.Controllers
 
 
 
-
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead)]
         public ActionResult PendingMobile()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);

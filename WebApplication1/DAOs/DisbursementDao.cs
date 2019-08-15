@@ -360,6 +360,7 @@ namespace WebApplication1.DAOs
                 List<Disbursement> disbursements = ctx.Disbursements.Include("Department").Include("DisbursementDetails").Include("DisbursementDetails.Item")
                     .Include("Department.PickupPoint").Include("Department.Representative")
                     .Where(d => d.Department.DepartmentId == departmentId && d.Department.Representative != null)
+                    .Where(d => d.Status == (int)DisbursementStatus.Prepared)
                     .Where(d => d.Department.Representative.UserId == userId).ToList();
 
                 return disbursements;

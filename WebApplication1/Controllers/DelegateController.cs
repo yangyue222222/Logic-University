@@ -61,17 +61,17 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet,Route("delegateauthority")]
-        public ActionResult DelegateAuthority(int delegateAuthority, int userId) {
+        public ActionResult DelegateAuthority(int delegateAuthority, int id) {
             //1 means assign
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
             if (delegateAuthority == 1)
             {
-                DepartmentDao.AssignTemporaryHead(departmentId, userId);
+                DepartmentDao.AssignTemporaryHead(departmentId, id);
             }
             //2 means cancel
             else if (delegateAuthority == 2)
             {
-                DepartmentDao.CancelTemporaryHead(departmentId, userId);
+                DepartmentDao.CancelTemporaryHead(departmentId, id);
             }
 
             return RedirectToAction("Delegate");

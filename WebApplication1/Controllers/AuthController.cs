@@ -53,6 +53,9 @@ namespace WebApplication1.App_Start
                     case (int)UserRank.Head:
                         result = RedirectToAction("PendingRequisitions", "Requisition");
                         break;
+                    case (int)UserRank.TemporaryHead:
+                        result = RedirectToAction("PendingRequisitions", "Requisition");
+                        break;
                     case (int)UserRank.Supervisor:
                         result = RedirectToAction("Dashboard");
                         break;

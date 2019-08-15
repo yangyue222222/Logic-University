@@ -85,6 +85,7 @@ namespace WebApplication1.Controllers
 
             Adjustment adj = AdjustmentDao.GetAdjustmentDetailById(adjustmentId);
             ViewData["Adjustment"] = adj;
+            ViewData["MyAdjustment"] = 1;
             return View("AdjustmentDetail");
         }
 
@@ -124,7 +125,7 @@ namespace WebApplication1.Controllers
             Adjustment adjustment = AdjustmentDao.GetAdjustmentDetailById(adjustmentId);
             ViewData["Adjustment"] = adjustment;
             //reuse the view for storemanager and storesupervisor
-            ViewData["MyAdjustment"] = 1;
+            
             return View("AdjustmentDetail");
         }
     }
