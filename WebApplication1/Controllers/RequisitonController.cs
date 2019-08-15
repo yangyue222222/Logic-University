@@ -112,7 +112,7 @@ namespace WebApplication1.Controllers
         }
 
 
-
+        [HttpGet, Route("pendingreqmobile")]
         [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead)]
         public ActionResult PendingMobile()
         {

@@ -130,7 +130,7 @@ namespace WebApplication1.App_Start
            
             return View();
         }
-        [HttpPost]
+        [HttpPost,Route("loginmobile")]
         public ActionResult LoginMobile(User user)
         {
             var failLogin = new
@@ -176,7 +176,7 @@ namespace WebApplication1.App_Start
             }
             return RedirectToAction("Index");
         }
-
+        [HttpGet,Route("logoutmobile")]
         public ActionResult LogoutMobile()
         {
             if (HttpContext.Request.Cookies["token"] != null)

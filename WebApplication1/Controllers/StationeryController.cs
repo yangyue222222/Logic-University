@@ -24,7 +24,7 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-        [HttpGet]
+        [HttpGet, Route("retrievalmobile")]
         public ActionResult RetrievalMobile()
         {
             List<RetrievalItem> items = DisbursementDao.GetAllItemsForRetrieval();

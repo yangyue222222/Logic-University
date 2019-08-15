@@ -77,7 +77,7 @@ namespace WebApplication1.Controllers
             return RedirectToAction("Delegate");
         }
 
-
+        [HttpGet, Route("delegatemobile")]
         public async Task<ActionResult> DelegationMobile()
         {
             List<object> result = new List<object>();
@@ -97,6 +97,7 @@ namespace WebApplication1.Controllers
             }
         
         }
+        [HttpGet, Route("pickupmobile")]
         public async Task<ActionResult> PickUpPointMobile()
         {
             List<object> result = new List<object>();

@@ -286,7 +286,7 @@ namespace WebApplication1.Controllers
         }
 
 
-
+        [HttpGet, Route("deliveriesmobile")]
         public ActionResult DeliveriesMobile()
         {
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
@@ -317,13 +317,13 @@ namespace WebApplication1.Controllers
             return Json(disbursementList, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpPost]
+        [HttpPost, Route("disbursementsmobile")]
         public ActionResult DisbursementsMobile(List<RetrievalItem> list)
         {
             ActionResult ar = Disbursements(list);
             return Json(list, JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
+        [HttpPost, Route("receivingmobile")]
         public ActionResult ReceivingMobile(List<DisbursementDetail> details)
         {
             int ddid = details[0].DisbursementDetailId;
