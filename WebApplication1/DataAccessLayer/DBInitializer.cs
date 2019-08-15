@@ -60,6 +60,17 @@ namespace WebApplication1.DataAccessLayer
 
             storeclerk3.PickUpPoints = pts3;
 
+            List<Department> allDepartments = context.Departments.ToList();
+            PickUpPoint pick = context.PickUpPoints.Where(pi => pi.PickUpPointId == 1).SingleOrDefault();
+
+            foreach(var d in allDepartments)
+            {
+                d.PickupPoint = pick;
+            }
+
+            context.SaveChanges();
+
+
             base.Seed(context);
         }
 

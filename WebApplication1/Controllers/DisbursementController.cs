@@ -136,7 +136,7 @@ namespace WebApplication1.Controllers
 
 
         //retrieving and preparing for delivery
-        [HttpPost]
+        [HttpPost, Route("disbursement/disbursements")]
         [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult Disbursements(List<RetrievalItem> items)
         {
@@ -228,10 +228,11 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet,Route("generateinvoice")]
-        public ActionResult GenerateInvoice(int departmentId,int month) {
+        public ActionResult GenerateInvoice(int requestedDepartmentId, int month) {
             try
             {
-                DisbursementDao.GenerateInvoiceByDepartmentAndMonth(departmentId, month);
+                Debug.WriteLine("Department Id is " + requestedDepartmentId);
+                DisbursementDao.GenerateInvoiceByDepartmentAndMonth(requestedDepartmentId, month);
                 return RedirectToAction("GenerateInvoices");
             }
             catch (Exception e)
@@ -274,7 +275,6 @@ namespace WebApplication1.Controllers
 
 
         //approved disbursements for invoice
-
         [HttpGet, Route("approveddisbursements/{disbursementId}")]
         [AuthorizeFilter((int)UserRank.Manager,(int)UserRank.Supervisor,(int)UserRank.Clerk)]
         public ActionResult ApprovedDisbursements(int disbursementId)
@@ -285,5 +285,7 @@ namespace WebApplication1.Controllers
 
             return View("ApprovedDisbursementDetail");
         }
+
+       
     }
 }

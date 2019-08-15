@@ -17,15 +17,22 @@
             <h5 class="ui header">Department Name : @d.Department.DepartmentName</h5>
             <h5 class="ui header">Request Detail : <a href="http://localhost:50271/myrequisitions/@d.Request.RequestId">View Request Detail</a></h5>
             <h5 class="ui header">
-                Department Representative : 
-                @if(d.Department.Representative != null)
+                Department Representative :
+                @if (d.Department.Representative != null)
                 {
                     @d.Department.Representative.Name
                 }
             </h5>
+            <h5 class="ui header">
+                Collection Point : 
+                @if (d.Department.PickupPoint != null)
+                {
+                <span>@d.Department.PickupPoint.Location - @d.Department.PickupPoint.PickUpTime</span>
+                } 
+            </h5>
         }
 
-        <form action="http://localhost:50271/deliveries/@d.DisbursementId" method="post">
+        <form id="deliveries-form" onkeydown="return event.key != 'Enter';" action="http://localhost:50271/deliveries/@d.DisbursementId" method="post">
             <table class="ui celled table">
                 <thead>
                     <tr>
@@ -49,7 +56,7 @@
                                     <input type="hidden" name="[@i].DisbursementDetailId" value="@list[i].DisbursementDetailId" />
                                     <input type="hidden" name="[@i].Item.ItemId" value="@list[i].Item.ItemId" />
                                     <div class="ui input" style="width : 100%">
-                                        <input type="number" max="@list[i].Quantity" min="0" name="[@i].Quantity" />
+                                        <input id="@list[i].Item.ItemId" type="number" max="@list[i].Quantity" min="0" name="[@i].Quantity" />
                                     </div>
                                 </td>
                             </tr>
@@ -59,10 +66,69 @@
             </table>
             @if (list != null)
             {
-                <button class="ui primary button" type="submit">Deliver</button>
+                <button class="ui primary button" type="button" onclick="formSubmitting()">Deliver</button>
 
             }
         </form>
 
     </div>
 </div>
+
+<div class="ui modal">
+    <div class="header" style="color : orange !important;">
+        Warning
+    </div>
+    <div class="content">
+        <p>
+            Since, requested quantities and collected quantities are mismatched, submitting this form will automatically generate adjustments for mismatched items.
+            Are your sure to continue?
+        </p>
+    </div>
+    <div class="actions">
+        <div class="ui red deny button">
+            No
+        </div>
+        <div class="ui positive button">
+            Yes
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var itemInfo = {};
+    @foreach(var i in list)
+    {
+        @:itemInfo["@i.Item.ItemId"] = @i.Quantity;
+    }
+
+    function formSubmitting() {
+        var keys = Object.keys(itemInfo);
+        var mismatch = false;
+        var overInput = false;
+        for (var i = 0; i < keys.length; i++) {
+            var actualInputAmount = Math.round(Number($(`#${keys[i]}`).val()));
+            var allocatedAmount = Math.round(Number(itemInfo[keys[i]]));
+            if (actualInputAmount < allocatedAmount) {
+                mismatch = true;
+                break;
+            } else if (actualInputAmount > allocatedAmount) {
+                overInput = true;
+                break;
+            }
+        }
+
+        if (mismatch) {
+            $('.ui.modal').modal({
+                onApprove: function () {
+                    document.getElementById("deliveries-form").submit();
+                }
+            }).modal('show');
+        } else if (overInput) {
+
+        } else {
+            document.getElementById("deliveries-form").submit();
+        }
+    }
+
+</script>

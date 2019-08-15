@@ -15,8 +15,8 @@ namespace WebApplication1
             routes.MapMvcAttributeRoutes();
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{filename}",
-                defaults: new { controller = "Home", action = "Index", filename = UrlParameter.Optional }
+                url: "",
+                defaults: new { controller = "Auth", action = "Index", filename = UrlParameter.Optional }
             );
 
 

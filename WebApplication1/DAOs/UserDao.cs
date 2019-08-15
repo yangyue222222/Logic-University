@@ -28,9 +28,7 @@ namespace WebApplication1.DAOs
         public async static Task<User> GetRepresentative(int departmentId) {
             using(var ctx = new UniDBContext())
             {
-                Debug.WriteLine("GET REPRESENTATIVE");
                 Department department = await ctx.Departments.Include("Representative").Where(d => d.DepartmentId == departmentId).FirstOrDefaultAsync<Department>();
-                Debug.WriteLine("GET REPRESENTATIVE FINISHED");
                 User u = department.Representative;
                 return u;
             }

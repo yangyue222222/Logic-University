@@ -46,8 +46,8 @@ namespace WebApplication1.DataAccessLayer
 
             User e4 = new User()
             {
-                Name = "English Employee 1",
-                Username = "enge1",
+                Name = "English Employee 2",
+                Username = "enge2",
                 Password = "enge2",
                 Rank = (int)UserRank.Employee
             };

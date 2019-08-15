@@ -76,7 +76,7 @@
             tableText += `<tr><td>${departmentName}</td><td>${data[i].Total}</td><td><a href="http://localhost:50271/approveddisbursements/${data[i].DisbursementId}">View Detail</a></td></tr>`
         }
 
-        tableText += `</tbody></table><a href="http://localhost:50271/generateinvoice?departmentId=${departmentDropdown.value}&month=${monthDropdown.value}" class="ui primary button">Generate Invoice</a>`
+        tableText += `</tbody></table><a href="http://localhost:50271/generateinvoice?requestedDepartmentId=${departmentDropdown.value}&month=${monthDropdown.value}" class="ui primary button">Generate Invoice</a>`
         div.innerHTML = tableText;
     }
 </script>

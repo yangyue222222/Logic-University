@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using WebApplication1.Models;
 
 namespace WebApplication1.Filters
 {
@@ -14,15 +15,6 @@ namespace WebApplication1.Filters
         {
             this.allowedRoles = allowedRoles;
         }
-
-        //protected override bool AuthorizeCore(HttpContextBase httpContext)
-        //{
-        //    bool authorize = false;
-        //    int requestorRank = Convert.ToInt32(httpContext.Request.RequestContext.RouteData.Values["rank"]);
-            
-
-        //    return authorize;
-        //}
 
         void IAuthorizationFilter.OnAuthorization(AuthorizationContext filterContext)
         {
@@ -41,12 +33,57 @@ namespace WebApplication1.Filters
 
             if (authorize != true)
             {
-                filterContext.Result = new RedirectToRouteResult(
-                    new RouteValueDictionary
-                    {
-                            { "controller", "Auth" },
-                            { "action", "Index" }
-                    });
+                RedirectToRouteResult result = null;
+                switch (requestorRank)
+                {
+                    case (int)UserRank.Manager:
+                        result =  new RedirectToRouteResult(
+                                        new RouteValueDictionary
+                                        {
+                                            { "controller", "Orders" },
+                                            { "action", "PendingOrders" }
+                                        });
+                        break;
+
+                    case (int)UserRank.Supervisor:
+                        result = new RedirectToRouteResult(
+                                        new RouteValueDictionary
+                                        {
+                                            { "controller", "Orders" },
+                                            { "action", "PendingOrders" }
+                                        });
+                        break;
+
+                    case (int)UserRank.Employee:
+                        result = new RedirectToRouteResult(
+                                        new RouteValueDictionary
+                                        {
+                                            { "controller", "Requisition" },
+                                            { "action", "Index" }
+                                        });
+                        break;
+
+                    case (int)UserRank.Head:
+                        result = new RedirectToRouteResult(
+                                        new RouteValueDictionary
+                                        {
+                                            { "controller", "Requisition" },
+                                            { "action", "PendingRequisitions" }
+                                        });
+                        break;
+
+                    case (int)UserRank.Clerk:
+                        result = new RedirectToRouteResult(
+                                        new RouteValueDictionary
+                                        {
+                                            { "controller", "Orders" },
+                                            { "action", "Index" }
+                                        });
+                        break;
+                }
+
+
+                filterContext.Result = result;
             }
         }
     }

@@ -22,7 +22,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if (disbursements != null)
+                @if (disbursements != null && disbursements.Count > 0)
                 {
                     foreach (var d in disbursements)
                     {

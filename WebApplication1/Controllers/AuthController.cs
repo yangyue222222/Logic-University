@@ -15,9 +15,71 @@ namespace WebApplication1.App_Start
     public class AuthController : Controller
     {
         [HttpGet,Route("login")]
+        [Route("~/")]
         public ActionResult Index()
         {
-            return View("Login");
+            if (Request.Cookies["token"] != null)
+            {
+                string token = Request.Cookies["token"].Value;
+                string decodedToken = TokenUtility.Decrypt(token);
+                string[] arr = decodedToken.Split(new string[] { "%" }, StringSplitOptions.None);
+
+                int departmentId = Convert.ToInt32(arr[2]);
+
+                Department d = new Department()
+                {
+                    DepartmentId = departmentId
+                };
+                User user = new User()
+                {
+                    Department = d,
+                    UserId = Convert.ToInt32(arr[0])
+                };
+
+                User loggedInUser = UserDao.GetUserProfile(user);
+                if(loggedInUser != null)
+                {
+                    RedirectToRouteResult result = null;
+                    switch (loggedInUser.Rank)
+                    {
+                        case (int)UserRank.Manager:
+                            result = RedirectToRoute("pendingorders");
+                            break;
+
+                        case (int)UserRank.Supervisor:
+                            result = RedirectToRoute("pendingorders");
+                            break;
+
+                        case (int)UserRank.Employee:
+                            result = RedirectToRoute("requestitems");
+                            break;
+
+                        case (int)UserRank.Head:
+                            result = RedirectToRoute("pendingrequisitions");
+                            break;
+
+                        case (int)UserRank.Clerk:
+                            result = RedirectToRoute("orderitems");
+                            break;
+                    }
+
+                    return result;
+                }
+                else
+                {
+                    HttpCookie cookie = new HttpCookie("token", "...");
+                    cookie.Expires = DateTime.Now.AddDays(-1);
+                    Response.Cookies.Add(cookie);
+                    return RedirectToAction("Index");
+                }
+
+            }
+            else
+            {
+                return View("Login");
+            }
+
+
         }
         [HttpPost, Route]
         public ActionResult Login(User user)
@@ -32,9 +94,6 @@ namespace WebApplication1.App_Start
                     return View();
                 }
 
-                Debug.WriteLine(u.Department.DepartmentId);
-                Debug.WriteLine(u.Department.DepartmentName);
-
                 string token = TokenUtility.Encrypt(u);
                 HttpCookie cookie = new HttpCookie("token",token);
                 cookie.Expires = DateTime.Now.AddDays(1);
@@ -44,25 +103,26 @@ namespace WebApplication1.App_Start
                 switch (u.Rank)
                 {
                     case (int)UserRank.Manager:
-                        result = RedirectToAction("Dashboard");
+                        result = RedirectToRoute("PendingOrders");
                         break;
 
                     case (int)UserRank.Supervisor:
-                        result = RedirectToAction("Dashboard");
+                        result = RedirectToRoute("PendingOrders");
                         break;
 
                     case (int)UserRank.Employee:
-                        result = RedirectToAction("Index","Requisition");
+                        result = RedirectToRoute("requestitems");
                         break;
 
                     case (int)UserRank.Head:
-                        result = RedirectToAction("PendingRequisitions", "Requisition");
+                        result = RedirectToRoute("pendingrequisitions");
                         break;
 
                     case (int)UserRank.Clerk:
-                        result = RedirectToAction("Index", "Orders");
+                        result = RedirectToRoute("orderitems");
                         break;
                 }
+
 
                 return result;
             }
@@ -82,10 +142,5 @@ namespace WebApplication1.App_Start
             return RedirectToAction("Index");
         }
 
-        [AuthFilter]
-        public ActionResult Dashboard()
-        {
-            return View();
-        }
     }
 }

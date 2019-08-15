@@ -11,7 +11,7 @@ namespace WebApplication1.Models
         Approved,
         Rejected,
         Cancelled,
-        Delivered,
+        FullyDelivered,
         PartiallyDelivered,
     }
 

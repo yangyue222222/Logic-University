@@ -42,36 +42,36 @@ namespace WebApplication1.Controllers
             return View("Index");
         }
 
-        [HttpPost]
+        [HttpPost, Route("delegate/representative")]
         public ActionResult Representative(int representativeId)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
             DepartmentDao.UpdateDepartmentRepresentative(representativeId,departmentId);
-            return RedirectToAction("Index");
+            return RedirectToAction("Delegate");
         }
 
-        [HttpPost]
+        [HttpPost, Route("delegate/pickuppoint")]
         public ActionResult PickupPoint(int pickupPointId)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
             DepartmentDao.UpdatePickUpPoint(departmentId, pickupPointId);
-            return RedirectToAction("Index");
+            return RedirectToAction("Delegate");
         }
 
 
 
         [HttpGet,Route("delegateauthority")]
-        public ActionResult DelegateAuthority(int delegateAuthority, int userId) {
+        public ActionResult DelegateAuthority(int delegateAuthority, int employeeId) {
             //1 means assign
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
             if (delegateAuthority == 1)
             {
-                DepartmentDao.AssignTemporaryHead(departmentId, userId);
+                DepartmentDao.AssignTemporaryHead(departmentId, employeeId);
             }
             //2 means cancel
             else if (delegateAuthority == 2)
             {
-                DepartmentDao.CancelTemporaryHead(departmentId, userId);
+                DepartmentDao.CancelTemporaryHead(departmentId, employeeId);
             }
 
             return RedirectToAction("Delegate");

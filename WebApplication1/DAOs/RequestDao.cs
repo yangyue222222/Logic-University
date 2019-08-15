@@ -237,7 +237,7 @@ namespace WebApplication1.DAOs
             using(var ctx = new UniDBContext())
             {
                 IQueryable<Request> query = ctx.Requests.Include("Requestor").Include("RequestDetails").Include("ApprovedBy").Include("Department").Include("RequestDetails.Item");
-                if(u.Rank == (int)UserRank.Clerk)
+                if(u.Rank == (int)UserRank.Clerk || u.Rank == (int)UserRank.Supervisor || u.Rank == (int)UserRank.Manager)
                 {
                     query = query.Where(r => r.RequestId == requestId);
                 }
@@ -296,11 +296,23 @@ namespace WebApplication1.DAOs
                     req.Status = (int)RequestStatus.PartiallyDelivered;
                 }else
                 {
-                    req.Status = (int)RequestStatus.Delivered;
+                    req.Status = (int)RequestStatus.FullyDelivered;
                 }
                 req.DisbursementStatus = (int)RequestRetrievalStatus.NotPrepared;
                 ctx.SaveChanges();
 
+            }
+        }
+
+        public static List<Request> GetUnFulfilledRequests()
+        {
+            using(var ctx = new UniDBContext())
+            {
+                List<Request> requests = ctx.Requests.Include("Department")
+                    .Where(r => r.Status == (int)RequestStatus.Approved || r.Status == (int)RequestStatus.PartiallyDelivered)
+                    .ToList();
+
+                return requests;
             }
         }
 

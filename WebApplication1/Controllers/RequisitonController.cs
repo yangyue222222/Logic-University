@@ -14,7 +14,18 @@ namespace WebApplication1.Controllers
     [AuthFilter]
     public class RequisitionController : Controller
     {
-        [HttpPost]
+
+        [HttpGet, Route("requestitems", Name = "requestitems")]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee)]
+        public ActionResult Index()
+        {
+            Dictionary<string, List<Item>> items = ItemDao.getItemsForRequisition();
+
+            ViewData["Items"] = items;
+            return View();
+        }
+
+        [HttpPost, Route("requestitems")]
         [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee)]
         public ActionResult Index(List<Item> items)
         {
@@ -59,17 +70,9 @@ namespace WebApplication1.Controllers
 
 
         }
-        [HttpGet]
-        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee)]
-        public ActionResult Index()
-        {
-            Dictionary<string, List<Item>> items = ItemDao.getItemsForRequisition();
-
-            ViewData["Items"] = items;
-            return View();
-        }
-
-        [HttpGet]
+        
+        //dept head gets pending requisitions to approve
+        [HttpGet,Route("pendingrequisitions",Name = "pendingrequisitions")]
         [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead)]
         public ActionResult PendingRequisitions()
         {
@@ -82,6 +85,7 @@ namespace WebApplication1.Controllers
             return View("PendingRequisitions");
         }
 
+        //get single pending requisition
         [Route("Requisitions/{id}"), HttpGet]
         [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead)]
         public JsonResult RequisitionById(int id)
@@ -92,6 +96,7 @@ namespace WebApplication1.Controllers
             return Json(requestDetails, JsonRequestBehavior.AllowGet);
         }
 
+        //approve single requisition
         [Route("Requisitions/{id}"), HttpPost]
         [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead)]
         public ActionResult ApproveRequisition(int id, string status)
@@ -125,6 +130,7 @@ namespace WebApplication1.Controllers
             return RedirectToAction("PendingRequisitions");
         }
 
+        //get own requisitions history
         [HttpGet,Route("myrequisitions",Name = "myrequisitions")]
         [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee)]
         public ActionResult MyRequisitions()
@@ -147,6 +153,7 @@ namespace WebApplication1.Controllers
             return View();
         }
 
+        //get detail of request by all roles
         [HttpGet,Route("myrequisitions/{requestId}")]
         [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee,(int)UserRank.Manager,(int)UserRank.Supervisor,(int)UserRank.Clerk)]
         public ActionResult GetMyRequisition(int requestId)
@@ -202,7 +209,16 @@ namespace WebApplication1.Controllers
             return RedirectToAction("MyRequisitions");
         }
 
-        
+        [HttpGet, Route("outstandingrequests", Name = "outstandingrequests")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
+        public ActionResult GetOutStandingRequest()
+        {
+            List<Request> requests = RequestDao.GetUnFulfilledRequests();
+            ViewData["Requests"] = requests;
+            return View("UnFulfilledRequests");
+        }
+
+
     }
 
 }

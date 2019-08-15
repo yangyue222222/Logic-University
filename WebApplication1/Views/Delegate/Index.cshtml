@@ -87,11 +87,11 @@
                             <td>@Enum.GetName(typeof(UserRank), e.Rank)</td>
                             @if (e.Rank != (int)UserRank.TemporaryHead)
                             {
-                                <td><a href="http://localhost:50271/delegateauthority?delegateAuthority=1&userId=@e.UserId">Assign</a></td>
+                                <td><a href="http://localhost:50271/delegateauthority?delegateAuthority=1&employeeId=@e.UserId">Assign</a></td>
                             }
                             else
                             {
-                                <td><a href="http://localhost:50271/delegateauthority?delegateAuthority=2&userId=@e.UserId">Cancel</a></td>
+                                <td><a href="http://localhost:50271/delegateauthority?delegateAuthority=2&employeeId=@e.UserId">Cancel</a></td>
                             }
                             <td>@(e.Rank == (int)UserRank.TemporaryHead ? "Active" : "-")</td>
                         </tr>

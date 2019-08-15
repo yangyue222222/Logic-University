@@ -14,7 +14,7 @@ namespace WebApplication1.Controllers
     [AuthorizeFilter((int)UserRank.Clerk)]
     public class StationeryController : Controller
     {
-        [HttpGet]
+        [HttpGet,Route("itemretrieval",Name = "itemretrieval")]
         public ActionResult Retrieval()
         {
             List<RetrievalItem> items = DisbursementDao.GetAllItemsForRetrieval();

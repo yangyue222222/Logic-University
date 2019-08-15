@@ -1,0 +1,38 @@
+﻿@using WebApplication1.Models
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    ViewBag.Title = "Unfulfilled Requests";
+    List<Request> reqs = (List<Request>)ViewData["Requests"];
+}
+
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>Department</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ 
+                    if(reqs != null && reqs.Count > 0)
+                    {
+                        foreach(var r in reqs)
+                        {
+                            <tr>
+                                <td>@r.Department.DepartmentName</td>
+                                <td>@r.Date.ToString("dd/MM/yyyy")</td>
+                                <td>@Enum.GetName(typeof(RequestStatus),r.Status)</td>
+                                <td><a href="http://localhost:50271/myrequisitions/@r.RequestId">View Detail</a></td>
+                            </tr>
+                        }
+                    }
+                }
+                
+            </tbody>
+        </table>
+    </div>
+</div>
