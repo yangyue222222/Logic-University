@@ -56,7 +56,7 @@
                 }
             }
 
-            <a class="item" href="@Url.Action("History", "Department")">
+            <a class="item @(pgName == "GetHistoricalRequisitions" ? "activeLink" : "")" href="@Url.RouteUrl("history")">
                 <span>History</span>
                 <i class="file alternate icon"></i>
             </a>

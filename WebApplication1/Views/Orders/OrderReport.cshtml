@@ -35,8 +35,8 @@
 </div>
 
 <script>
-    var supplierDropdown = document.getElementById("supplier-dropdown")
-    var monthDropdown = document.getElementById("month-dropdown")
+    var supplierDropdown = document.getElementById("supplier-dropdown");
+    var monthDropdown = document.getElementById("month-dropdown");
     function GetOrders() {
         var supplier = supplierDropdown.value;
         var month = monthDropdown.value;
@@ -55,20 +55,22 @@
         }
     }
     function noDataFound() {
-        var div = document.getElementById("table-div")
+        var div = document.getElementById("table-div");
         var monthName = monthDropdown.options[monthDropdown.selectedIndex].innerHTML;
         div.innerHTML = `No completed orders found for ${monthName}.`
     }
 
     function GenerateTable(data) {
-        var div = document.getElementById("table-div")
-        var tableText = `<table class="ui celled table"><thead><tr><th>Item Description</th><th>Total Received</th></tr></thead><tbody>`;
+        var total = 0;
+        var div = document.getElementById("table-div");
+        var tableText = `<table class="ui celled table"><thead><tr><th>Item Description</th><th>Total Received</th><th>Cost</th></tr></thead><tbody>`;
         for (var i = 0; i < data.length; i++) {
             console.log(data[i])
-            tableText += `<tr><td>${data[i].Description}</td><td>${data[i].ActualQuantity}</td></tr>`
+            tableText += `<tr><td>${data[i].Description}</td><td>${data[i].Qty}</td><td>${data[i].Qty * data[i].Price}</td></tr>`
+            total = total + data[i].Qty * data[i].Price
         }
 
-        tableText += `</tbody></table><a href="" class="ui primary button">Create Report</a>`
+        tableText += `<tr><td colspan='2'><b>Total Cost</b></td><td><b>${total}</b></td></tr></tbody></table><a href="" class="ui primary button">Create Report</a>`
         div.innerHTML = tableText;
     }
 </script>

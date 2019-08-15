@@ -82,11 +82,11 @@
                 <span>Generate Invoices</span>
                 <i class="icon dollar sign"></i>
             </a>
-            <a class="item @(pgName == "GenerateRequisitionReport" ? "activeLink" : "")" href="@Url.Action("GenerateRequisitionReport", "Requisition")">
+            <a class="item @(pgName == "GenerateRequisitionReport" ? "activeLink" : "")" href="@Url.RouteUrl("reqreport")">
                 <span>Requisition Report</span>
                 <i class="file alternate icon"></i>
             </a>
-            <a class="item @(pgName == "GenerateOrderReport" ? "activeLink" : "")" href="@Url.Action("Reporting", "Orders")">
+            <a class="item @(pgName == "GenerateOrderReport" ? "activeLink" : "")" href="@Url.RouteUrl("orderreport")">
                 <span>Order Report</span>
                 <i class="file alternate icon"></i>
             </a>

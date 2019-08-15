@@ -255,7 +255,7 @@ namespace WebApplication1.DAOs
             }
         }
 
-        public static List<RetrievalItem> GetOrderedItemsByMonth(int month, int supplierId)
+        public static List<object> GetOrderedItemsByMonth(int month, int supplierId)
         {
             try
             {
@@ -289,23 +289,24 @@ namespace WebApplication1.DAOs
 
                     List<int> itemIds = itemInfo.Keys.ToList();
                     Dictionary<int, Item> stockDict = ctx.Items.Where(i => itemIds.Contains(i.ItemId)).ToDictionary(i => i.ItemId);
-                    List<RetrievalItem> retrievalItems = new List<RetrievalItem>();
+                    List<object> orderlist = new List<object>();
                     foreach (var itemId in itemIds)
                     {
                         int requestedNumber = itemInfo[itemId];
                         Item i = stockDict[itemId];
 
-                        RetrievalItem retrieval = new RetrievalItem()
+                        object orderitem = new 
                         {
-                            ActualQuantity = requestedNumber,
                             Description = i.Description,
+                            Qty = requestedNumber,
                             ItemId = i.ItemId,
+                            Price = i.Price,
                         };
 
-                        retrievalItems.Add(retrieval);
+                        orderlist.Add(orderitem);
 
                     }
-                    return retrievalItems;
+                    return orderlist;
                 }
             }
             catch (Exception e)

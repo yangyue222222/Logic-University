@@ -352,20 +352,9 @@ namespace WebApplication1.DAOs
                             }
                         }
                     }
-            }
-        }
 
-        public static List<Request> GetUnFulfilledRequests()
-        {
-            using(var ctx = new UniDBContext())
-            {
-                List<Request> requests = ctx.Requests.Include("Department")
-                    .Where(r => r.Status == (int)RequestStatus.Approved || r.Status == (int)RequestStatus.PartiallyDelivered)
-                    .ToList();
 
-                return requests;
-            }
-        }
+        
 
                     List<int> itemIds = itemInfo.Keys.ToList();
                     Dictionary<int, Item> stockDict = ctx.Items.Where(i => itemIds.Contains(i.ItemId)).ToDictionary(i => i.ItemId);
@@ -391,6 +380,17 @@ namespace WebApplication1.DAOs
             catch (Exception e)
             {
                 return null;
+            }
+        }
+        public static List<Request> GetUnFulfilledRequests()
+        {
+            using (var ctx = new UniDBContext())
+            {
+                List<Request> requests = ctx.Requests.Include("Department")
+                    .Where(r => r.Status == (int)RequestStatus.Approved || r.Status == (int)RequestStatus.PartiallyDelivered)
+                    .ToList();
+
+                return requests;
             }
         }
     }

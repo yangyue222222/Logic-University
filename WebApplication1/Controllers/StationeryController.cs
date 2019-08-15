@@ -14,7 +14,6 @@ namespace WebApplication1.Controllers
     [AuthorizeFilter((int)UserRank.Clerk)]
     public class StationeryController : Controller
     {
-        [HttpGet]
         [AuthorizeFilter((int)UserRank.Clerk)]
         [HttpGet,Route("itemretrieval",Name = "itemretrieval")]
         public ActionResult Retrieval()

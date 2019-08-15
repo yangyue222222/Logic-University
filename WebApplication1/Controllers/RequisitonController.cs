@@ -89,6 +89,7 @@ namespace WebApplication1.Controllers
             ViewData["History"] = history;
             return View("RequisitionHistory");
         }
+        [HttpGet, Route("reqreport", Name = "reqreport")]
         public ActionResult GenerateRequisitionReport()
         {
             List<Department> departments = DepartmentDao.GetAllDepartments();
@@ -122,7 +123,7 @@ namespace WebApplication1.Controllers
 
         //get single pending requisition
         [Route("Requisitions/{id}"), HttpGet]
-        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead)]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee)]
         public JsonResult RequisitionById(int id)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);

@@ -182,7 +182,7 @@ namespace WebApplication1.Controllers
             OrderDao.UpdateOrderStatus(order);
             return RedirectToAction("PendingOrders");
         }
-        [HttpGet, Route("orders/reporting")]
+        [HttpGet, Route("orderreport", Name = "orderreport")]
         public ActionResult GenerateOrderReport()
         {
             List<Supplier> suppliers = SupplierDao.GetSuppliers();
@@ -199,7 +199,7 @@ namespace WebApplication1.Controllers
         public ActionResult GetOrdersByMonth(int month, int supplierId)
         {
 
-            List<RetrievalItem> monthlyorders = OrderDao.GetOrderedItemsByMonth(month, supplierId);
+            List<object> monthlyorders = OrderDao.GetOrderedItemsByMonth(month, supplierId);
             return Json(new { results = monthlyorders }, JsonRequestBehavior.AllowGet);
         }
     }
