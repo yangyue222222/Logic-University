@@ -11,10 +11,12 @@ using WebApplication1.Filters;
 namespace WebApplication1.Controllers
 {
     [AuthFilter]
+    [AuthorizeFilter((int)UserRank.Clerk)]
     public class StationeryController : Controller
     {
         [HttpGet]
         [AuthorizeFilter((int)UserRank.Clerk)]
+        [HttpGet,Route("itemretrieval",Name = "itemretrieval")]
         public ActionResult Retrieval()
         {
             List<RetrievalItem> items = DisbursementDao.GetAllItemsForRetrieval();
@@ -50,7 +52,7 @@ namespace WebApplication1.Controllers
         //    return View();
         //}
 
-
+        
         //public JsonResult GetRequestDetails(int sortBy)
         //{
         //    Debug.WriteLine("Request Details");

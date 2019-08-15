@@ -8,10 +8,10 @@
     <div class="four wide computer column" id="sidebar">
         <div class="ui secondary vertical pointing fluid menu">
 
-            <a class="item @(pgName == "Dashboard" ? "activeLink" : "")" href="@Url.Action("Dashboard", "Auth")">
+            @*<a class="item @(pgName == "Dashboard" ? "activeLink" : "")" href="@Url.Action("Dashboard", "Auth")">
                 <span>Dashboard</span>
                 <i class="icon dashcube"></i>
-            </a>
+            </a>*@
 
             <a class="item  @(pgName == "Index" ? "activeLink" : "")" href="@Url.RouteUrl("orderitems")">
                 <span>Order Items</span>
@@ -23,6 +23,11 @@
                     <a class="item  @(pgName == "PendingOrders" ? "activeLink" : "")" href="@Url.RouteUrl("PendingOrders")">
                         <span>Pending Orders</span>
                         <i class="icon clone outline"></i>
+                    </a>
+
+                    <a class="item @(pgName == "PendingAdjustments" ? "activeLink" : "")" href="@Url.RouteUrl("adjustments")">
+                        <span>Adjustments</span>
+                        <i class="briefcase icon"></i>
                     </a>
                 }
             }
@@ -60,21 +65,15 @@
                 <span>Make Adjustments</span>
                 <i class="briefcase icon"></i>
             </a>
-            @{
-                if (rank == (int)UserRank.Manager || rank == (int)UserRank.Supervisor)
-                {
-                    <a class="item @(pgName == "PendingAdjustments" ? "activeLink" : "")" href="@Url.RouteUrl("adjustments")">
-                        <span>Adjustments</span>
-                        <i class="briefcase icon"></i>
-                    </a>
-                }
-            }
+
+
+
             <a class="item @(pgName == "GetAdjustmentsByClerk" ? "activeLink" : "")" href="@Url.RouteUrl("myadjustments")">
                 <span>My Adjustments</span>
                 <i class="briefcase icon"></i>
             </a>
 
-            <a class="item @(pgName == "Retrieval" ? "activeLink" : "")" href="@Url.Action("Retrieval", "Stationery")">
+            <a class="item @(pgName == "Retrieval" ? "activeLink" : "")" href="@Url.RouteUrl("itemretrieval")">
                 <span>Item Retrievals</span>
                 <i class="file alternate icon"></i>
             </a>
@@ -91,6 +90,12 @@
                 <span>Order Report</span>
                 <i class="file alternate icon"></i>
             </a>
+
+            <a class="item  @(pgName == "GetOutStandingRequest" ? "activeLink" : "")" href="@Url.RouteUrl("outstandingrequests")">
+                <span>Outstanding Requests</span>
+                <i class="file alternate icon"></i>
+            </a>
+
 
         </div>
     </div>

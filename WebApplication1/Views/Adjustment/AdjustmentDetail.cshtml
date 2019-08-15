@@ -3,6 +3,7 @@
 @{
     Layout = "~/Views/Shared/_StoreLayout.cshtml";
     Adjustment ad = (Adjustment)ViewData["Adjustment"];
+    var rank = (int)ViewData["rank"];
 }
 
 
@@ -69,15 +70,21 @@
         </div>
         @if (ViewData["MyAdjustment"] != null)
         {
-            <div class="sixteen wide tablet column">
-                <form id="form-request" method="post" action="http://localhost:50271/adjustments/@ad.AdjustmentId">
-                    <div class="ui grid">
-                        <div class="sixteen wide tablet right aligned column">
-                            <button type="submit" class="ui positive button">Checked</button>
+        <div class="sixteen wide tablet column">
+            @{
+                if (rank == (int)UserRank.Manager || rank == (int)UserRank.Supervisor)
+                {
+                    <form id="form-request" method="post" action="http://localhost:50271/adjustments/@ad.AdjustmentId">
+                        <div class="ui grid">
+                            <div class="sixteen wide tablet right aligned column">
+                                <button type="submit" class="ui positive button">Checked</button>
+                            </div>
                         </div>
-                    </div>
-                </form>
-            </div>
+                    </form>
+                }
+            }
+
+        </div>
         }
 
     </div>

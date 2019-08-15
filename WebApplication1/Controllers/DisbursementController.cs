@@ -135,7 +135,7 @@ namespace WebApplication1.Controllers
 
 
         //retrieving and preparing for delivery
-        [HttpPost]
+        [HttpPost, Route("disbursement/disbursements")]
         [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult Disbursements(List<RetrievalItem> items)
         {
@@ -226,12 +226,12 @@ namespace WebApplication1.Controllers
             return Json(new {results = data },JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet, Route("generateinvoice")]
-        public ActionResult GenerateInvoice(int departmentId, int month)
-        {
+        [HttpGet,Route("generateinvoice")]
+        public ActionResult GenerateInvoice(int requestedDepartmentId, int month) {
             try
             {
-                DisbursementDao.GenerateInvoiceByDepartmentAndMonth(departmentId, month);
+                Debug.WriteLine("Department Id is " + requestedDepartmentId);
+                DisbursementDao.GenerateInvoiceByDepartmentAndMonth(requestedDepartmentId, month);
                 return RedirectToAction("GenerateInvoices");
             }
             catch (Exception e)
@@ -260,8 +260,8 @@ namespace WebApplication1.Controllers
             return View("DepartmentDisbursementDetail");
         }
 
-        [HttpGet,Route("prepareddisbursements", Name = "prepareddisbursements")]
-        [AuthorizeFilter((int)UserRank.Employee, (int)UserRank.Head)]
+        [HttpGet,Route("prepareddisbursements",Name = "prepareddisbursements")]
+        [AuthorizeFilter((int)UserRank.Employee,(int)UserRank.Head)]
         public ActionResult GetPreparedDisbursementsByDepartment()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -269,14 +269,13 @@ namespace WebApplication1.Controllers
             List<Disbursement> disbursements = DisbursementDao.GetPreparedDisbursements(departmentId, userId);
             ViewData["Disbursements"] = disbursements;
             return View("PickUpDisbursements");
-
+            
         }
 
 
         //approved disbursements for invoice
-
         [HttpGet, Route("approveddisbursements/{disbursementId}")]
-        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
+        [AuthorizeFilter((int)UserRank.Manager,(int)UserRank.Supervisor,(int)UserRank.Clerk)]
         public ActionResult ApprovedDisbursements(int disbursementId)
         {
             Disbursement d = DisbursementDao.GetDisbursementDetailById(disbursementId);

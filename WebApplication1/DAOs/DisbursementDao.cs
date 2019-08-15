@@ -359,8 +359,7 @@ namespace WebApplication1.DAOs
             {
                 List<Disbursement> disbursements = ctx.Disbursements.Include("Department").Include("DisbursementDetails").Include("DisbursementDetails.Item")
                     .Include("Department.PickupPoint").Include("Department.Representative")
-                    .Where(d => d.Department.DepartmentId == departmentId && d.Department.Representative != null)
-                    .Where(d => d.Status == (int)DisbursementStatus.Prepared)
+                    .Where(d => d.Department.DepartmentId == departmentId && d.Status == (int)DisbursementStatus.Prepared && d.Department.Representative != null)
                     .Where(d => d.Department.Representative.UserId == userId).ToList();
 
                 return disbursements;
@@ -386,9 +385,8 @@ namespace WebApplication1.DAOs
             using(var ctx = new UniDBContext())
             {
                 Disbursement disbursement = ctx.Disbursements.Include("Department").Include("Department.Representative").Include("DisbursementDetails").Include("DisbursementDetails.Item")
-                    .Include("Request")
+                    .Include("Request").Include("Department.PickupPoint")
                     .Where(d => d.Status == (int)DisbursementStatus.Prepared && d.DisbursementId == id).SingleOrDefault();
-                Debug.WriteLine("Delivery Department {0}", disbursement.Department.DepartmentName);
                 return disbursement;
             }
         }
@@ -474,7 +472,7 @@ namespace WebApplication1.DAOs
             using(var ctx = new UniDBContext())
             {
                 List<Disbursement> disbursements = ctx.Disbursements.Include("Department")
-                    .Where(d => d.Department.DepartmentId == departmentId && d.Date.Year == DateTime.Now.Year && d.Date.Month == month && d.Status == (int)DisbursementStatus.Delivered)
+                    .Where(d => d.Department.DepartmentId == departmentId && d.Date.Year == DateTime.Now.Year && d.Date.Month == month && d.Status == (int)DisbursementStatus.Approved)
                     .ToList();
 
                 if(disbursements != null)
@@ -482,7 +480,9 @@ namespace WebApplication1.DAOs
                     foreach(var d in disbursements)
                     {
                         d.Status = (int)DisbursementStatus.InvoiceGenerated;
+                        Debug.WriteLine("Status is " + Enum.GetName(typeof(DisbursementStatus), d.Status));
                     }
+
                     ctx.SaveChanges();
                 }
             }

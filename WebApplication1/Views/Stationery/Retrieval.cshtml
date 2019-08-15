@@ -75,8 +75,8 @@
     </div>
     <div class="content">
         <p>
-            Since there is at least mistmatch between allocated quantity and actual quantity,submitting this form will automatically create Adjustment.
-            Would you like to continue?
+            Since, requested quantities and collected quantities are mismatched, submitting this form will automatically generate adjustments for mismatched items.
+            Are your sure to continue?
         </p>
     </div>
     <div class="actions">
@@ -108,8 +108,8 @@
         var mismatch = false;
         var overInput = false;
         for (var i = 0; i < keys.length; i++) {
-            var actualInputAmount = Number($(`#${keys[i]}`).val());
-            var allocatedAmount = Number(itemInfo[keys[i]]);
+            var actualInputAmount = Math.round(Number($(`#${keys[i]}`).val()));
+            var allocatedAmount = Math.round(Number(itemInfo[keys[i]]));
             if (actualInputAmount < allocatedAmount) {
                 mismatch = true;
                 break;

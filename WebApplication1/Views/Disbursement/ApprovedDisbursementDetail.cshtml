@@ -20,7 +20,9 @@
                     <thead>
                         <tr>
                             <th>Item Description</th>
+                            <th>Price</th>
                             <th>Quantity</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -28,10 +30,15 @@
                         {
                             <tr>
                                 <td>@dd.Item.Description</td>
+                                <td>@dd.Item.Price</td>
                                 <td>@dd.Quantity</td>
+                                <td>@(@dd.Item.Price*dd.Quantity)</td>
                             </tr>
                         }
-                        
+                        <tr>
+                            <td colspan="3" style="text-align : right">SUBTOTAL</td>
+                            <td>@disbursement.DisbursementDetails.Sum(dd => (dd.Quantity * dd.Item.Price))</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
