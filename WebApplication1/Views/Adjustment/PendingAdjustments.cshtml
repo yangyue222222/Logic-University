@@ -1,0 +1,40 @@
+﻿@using WebApplication1.Models
+
+@{
+    ViewBag.Title = "Pending Adjustments";
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+}
+
+<div class="sixteen wide tablet twelve wide computer column">
+    <h5 class="ui header">Adjustments</h5>
+    <table class="ui celled table">
+        <thead>
+            <tr>
+
+                <th>Raised By</th>
+                <th>Raised Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Option</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (ViewData["Adjustments"] != null)
+                {
+                    foreach (var ad in (List<Adjustment>)ViewData["Adjustments"])
+                    {
+                        <tr>
+                           
+                            <td>@ad.Requestor.Name</td>
+                            <td>@ad.RaisedTime.ToString("dd/MM/yyyy")</td>
+                            <td>$@ad.Total</td>
+                            <td>@Enum.GetName(typeof(AdjustmentStatus), ad.Status)</td>
+                            <td><a class="ui basic primary outline button" href="http://localhost:50271/adjustments/@ad.AdjustmentId">View Detail</a></td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>

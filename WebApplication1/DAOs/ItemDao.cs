@@ -50,8 +50,17 @@ namespace WebApplication1.DAOs
         {
             using(var ctx = new UniDBContext())
             {
-                List<Item> items = ctx.Items.ToList();
+                List<Item> items = ctx.Items.OrderBy(i => i.Quantity).ToList();
                 return items;
+            }
+        }
+
+        public static List<string> GetCategoryNames()
+        {
+            using(var ctx = new UniDBContext())
+            {
+                List<string> categories = ctx.Items.Select(i => i.Category).Distinct().ToList();
+                return categories;
             }
         }
 

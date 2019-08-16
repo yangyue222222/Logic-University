@@ -70,7 +70,7 @@ namespace WebApplication1.Controllers
 
         [HttpGet, Route("adjustments", Name = "adjustments")]
         [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor)]
-        public ActionResult PendingAdjustments()
+        public ActionResult GetAllAdjustments()
         {
             int rank = Convert.ToInt32(RouteData.Values["rank"]);
             List<Adjustment> adjustments = AdjustmentDao.GetAllAdjustments(rank);
@@ -99,7 +99,7 @@ namespace WebApplication1.Controllers
                 UserId = userId
             };
             AdjustmentDao.UpdateAdjustmentStatus(adjustmentId,u);
-            return RedirectToAction("PendingAdjustments");
+            return RedirectToAction("GetPendingAdjustments");
         }
 
         [HttpGet, Route("myadjustments",Name = "myadjustments")]
@@ -127,6 +127,16 @@ namespace WebApplication1.Controllers
             //reuse the view for storemanager and storesupervisor
             
             return View("AdjustmentDetail");
+        }
+
+        [HttpGet, Route("pendingadjustments", Name = "pendingadjustments")]
+        [AuthorizeFilter( (int)UserRank.Manager,(int)UserRank.Supervisor)]
+        public ActionResult GetPendingAdjustments()
+        {
+            int userId = Convert.ToInt32(RouteData.Values["userId"]);
+            List<Adjustment> adjustments = AdjustmentDao.GetAllPendingAdjustments(userId);
+            ViewData["Adjustments"] = adjustments;
+            return View("PendingAdjustments");
         }
     }
 }

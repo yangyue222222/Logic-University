@@ -9,9 +9,9 @@
         <div class="ui secondary vertical pointing fluid menu">
 
             @*<a class="item @(pgName == "Dashboard" ? "activeLink" : "")" href="@Url.Action("Dashboard", "Auth")">
-                <span>Dashboard</span>
-                <i class="icon dashcube"></i>
-            </a>*@
+            <span>Dashboard</span>
+            <i class="icon dashcube"></i>
+        </a>*@
 
             <a class="item  @(pgName == "Index" ? "activeLink" : "")" href="@Url.RouteUrl("orderitems")">
                 <span>Order Items</span>
@@ -25,10 +25,16 @@
                         <i class="icon clone outline"></i>
                     </a>
 
-                    <a class="item @(pgName == "PendingAdjustments" ? "activeLink" : "")" href="@Url.RouteUrl("adjustments")">
+                    <a class="item @(pgName == "GetAllAdjustments" ? "activeLink" : "")" href="@Url.RouteUrl("adjustments")">
                         <span>Adjustments</span>
                         <i class="briefcase icon"></i>
                     </a>
+
+                    <a class="item @(pgName == "GetPendingAdjustments" ? "activeLink" : "")" href="@Url.RouteUrl("pendingadjustments")">
+                        <span>Pending Adjustments</span>
+                        <i class="briefcase icon"></i>
+                    </a>
+
                 }
             }
 
@@ -93,6 +99,11 @@
 
             <a class="item  @(pgName == "GetOutStandingRequest" ? "activeLink" : "")" href="@Url.RouteUrl("outstandingrequests")">
                 <span>Outstanding Requests</span>
+                <i class="file alternate icon"></i>
+            </a>
+
+            <a class="item  @(pgName == "GetTrendPage" ? "activeLink" : "")" href="@Url.RouteUrl("TrendAnalysis")">
+                <span>Trend Analysis</span>
                 <i class="file alternate icon"></i>
             </a>
 

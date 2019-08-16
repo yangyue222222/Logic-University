@@ -46,8 +46,9 @@
         <table class="ui celled table">
             <thead>
                 <tr>
-                    <th style="background-color:#f2f2f2;">Name</th>
-                    <th style="background-color:#f2f2f2;">Qty</th>
+                    <th>Name</th>
+                    <th>Requested Qty</th>
+                    <th>Delivered Qty</th>
                 </tr>
             </thead>
             <tbody id="tBody"></tbody>
@@ -70,10 +71,10 @@
             contentType: 'application/json',
             xhrFields: { withCredentials: true },
             success: function (data, textStatus, xhr) {
-
+                console.log(data)
                 var rowsString = "";
                 for (var i = 0; i < data.length; i++) {
-                    rowsString += `<tr><td>${data[i].Item.Description}</td><td>${data[i].Quantity}</td></tr>`
+                    rowsString += `<tr><td>${data[i].Item.Description}</td><td>${data[i].Quantity}</td><td>${data[i].DeliveredQuantity}</td></tr>`
                 }
                 tBody.innerHTML = rowsString;
                 modal.modal('show');

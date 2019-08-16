@@ -106,5 +106,36 @@ namespace WebApplication1.DAOs
             }
         }
 
+        public static List<Adjustment> GetAllPendingAdjustments(int userId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                User user = ctx.Users.
+                    Where(u => u.UserId == userId && (u.Rank == (int)UserRank.Manager || u.Rank == (int)UserRank.Supervisor))
+                    .SingleOrDefault();
+                if(user != null)
+                {
+                    IQueryable<Adjustment> adjustQuery = null;
+                    List<Adjustment> adjustments = null;
+                    switch (user.Rank)
+                    {
+                        case (int)UserRank.Manager:
+                            adjustQuery = ctx.Adjustments.Include("Requestor")
+                                .Where(ad => ad.Total >= 250 && ad.Status == (int)AdjustmentStatus.Raised);
+                                break;
+                        case (int)UserRank.Supervisor:
+                            adjustQuery = ctx.Adjustments.Include("Requestor")
+                                .Where(ad => ad.Total > 0 && ad.Total < 250 && ad.Status == (int)AdjustmentStatus.Raised);
+                                break;
+                    }
+
+                    adjustments = adjustQuery.OrderByDescending(ad => ad.AdjustmentId).ToList();
+                    return adjustments;
+                }
+
+                return null;
+            }
+        }
+
     }
 }

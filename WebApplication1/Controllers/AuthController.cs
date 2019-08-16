@@ -49,6 +49,10 @@ namespace WebApplication1.App_Start
                             result = RedirectToRoute("pendingorders");
                             break;
 
+                        case (int)UserRank.TemporaryHead:
+                            result = RedirectToRoute("requestitems");
+                            break;
+
                         case (int)UserRank.Employee:
                             result = RedirectToRoute("requestitems");
                             break;
@@ -107,6 +111,10 @@ namespace WebApplication1.App_Start
 
                     case (int)UserRank.Supervisor:
                         result = RedirectToRoute("PendingOrders");
+                        break;
+
+                    case (int)UserRank.TemporaryHead:
+                        result = RedirectToRoute("requestitems");
                         break;
 
                     case (int)UserRank.Employee:

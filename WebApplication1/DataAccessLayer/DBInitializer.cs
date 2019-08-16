@@ -70,6 +70,11 @@ namespace WebApplication1.DataAccessLayer
                 d.PickupPoint = pick;
             }
 
+            User csE1 = context.Users.Include("Department").Where(us => us.Username == "cse1").SingleOrDefault();
+            Department csDep = csE1.Department;
+            csDep.Representative = csE1;
+
+
             context.SaveChanges();
 
 

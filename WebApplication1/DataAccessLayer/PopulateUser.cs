@@ -95,7 +95,7 @@ namespace WebApplication1.DataAccessLayer
 
             User storeSupervisor = new User()
             {
-                Name = "Store Clerk",
+                Name = "Store Supervisor",
                 Username = "storesupervisor",
                 Password = "storesupervisor",
                 Rank = (int)UserRank.Supervisor
