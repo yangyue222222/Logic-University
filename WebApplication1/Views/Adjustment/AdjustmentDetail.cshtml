@@ -68,24 +68,21 @@
                 </tfoot>
             </table>
         </div>
-        @if (ViewData["MyAdjustment"] != null)
-        {
-        <div class="sixteen wide tablet column">
-            @{
-                if (rank == (int)UserRank.Manager || rank == (int)UserRank.Supervisor)
-                {
-                    <form id="form-request" method="post" action="http://localhost:50271/adjustments/@ad.AdjustmentId">
-                        <div class="ui grid">
-                            <div class="sixteen wide tablet right aligned column">
-                                <button type="submit" class="ui positive button">Checked</button>
-                            </div>
-                        </div>
-                    </form>
-                }
-            }
+            <div class="sixteen wide tablet column">
 
-        </div>
-        }
+                @{
+                    if ((rank == (int)UserRank.Manager || rank == (int)UserRank.Supervisor) && ad.Status != (int)AdjustmentStatus.Approved)
+                    {
+                        <form id="form-request" method="post" action="http://localhost:50271/adjustments/@ad.AdjustmentId">
+                            <div class="ui grid">
+                                <div class="sixteen wide tablet right aligned column">
+                                    <button type="submit" class="ui positive button">Checked</button>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                }
+            </div>
 
     </div>
 </div>

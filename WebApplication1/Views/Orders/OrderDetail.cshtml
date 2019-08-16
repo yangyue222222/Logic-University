@@ -32,7 +32,7 @@
             <tbody>
                 @foreach (var od in o.OrderDetails)
                 {
-                    var total = od.Item.Price * od.OrderQuantity;
+                    var total = od.Item.Price * (od.DeliveredQuantity == 0 ? od.OrderQuantity : od.DeliveredQuantity);
                     subtotal += total;
                     <tr>
                         <td>@od.Item.Description</td>

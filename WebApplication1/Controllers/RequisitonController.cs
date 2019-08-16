@@ -87,7 +87,7 @@ namespace WebApplication1.Controllers
 
         //get single pending requisition
         [Route("Requisitions/{id}"), HttpGet]
-        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead)]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee)]
         public JsonResult RequisitionById(int id)
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -216,6 +216,48 @@ namespace WebApplication1.Controllers
             List<Request> requests = RequestDao.GetUnFulfilledRequests();
             ViewData["Requests"] = requests;
             return View("UnFulfilledRequests");
+        }
+
+
+        //YANG Part
+
+        [HttpGet, Route("history", Name = "history")]
+        public ActionResult GetHistoricalRequisitions()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            List<Request> history = RequestDao.getHistoricalRequestsByDepartment(departmentId);
+            ViewData["History"] = history;
+            return View("RequisitionHistory");
+        }
+
+        [Route("requisition/generaterequisitionreport")]
+        public ActionResult GenerateRequisitionReport()
+        {
+            List<Department> departments = DepartmentDao.GetAllDepartments();
+
+            Dictionary<int, string> monthDict = new Dictionary<int, string>();
+            foreach (var i in Enum.GetValues(typeof(Months)))
+            {
+                monthDict.Add((int)i, i.ToString());
+            }
+            ViewData["Departments"] = departments;
+            ViewData["MonthDict"] = monthDict;
+            return View("ReqReport");
+        }
+        [HttpGet, Route("reqhistory")]
+        public ActionResult GetRequisitionByMonth(int deptId, int month)
+        {
+            List<RetrievalItem> reqs = RequestDao.getRequestedItemsByMonth(deptId, month);
+
+            return Json(new { results = reqs }, JsonRequestBehavior.AllowGet);
+        }
+
+
+        public ActionResult PendingMobile()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            List<Request> requests = RequestDao.getRequestsByDepartment(departmentId);
+            return Json(requests, JsonRequestBehavior.AllowGet);
         }
 
 

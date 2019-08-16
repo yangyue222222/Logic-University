@@ -153,6 +153,7 @@
     <Compile Include="Controllers\RequisitonController.cs" />
     <Compile Include="Controllers\StationeryController.cs" />
     <Compile Include="Controllers\StockController.cs" />
+    <Compile Include="Controllers\TrendController.cs" />
     <Compile Include="DAOs\AdjustmentDao.cs" />
     <Compile Include="DAOs\DepartmentDao.cs" />
     <Compile Include="DAOs\DisbursementDao.cs" />
@@ -192,6 +193,8 @@
     <Compile Include="Utilities\TokenUtility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Chart.css" />
+    <Content Include="Content\Chart.js" />
     <Content Include="Content\icon.min.css" />
     <Content Include="Content\jQuery3.1.1.min.js" />
     <Content Include="Content\Lu.png" />
@@ -258,6 +261,9 @@
     <Content Include="Views\Disbursement\PickUpDisbursements.cshtml" />
     <Content Include="Views\Disbursement\ApprovedDisbursementDetail.cshtml" />
     <Content Include="Views\Requisition\UnFulfilledRequests.cshtml" />
+    <Content Include="Views\Requisition\RequisitionHistory.cshtml" />
+    <Content Include="Views\Adjustment\PendingAdjustments.cshtml" />
+    <Content Include="Views\Trend\Chart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

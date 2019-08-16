@@ -63,6 +63,15 @@ namespace WebApplication1.Filters
                                         });
                         break;
 
+                    case (int)UserRank.TemporaryHead:
+                        result = new RedirectToRouteResult(
+                                        new RouteValueDictionary
+                                        {
+                                            { "controller", "Requisition" },
+                                            { "action", "Index" }
+                                        });
+                        break;
+
                     case (int)UserRank.Head:
                         result = new RedirectToRouteResult(
                                         new RouteValueDictionary

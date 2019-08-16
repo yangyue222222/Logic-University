@@ -1,0 +1,113 @@
+﻿
+@using WebApplication1.Models
+@{
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+    ViewBag.Title = "Trend Analysis";
+}
+<script src="~/Content/Chart.js">
+</script>
+<link rel="stylesheet" href="~/Content/Chart.css">
+
+<div class="ui grid">
+    <div class="sixteen wide tablet column">
+        <select class="ui dropdown" id="category-dropdown">
+            @foreach(var i in (List<string>)ViewData["Categories"])
+            {
+                <option value="@i">@i</option>
+            }
+        </select>
+
+        <button class="ui positive button" onclick="fetchAndShow()">Show Trend</button>
+    </div>
+    <div class="sixteen wide tablet column">
+        <canvas id="canvas"></canvas>
+    </div>
+</div>
+
+<script>
+    var colors = ['antiquewhite', 'aqua', 'aquamarine', 'black', 'blue', 'blueviolet', 'brown', 'cadetblue', 'chartreuse', 'cornflowerblue', 'darkcyan', 'darkorange', 'deeppink', 'dodgerblue']
+    var labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    var barchartData = {
+        labels: labels,
+        datasets: [
+        ]
+    }
+    
+    function fetchAndShow() {
+        var chosenCategory = $("#category-dropdown").val();
+        $.ajax({
+            url: 'http://localhost:50271/getstockdata?itemCategory=' + chosenCategory,
+            type: 'GET',
+            contentType: 'application/json',
+            xhrFields: { withCredentials: true },
+            success: function (data, textStatus, xhr) {
+                console.log(data)
+                GenerateChart(data);
+            }
+        })
+    }
+
+    window.onload = function () {
+        var ctx = document.getElementById("canvas").getContext('2d');
+        window.myBar = new Chart(ctx, {
+            type: 'bar',
+            data: barchartData,
+            options: {
+                title: {
+                    display: true,
+                    text: 'Trend Analysis By Item Category'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                    }],
+                    yAxes: [{
+                        stacked: true
+                    }]
+                }
+            }
+        });
+    }
+
+    function GenerateChart(data) {
+        var itemsKeys = Object.keys(data);
+        var datasets = [];
+        for (var i = 0; i < itemsKeys.length; i++) {
+            var label = itemsKeys[i];
+            var backgroundColor = colors[i];
+            var monthlyNumberArray = data[label];
+
+            //month key and qty value
+            var monthlyNumberObj = {};
+            monthlyNumberArray.forEach(d => monthlyNumberObj[d.month] = d.qty);
+
+            var info = [];
+            //loop through, if there is not data for specific month , fill with 0
+            for (var j = 0; j < 12; j++) {
+                if (monthlyNumberObj[j + 1]) {
+                    info.push(monthlyNumberObj[j+1])
+                } else {
+                    info.push(0);
+                }
+            }
+
+            var objToPush = {
+                label: label,
+                backgroundColor: backgroundColor,
+                data: info
+            }
+            datasets.push(objToPush)
+        }
+
+
+        barchartData.datasets = datasets;
+
+        window.myBar.update();
+    }
+    
+</script>

@@ -90,90 +90,6 @@ namespace WebApplication1.DAOs
                     Debug.WriteLine(e.InnerException.Message);
                     Debug.WriteLine(e.InnerException.StackTrace.ToString());
                 }
-
-                
-
-                //var req = ctx.Requests.Include("RequestDetails").Include("RequestDetails.Item").Where(r => r.RequestId == request.RequestId && r.Department.DepartmentId == request.Department.DepartmentId).SingleOrDefault();
-                //req.Status = request.Status;
-                //req.ApprovedBy = request.ApprovedBy;
-                //ctx.Users.Attach(req.ApprovedBy);
-                //ctx.Departments.Attach(request.Department);
-
-                //if(req.Status == (int)RequestStatus.Approved)
-                //{
-                //    //get list of item ids
-                //    Disbursement disbursement = new Disbursement();
-                //    List<int> itemIds = req.RequestDetails.Select(rd => rd.Item.ItemId).ToList();
-                //    List<DisbursementDetail> disbursementDetails = new List<DisbursementDetail>();
-
-                //    //get the current stock items 
-                //    IDictionary<int, Item> itemsDictionary = ctx.Items.Where(i => itemIds.Contains(i.ItemId)).ToDictionary(i => i.ItemId, i => i);
-
-                //    foreach(var rD in req.RequestDetails)
-                //    {
-                //        Item i = itemsDictionary[rD.Item.ItemId];
-                       
-                //        if(i.Quantity != 0) {
-
-                //            if (rD.Quantity > i.Quantity)
-                //            {
-                //                //requested amount is more than current stock
-                //                disbursement.Status = (int)DisbursementStatus.Allocated;
-                //                req.Status = (int)RequestStatus.PartiallyAllocated;
-                //                DisbursementDetail dd = new DisbursementDetail()
-                //                {
-                //                    Item = i,
-                //                    Quantity = i.Quantity
-                //                };
-
-                //                rD.DeliveredQuantity = i.Quantity;
-
-                //                i.Quantity = 0;
-                //                disbursementDetails.Add(dd);
-                //            }
-                //            else
-                //            {
-                //                DisbursementDetail dd = new DisbursementDetail()
-                //                {
-                //                    Item = i,
-                //                    Quantity = rD.Quantity,
-                //                };
-
-                //                rD.DeliveredQuantity = rD.Quantity;
-
-                //                i.Quantity = i.Quantity - rD.Quantity;
-                //                disbursementDetails.Add(dd);
-                //            }
-                //        }
-                        
-                //    }
-
-                //    if (disbursementDetails.Count > 0)
-                //    {
-                //        disbursement.DisbursementDetails = disbursementDetails;
-                //        disbursement.Date = DateTime.Now.AddDays(-1);
-                //        disbursement.Department = request.Department;
-                //        disbursement.Request = req;
-                //        ctx.Disbursements.Add(disbursement);
-                //        ctx.DisbursementDetails.AddRange(disbursementDetails);
-
-                //        if (req.Status != (int)RequestStatus.PartiallyAllocated)
-                //        {
-                //            req.Status = (int)RequestStatus.FullyAllocated;
-                //        }
-                //    }
-                    
-                //}
-                //try
-                //{
-                //    ctx.SaveChanges();
-
-                //}
-                //catch (Exception e)
-                //{
-                //    Debug.WriteLine(e.InnerException.Message);
-                //    Debug.WriteLine(e.InnerException.StackTrace.ToString());
-                //}
             }
         }
 
@@ -313,6 +229,116 @@ namespace WebApplication1.DAOs
                     .ToList();
 
                 return requests;
+            }
+        }
+
+        //YANG Part
+
+        public static List<Request> getHistoricalRequestsByDepartment(int departmentId)
+        {
+            try
+            {
+                using (var ctx = new UniDBContext())
+                {
+                    List<Request> requests = ctx.Requests.Include("Requestor").Where(r => r.Requestor.Department.DepartmentId == departmentId && r.Status != (int)RequestStatus.Requested).ToList();
+
+                    return requests;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        //YANG Part
+
+        public static List<RetrievalItem> getRequestedItemsByMonth(int deptId, int month)
+        {
+            try
+            {
+                using (var ctx = new UniDBContext())
+                {
+                    List<Request> requestList = ctx.Requests.Include("Department").Include("RequestDetails").Include("RequestDetails.Item")
+                        .Where(r => r.Date.Year == DateTime.Now.Year && r.Date.Month == month && r.Status != (int)RequestStatus.Requested && r.Status != (int)RequestStatus.Rejected && r.Status != (int)RequestStatus.Cancelled)
+                        .ToList();
+                    if (deptId != 0)
+                    {
+                        requestList = requestList.Where(r => r.Department.DepartmentId == deptId).ToList();
+                    }
+                    Dictionary<int, int> itemInfo = new Dictionary<int, int>();
+
+                    foreach (var r in requestList)
+                    {
+                        foreach (var rD in r.RequestDetails)
+                        {
+                            var requiredAmount = rD.Quantity;
+                            if (itemInfo.ContainsKey(rD.Item.ItemId))
+                            {
+                                requiredAmount += itemInfo[rD.Item.ItemId];
+                                itemInfo[rD.Item.ItemId] = requiredAmount;
+                            }
+                            else
+                            {
+                                itemInfo.Add(rD.Item.ItemId, requiredAmount);
+                            }
+                        }
+                    }
+
+                    List<int> itemIds = itemInfo.Keys.ToList();
+                    Dictionary<int, Item> stockDict = ctx.Items.Where(i => itemIds.Contains(i.ItemId)).ToDictionary(i => i.ItemId);
+                    List<RetrievalItem> retrievalItems = new List<RetrievalItem>();
+                    foreach (var itemId in itemIds)
+                    {
+                        int requestedNumber = itemInfo[itemId];
+                        Item i = stockDict[itemId];
+
+                        RetrievalItem retrieval = new RetrievalItem()
+                        {
+                            AllocatedQuantity = requestedNumber,
+                            Description = i.Description,
+                            ItemId = i.ItemId,
+                        };
+
+                        retrievalItems.Add(retrieval);
+
+                    }
+                    return retrievalItems;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        //key for item description,
+        //another dict key for month and value for no of items requested 
+        public static Dictionary<string,Dictionary<int,int>> GetRequestedItemNoByCategory(string category)
+        {
+            using (var ctx = new UniDBContext())
+            {
+                //description key ,
+                Dictionary<string, List<RequestDetail>> rDDict = ctx.RequestDetails.Include("Request").Include("Item")
+                    .Where(rd => (rd.Request.Status == (int)RequestStatus.Approved || rd.Request.Status == (int)RequestStatus.PartiallyDelivered ||
+                    rd.Request.Status == (int)RequestStatus.FullyDelivered) && rd.Request.Date.Year == DateTime.Now.Year && rd.Item.Category == category)
+                    .GroupBy(rd => rd.Item.Description)
+                    .ToDictionary(cl => cl.Key, cl => cl.ToList());
+
+                Dictionary<string, Dictionary<int, int>> itemInfo = new Dictionary<string, Dictionary<int, int>>();
+                foreach(KeyValuePair<string,List<RequestDetail>> kV in rDDict){
+                    List<int> rdIds = kV.Value.Select(rd => rd.RequestDetailId).ToList();
+
+                    Dictionary<int, int> monthAndItemAmount = ctx.RequestDetails.Include("Request")
+                        .Where(rd => rdIds.Contains(rd.RequestDetailId))
+                        .GroupBy(rd => rd.Request.Date.Month)
+                        .ToDictionary(cl => cl.Key, cl => cl.Sum(rd => rd.Quantity));
+
+                    itemInfo.Add(kV.Key, monthAndItemAmount);
+
+                }
+
+                return itemInfo;
             }
         }
 
