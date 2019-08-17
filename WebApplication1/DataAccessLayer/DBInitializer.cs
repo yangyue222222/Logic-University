@@ -7,7 +7,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DataAccessLayer
 {
-    public class DBInitializer : DropCreateDatabaseIfModelChanges<UniDBContext>
+    public class DBInitializer : DropCreateDatabaseAlways<UniDBContext>
     {
         protected override void Seed(UniDBContext context)
         {
@@ -67,6 +67,7 @@ namespace WebApplication1.DataAccessLayer
             {
                 d.PickupPoint = pick;
             }
+
 
             User csE1 = context.Users.Include("Department").Where(us => us.Username == "cse1").SingleOrDefault();
             Department csDep = csE1.Department;

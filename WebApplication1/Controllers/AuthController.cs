@@ -8,7 +8,8 @@ using System.Diagnostics;
 using WebApplication1.Utilities;
 using System.Diagnostics;
 using WebApplication1.DAOs;
-using WebApplication1.Filters;
+using WebApplication1.Utilities;
+
 
 namespace WebApplication1.App_Start
 {
@@ -18,6 +19,7 @@ namespace WebApplication1.App_Start
         [Route("~/")]
         public ActionResult Index()
         {
+
             if (Request.Cookies["token"] != null)
             {
                 string token = Request.Cookies["token"].Value;

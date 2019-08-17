@@ -11,6 +11,7 @@ using WebApplication1.Filters;
 namespace WebApplication1.Controllers
 {
     [AuthFilter]
+    [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
     public class StockController : Controller
     {
         [HttpGet,Route("receivestocks")]
@@ -50,7 +51,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet, Route("instocks",Name = "instocks")]
-        [AuthorizeFilter((int)UserRank.Manager,(int)UserRank.Supervisor,(int)UserRank.Clerk)]
+        
         public ActionResult Inventory()
         {
             ViewData["Items"] = ItemDao.GetAllItems();

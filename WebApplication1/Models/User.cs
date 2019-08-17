@@ -24,6 +24,7 @@ namespace WebApplication1.Models
         public string Username { get; set; }
         [Required(ErrorMessage = "Please Enter Password", AllowEmptyStrings = false)]
         public string Password { get; set; }
+        public string Email { get; set; }
         public int Rank { get; set; }
         public Department Department { get; set; }
         public List<PickUpPoint> PickUpPoints { get; set; }

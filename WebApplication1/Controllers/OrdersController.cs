@@ -182,5 +182,57 @@ namespace WebApplication1.Controllers
             OrderDao.UpdateOrderStatus(order);
             return RedirectToAction("PendingOrders");
         }
+
+        [HttpGet, Route("priorityreorderitems")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
+        public ActionResult GetPriorityItemsForReOrder()
+        {
+            List<RequestDetail> unfulfilledRequestDetails = RequestDao.GetUnfulfilledRequestDetails();
+
+            //need to consider which requests are prepared but not delivered yet
+            List<int> requestIdWithPreparedDisbursement = unfulfilledRequestDetails.Where(rd => rd.Request.DisbursementStatus == (int)RequestRetrievalStatus.Prepared)
+                .Select(rd => rd.Request.RequestId).Distinct().ToList();
+
+            //get prepared disbursement details
+            List<DisbursementDetail> disbursementDetails = DisbursementDao.GetPreparedDisbursementByRequestIds(requestIdWithPreparedDisbursement);
+
+            //get prepared item id as key and prepared amount as value in dictionary
+            Dictionary<int,int> preparedItemsDict = disbursementDetails.GroupBy(dd => dd.Item.ItemId)
+                .ToDictionary(cl => cl.Key, cl => cl.Sum(dd => dd.Quantity));
+
+            //item id as key and required amount as dictionary value
+            Dictionary<int, int> requiredItemDict = unfulfilledRequestDetails.GroupBy(rd => rd.Item.ItemId)
+                .ToDictionary(cl => cl.Key,cl => cl.Sum(rd => (rd.Quantity - rd.DeliveredQuantity) ));
+            //get item key to pass as an argument to finding item instock info
+            List<int> itemIds = requiredItemDict.Keys.ToList();
+
+            List<Item> currentStockItems = ItemDao.GetCurrentStockInfoByIds(itemIds);
+            List<object> requiredItemsInfo = new List<object>();
+            foreach(var i in currentStockItems)
+            {
+                int unfulfilledAmount = requiredItemDict[i.ItemId];
+                if(i.Quantity == 0 || i.Quantity <= unfulfilledAmount)
+                {
+                    int preparedAmount = 0;
+                    if (preparedItemsDict.ContainsKey(i.ItemId))
+                    {
+                        preparedAmount = preparedItemsDict[i.ItemId];
+                    }
+                    int requiredQty = unfulfilledAmount - i.Quantity;
+                    int suggestedQty = requiredQty - preparedAmount + 10;
+                    var itemInfo = new
+                    {
+                        Description = i.Description,
+                        ItemId = i.ItemId,
+                        Category = i.Category,
+                        SuggestedQty = suggestedQty,
+                        UOM = i.UnitOfMeasure
+                    };
+                    requiredItemsInfo.Add(itemInfo);
+                }
+            }
+
+            return Json(requiredItemsInfo, JsonRequestBehavior.AllowGet);
+        }
     }
 }

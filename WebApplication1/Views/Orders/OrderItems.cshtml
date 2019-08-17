@@ -27,6 +27,21 @@
                 </div>
                 <div class="sixteen wide tablet ten wide computer column">
                     <div class="ui grid">
+                        <div class="sixteen wide tablet column" id="suggested-item-box">
+                            <table class="ui celled table" >
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>UOM</th>
+                                        <th>Suggested Qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="suggested-item-tablebody">
+                                    
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="sixteen wide tablet column">
                             <div class="ui input" style="width : 100%">
                                 <input id="searchbar" type="text" placeholder="Search..." disabled/>
@@ -98,6 +113,8 @@
         countLabel.innerHTML = `*Item Count By : ${arr[2]}`;
             
     }
+
+    GetSuggestedOrderInfo();
 
     function itemAdd() {
         if (arr.length > 0) {
@@ -204,6 +221,29 @@
 
     }
 
+    function GetSuggestedOrderInfo() {
+        $.ajax({
+            url: 'http://localhost:50271/priorityreorderitems',
+            type: 'GET',
+            contentType: 'application/json',
+            xhrFields: { withCredentials: true },
+            success: function (data, textStatus, xhr) {
+                if (data.length > 0) {
+                    var suggestedTable = document.getElementById('suggested-item-tablebody');
+                    var rowString = '';
+                    data.forEach(i =>
+                        rowString += `<tr><td>${i.Category}</td><td>${i.Description}</td><td>${i.UOM}</td><td>${i.SuggestedQty}</td></tr>`
+                    );
+                    suggestedTable.innerHTML = rowString;
+                } else {
+                    var suggestedBox = document.getElementById('suggested-item-box');
+                    suggestedBox.innerHTML = '<h5 class="ui header">Currently, there is no item to suggest.</h5>'
+                }
+
+            }
+        })
+    }
+
     $(document).ready(function () {
 
         var selectedSupplier = @suppliers[0].SupplierId
@@ -211,6 +251,9 @@
         selectBox = $('#supplier').change(function () {
             selectedSupplier = $(this).children("option:selected").val();
         })
+
+
+
 
         $('#submit-item').click(function () {
 

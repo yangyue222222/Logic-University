@@ -16,7 +16,8 @@ namespace WebApplication1.DataAccessLayer
                 Name = "CS Employee 1",
                 Username = "cse1",
                 Password = "cse1",
-                Rank = (int)UserRank.Employee
+                Rank = (int)UserRank.Employee,
+                Email = "wychia1@gmail.com"
             };
 
             User e2 = new User()
@@ -32,7 +33,8 @@ namespace WebApplication1.DataAccessLayer
                 Name = "CS Head",
                 Username = "cshead",
                 Password = "cshead",
-                Rank = (int)UserRank.Head
+                Rank = (int)UserRank.Head,
+                Email = "sa48depthead@gmail.com"
             };
 
 
