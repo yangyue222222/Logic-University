@@ -94,12 +94,12 @@ namespace WebApplication1.DAOs
             }
         }
 
-        public static List<Adjustment> GetAllAdjustmentsByClerk(int rank,int userId,int departmentId)
+        public static List<Adjustment> GetAllAdjustmentsByClerk(int userId,int departmentId)
         {
             using(var ctx = new UniDBContext())
             {
                 List<Adjustment> adjustments = ctx.Adjustments.Include("Requestor").Include("Requestor.Department")
-                    .Where(ad => ad.Requestor.UserId == userId && ad.Requestor.Rank == rank && ad.Requestor.Department.DepartmentId == departmentId)
+                    .Where(ad => ad.Requestor.UserId == userId && ad.Requestor.Department.DepartmentId == departmentId)
                     .ToList();
 
                 return adjustments;

@@ -106,7 +106,7 @@ namespace WebApplication1.Controllers
 
         //get all approved orders for receiving stock
         [HttpGet,Route("approvedorders",Name = "approvedorders")]
-        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
+        [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult ApprovedOrders()
         {
             List<Order> orders = OrderDao.GetApprovedOrders();
@@ -116,7 +116,7 @@ namespace WebApplication1.Controllers
 
         //post order for receiving stock
         [HttpPost,Route("approveorders/{orderId}")]
-        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
+        [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult ApprovedOrders(List<OrderDetail> orderDetails,int orderId)
         {
             OrderDao.ReceiveStocks(orderDetails, orderId);

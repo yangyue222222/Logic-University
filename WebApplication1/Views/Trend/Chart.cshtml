@@ -18,6 +18,8 @@
         </select>
 
         <button class="ui positive button" onclick="fetchAndShow()">Show Trend</button>
+        <br/>
+        *Please select item category to view the trend.
     </div>
     <div class="sixteen wide tablet column">
         <canvas id="canvas"></canvas>
@@ -59,7 +61,7 @@
             options: {
                 title: {
                     display: true,
-                    text: 'Trend Analysis By Item Category'
+                    text: `Requisition Trend for ${new Date().getFullYear()}`
                 },
                 tooltips: {
                     mode: 'index',
