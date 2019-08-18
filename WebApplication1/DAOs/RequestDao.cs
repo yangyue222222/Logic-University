@@ -316,17 +316,17 @@ namespace WebApplication1.DAOs
                 return null;
             }
         }
-        public static List<Request> GetUnFulfilledRequests()
-        {
-            using (var ctx = new UniDBContext())
-            {
-                List<Request> requests = ctx.Requests.Include("Department")
-                    .Where(r => r.Status == (int)RequestStatus.Approved || r.Status == (int)RequestStatus.PartiallyDelivered)
-                    .ToList();
+        //public static List<Request> GetUnFulfilledRequests()
+        //{
+        //    using (var ctx = new UniDBContext())
+        //    {
+        //        List<Request> requests = ctx.Requests.Include("Department")
+        //            .Where(r => r.Status == (int)RequestStatus.Approved || r.Status == (int)RequestStatus.PartiallyDelivered)
+        //            .ToList();
 
-                return requests;
-            }
-        }
+        //        return requests;
+        //    }
+        //}
 
 
         //key for item description,

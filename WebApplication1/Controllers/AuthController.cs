@@ -194,10 +194,5 @@ namespace WebApplication1.App_Start
             return Json(logout, JsonRequestBehavior.AllowGet);
         }
 
-        [AuthFilter]
-        public ActionResult Dashboard()
-        {
-            return View();
-        }
     }
 }
