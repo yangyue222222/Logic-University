@@ -28,7 +28,7 @@ namespace WebApplication1.Controllers
 
         //for representative employee to get delivered disbursement and approve it
         [HttpGet,Route("delivereddisbursements",Name = "delivereddisbursements")]
-        [AuthorizeFilter((int)UserRank.Employee)]
+        [AuthorizeFilter((int)UserRank.Employee, (int)UserRank.TemporaryHead)]
         public ActionResult GetDeliveredDisbursements()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
@@ -290,7 +290,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet,Route("prepareddisbursements",Name = "prepareddisbursements")]
-        [AuthorizeFilter((int)UserRank.Employee,(int)UserRank.Head)]
+        [AuthorizeFilter((int)UserRank.Employee,(int)UserRank.TemporaryHead,(int)UserRank.Head)]
         public ActionResult GetPreparedDisbursementsByDepartment()
         {
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);

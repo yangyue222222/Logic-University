@@ -106,22 +106,20 @@ namespace WebApplication1.Controllers
 
         //get all approved orders for receiving stock
         [HttpGet,Route("approvedorders",Name = "approvedorders")]
-        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
+        [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult ApprovedOrders()
         {
-            int userId = Convert.ToInt32(RouteData.Values["userId"]);
-            List<Order> orders = OrderDao.GetApprovedOrders(userId);
+            List<Order> orders = OrderDao.GetApprovedOrders();
             ViewData["Orders"] = orders;
             return View();
         }
 
         //post order for receiving stock
         [HttpPost,Route("approveorders/{orderId}")]
-        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
+        [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult ApprovedOrders(List<OrderDetail> orderDetails,int orderId)
         {
-            int userId = Convert.ToInt32(RouteData.Values["userId"]);
-            OrderDao.ReceiveStocks(userId, orderDetails, orderId);
+            OrderDao.ReceiveStocks(orderDetails, orderId);
             return RedirectToAction("ApprovedOrders");
         }
 
@@ -214,21 +212,45 @@ namespace WebApplication1.Controllers
                 if(i.Quantity == 0 || i.Quantity <= unfulfilledAmount)
                 {
                     int preparedAmount = 0;
+                    int requiredQty = 0;
+                    int suggestedQty = 0;
                     if (preparedItemsDict.ContainsKey(i.ItemId))
                     {
                         preparedAmount = preparedItemsDict[i.ItemId];
+                        requiredQty = unfulfilledAmount;
+                        if(requiredQty == preparedAmount)
+                        {
+                            suggestedQty = 0;
+                        }else
+                        {
+                            suggestedQty = requiredQty - preparedAmount + 10;
+                        }
                     }
-                    int requiredQty = unfulfilledAmount - i.Quantity;
-                    int suggestedQty = requiredQty - preparedAmount + 10;
-                    var itemInfo = new
+                    else
                     {
-                        Description = i.Description,
-                        ItemId = i.ItemId,
-                        Category = i.Category,
-                        SuggestedQty = suggestedQty,
-                        UOM = i.UnitOfMeasure
-                    };
-                    requiredItemsInfo.Add(itemInfo);
+                        requiredQty = unfulfilledAmount - i.Quantity;
+                        if(requiredQty == 0)
+                        {
+                            suggestedQty = 0;
+                        }else
+                        {
+                            suggestedQty = requiredQty + 10;
+                        }
+                    }
+                   
+                    if(suggestedQty != 0)
+                    {
+                        var itemInfo = new
+                        {
+                            Description = i.Description,
+                            ItemId = i.ItemId,
+                            Category = i.Category,
+                            SuggestedQty = suggestedQty,
+                            UOM = i.UnitOfMeasure
+                        };
+                        requiredItemsInfo.Add(itemInfo);
+                    }
+                    
                 }
             }
 

@@ -102,25 +102,25 @@ namespace WebApplication1.DAOs
             }
         }
 
-        public static List<Order> GetApprovedOrders(int userId)
+        public static List<Order> GetApprovedOrders()
         {
             using (var ctx = new UniDBContext())
             {
                 List<Order> approvedOrders = ctx.Orders.Include("Supplier").Include("OrderDetails").Include("OrderDetails.Item").Include("Requestor")
-                    .Where(o => o.Status == (int)OrderStatus.Approved && o.Requestor.UserId == userId)
+                    .Where(o => o.Status == (int)OrderStatus.Approved)
                     .ToList();
                 return approvedOrders;
             }
         }
 
-        public static void ReceiveStocks(int userId, List<OrderDetail> orderDetails,int orderId)
+        public static void ReceiveStocks(List<OrderDetail> orderDetails,int orderId)
         {
             using (var ctx = new UniDBContext())
             {
                 List<int> orderDetailIds = orderDetails.Select(od => od.OrderDetailId).ToList();
 
                 Order order= ctx.Orders.Include("Requestor").Include("OrderDetails").Include("OrderDetails.Item")
-                    .Where(o => o.OrderId == orderId && o.Requestor.UserId == userId)
+                    .Where(o => o.OrderId == orderId)
                     .SingleOrDefault();
                 if(order != null)
                 {
@@ -129,9 +129,16 @@ namespace WebApplication1.DAOs
                     foreach (var od in orderDetails)
                     {
                         OrderDetail orderDetail = orderDetailDict[od.OrderDetailId];
-                        orderDetail.DeliveredQuantity = od.DeliveredQuantity;
-                        Item i = orderDetail.Item;
-                        i.Quantity += od.DeliveredQuantity;
+                        if(od.DeliveredQuantity == 0)
+                        {
+                            ctx.OrderDetails.Remove(orderDetail);
+                        }else
+                        {
+                            orderDetail.DeliveredQuantity = od.DeliveredQuantity;
+                            Item i = orderDetail.Item;
+                            i.Quantity += od.DeliveredQuantity;
+                        }
+                        
                     }
 
                     ctx.SaveChanges();

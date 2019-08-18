@@ -18,7 +18,7 @@ namespace WebApplication1.Controllers
         public ActionResult Index()
         {
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
-            List<Order> orders = OrderDao.GetApprovedOrders(userId);
+            List<Order> orders = OrderDao.GetApprovedOrders();
             ViewData["ApprovedOrders"] = orders;
             return View("StockOrders");
         }

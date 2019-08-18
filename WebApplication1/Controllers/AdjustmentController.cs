@@ -110,7 +110,7 @@ namespace WebApplication1.Controllers
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
             int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
 
-            List<Adjustment> adjustments = AdjustmentDao.GetAllAdjustmentsByClerk(rank, userId, departmentId);
+            List<Adjustment> adjustments = AdjustmentDao.GetAllAdjustmentsByClerk(userId, departmentId);
             ViewData["Adjustments"] = adjustments;
             //reuse the view for storemanager and storesupervisor
             ViewData["MyAdjustment"] = 1;

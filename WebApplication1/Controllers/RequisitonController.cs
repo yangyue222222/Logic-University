@@ -72,8 +72,37 @@ namespace WebApplication1.Controllers
                 return new HttpStatusCodeResult(400);
             }
 
+        }
+
+        [HttpGet, Route("getpreviousrequest")]
+        [AuthorizeFilter((int)UserRank.Head, (int)UserRank.TemporaryHead, (int)UserRank.Employee)]
+        public ActionResult GetPreviousRequestByDepartment()
+        {
+            int departmentId = Convert.ToInt32(RouteData.Values["departmentId"]);
+            List<RequestDetail> details = RequestDao.GetLatestRequisitionByDepartment(departmentId);
+            List<object> previousItems = new List<object>();
+            if(details != null)
+            {
+                foreach (var i in details)
+                {
+                    var obj = new
+                    {
+                        ItemId = i.Item.ItemId,
+                        Quantity = i.Quantity,
+                        Description = i.Item.Description,
+                        UOM = i.Item.UnitOfMeasure
+                    };
+
+                    previousItems.Add(obj);
+                }
+            }
+           
+
+            return Json(previousItems, JsonRequestBehavior.AllowGet);
 
         }
+
+
         
         //dept head gets pending requisitions to approve
         [HttpGet,Route("pendingrequisitions",Name = "pendingrequisitions")]
@@ -211,7 +240,7 @@ namespace WebApplication1.Controllers
             int userId = Convert.ToInt32(RouteData.Values["userId"]);
             int rank = Convert.ToInt32(RouteData.Values["rank"]);
             string layout = "";
-            if (rank == (int)UserRank.Clerk)
+            if (rank == (int)UserRank.Clerk || rank == (int)UserRank.Supervisor || rank == (int)UserRank.Manager)
             {
                 layout = "_StoreLayout.cshtml";
             }else

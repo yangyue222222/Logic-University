@@ -18,6 +18,7 @@
                     <tr>
                         <th>Status</th>
                         <th>Approved By</th>
+                        <th>Date</th>
                         <th>View Request Detail</th>
                         <th>View Disbursement Detail</th>
                     </tr>
@@ -35,6 +36,7 @@
                             {
                                 <td>-</td>
                             }
+                            <td>@d.Date.ToString("dd/MM/yyyy")</td>
                             <td><button class="ui primary button" onclick="viewOrder('@d.Request.RequestId*@d.Request.Date.ToString("dd/MM/yyyy")')">View Request Detail</button></td>
                             <td><a href="http://localhost:50271/departmentdisbursements/@d.DisbursementId">View Disbursement Detail</a></td>
                         </tr>

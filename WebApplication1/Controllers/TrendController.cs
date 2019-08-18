@@ -47,5 +47,26 @@ namespace WebApplication1.Controllers
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet, Route("getdepartmentstockdata")]
+        [AuthorizeFilter((int)UserRank.Manager, (int)UserRank.Supervisor, (int)UserRank.Clerk)]
+        public ActionResult GetDataByDepartment()
+        {
+            Dictionary<string, List<RequestDetail>> detailDict = RequestDao.GetRequestDetailsByAllDepartments();
+            List<object> data = new List<object>();
+            foreach(KeyValuePair<string,List<RequestDetail>> kV in detailDict)
+            {
+                var count = kV.Value.Sum(rd => rd.Quantity);
+                var obj = new
+                {
+                    Department = kV.Key,
+                    Amount = count
+                };
+                data.Add(obj);
+            }
+
+            return Json(data, JsonRequestBehavior.AllowGet);
+
+        }  
     }
 }

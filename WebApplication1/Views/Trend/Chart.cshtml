@@ -11,16 +11,22 @@
 <div class="ui grid">
     <div class="sixteen wide tablet column">
         <select class="ui dropdown" id="category-dropdown">
-            @foreach(var i in (List<string>)ViewData["Categories"])
+            @foreach (var i in (List<string>)ViewData["Categories"])
             {
                 <option value="@i">@i</option>
             }
         </select>
 
         <button class="ui positive button" onclick="fetchAndShow()">Show Trend</button>
+        <br/>
+        *Please select item category to view the trend.
     </div>
     <div class="sixteen wide tablet column">
         <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="sixteen wide tablet column">
+        <canvas id="canvas2"></canvas>
     </div>
 </div>
 
@@ -42,20 +48,20 @@
             xhrFields: { withCredentials: true },
             success: function (data, textStatus, xhr) {
                 console.log(data)
-                GenerateChart(data);
+                GenerateTrendItemChart(data);
             }
         })
     }
 
     window.onload = function () {
         var ctx = document.getElementById("canvas").getContext('2d');
-        window.myBar = new Chart(ctx, {
+        window.trenditem = new Chart(ctx, {
             type: 'bar',
             data: barchartData,
             options: {
                 title: {
                     display: true,
-                    text: 'Trend Analysis By Item Category'
+                    text: `Requisition Trend for ${new Date().getFullYear()}`
                 },
                 tooltips: {
                     mode: 'index',
@@ -72,9 +78,58 @@
                 }
             }
         });
+
+        var ctx2 = document.getElementById("canvas2").getContext('2d');
+
+        $.ajax({
+            url: 'http://localhost:50271/getdepartmentstockdata',
+            type: 'GET',
+            contentType: 'application/json',
+            xhrFields: { withCredentials: true },
+            success: function (data, textStatus, xhr) {
+
+                var departmentNames = [];
+                var itemNoData = [];
+                var departmentColor = [];
+
+                for (var i = 0; i < data.length; i++) {
+                    itemNoData.push(data[i].Amount);
+                    departmentNames.push(data[i].Department)
+                    departmentColor.push(colors[i]);
+                }
+
+                var config = {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: itemNoData,
+                            backgroundColor: departmentColor,
+                            label: 'Dataset 1'
+                        }],
+                        labels: departmentNames
+                    },
+                    options: {
+                        responsive: true,
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: `No of Items Ordered By Each Department in ${new Date().getFullYear()}`
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true
+                        }
+                    }
+                };
+                window.doughnut = new Chart(ctx2, config);
+        }
+
+        });
     }
 
-    function GenerateChart(data) {
+    function GenerateTrendItemChart(data) {
         var itemsKeys = Object.keys(data);
         var datasets = [];
         for (var i = 0; i < itemsKeys.length; i++) {
@@ -107,7 +162,7 @@
 
         barchartData.datasets = datasets;
 
-        window.myBar.update();
+        window.trenditem.update();
     }
     
 </script>
