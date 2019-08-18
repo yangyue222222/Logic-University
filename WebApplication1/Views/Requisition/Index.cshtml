@@ -28,13 +28,13 @@
                     <div class="ui grid">
                         <div class="sixteen wide tablet column">
                             <div class="ui input" style="width : 100%">
-                                <input id="searchbar" type="text" placeholder="Search..." disabled/>
+                                <input id="searchbar" type="text" placeholder="Search..." disabled />
                             </div>
                         </div>
                         <div class="sixteen wide tablet column">
                             <div class="field" style="color: grey;">
                                 <div class="ui input" style="width : 100px;">
-                                    <input id="quantity-box" type="number" placeholder="Qty..." min="1" step="1"/>
+                                    <input id="quantity-box" type="number" placeholder="Qty..." min="1" step="1" />
                                 </div>
                                 <label id="count-label">*Item Count by :</label>
 
@@ -45,6 +45,13 @@
                             </div>
 
                         </div>
+                        <div class="sixteen wide tablet column">
+                            <button class="ui button" onclick="getPreviousRequisition()" style="background-color :#4285F4;color : white;">
+                                <i class="plus square outline icon"></i>
+                                View Previous Request
+                            </button>
+                        </div>
+                        
                         <div class="sixteen wide tablet column" style="max-height: 400px;overflow-y:scroll;">
                             <table class="ui celled table" id="item-table">
                                 <thead>
@@ -56,7 +63,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="order-table-body"></tbody>
-                                
+
                             </table>
                         </div>
                         <div class="sixteen wide tablet right aligned column">
@@ -72,11 +79,37 @@
 </div>
 
 
+
+    <div class="ui modal">
+            <div class="header">Department Previous Request</div>
+            <div class="content" id="previous-request-modal">
+                <table class="ui celled table">
+                    <thead>
+                        <tr>
+                            <th style="background-color:#f2f2f2;">Description</th>
+                            <th style="background-color:#f2f2f2;">Qty</th>
+                            <th style="background-color:#f2f2f2;">UOM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="previous-requestBody"></tbody>
+
+                </table>
+                <div class="ui grid">
+                    <div class="sixteen wide tablet column">
+                        <button onclick="closeModal()" class="ui negative button">Close</button>
+                        <button onclick="addToList()" class="ui positive button">Add to the list</button>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
 <script>
     var searchbar = document.getElementById("searchbar");
     var countLabel = document.getElementById("count-label");
     var quantityBox = document.getElementById("quantity-box");
     var tBody = document.getElementById("order-table-body");
+    var previousRequestDetails = [];
     var chosenItems = {};
     var arr = [];
     function accordionItemClick(param) {
@@ -104,6 +137,9 @@
             generateTable();
         }
         
+    }
+    function closeModal() {
+        $('.ui.modal').modal('hide');
     }
 
     function removeItem(e) {
@@ -160,6 +196,50 @@
 
         }
 
+    }
+
+    function getPreviousRequisition() {
+        $.ajax({
+            url: 'http://localhost:50271/getpreviousrequest',
+            type: 'GET',
+            contentType: 'application/json',
+            xhrFields: { withCredentials: true },
+            success: function (data, textStatus, xhr) {
+                previousRequestDetails = data;
+                var previousTableBody = document.getElementById('previous-requestBody')
+                if (data.length > 0) {
+                    var tableString = '';
+                    data.forEach(i =>
+                        tableString += `<tr><td>${i.Quantity}</td><td>${i.Description}</td><td>${i.UOM}</td></tr>`
+                    );
+                    previousTableBody.innerHTML = tableString;
+
+                } else {
+                    var previousRequestModal = document.getElementById('previous-request-modal');
+                    previousRequestModal.innerHTML = '<h5 style="padding : 30px;" class="ui header">There is no previous requisition.</h5>'
+                }
+
+                $('.ui.modal').modal('show');
+            }
+        })
+    }
+
+    function addToList() {
+        var data = previousRequestDetails;
+        if (data.length > 0) {
+            for (var i = 0; i < data.length; i++) {
+                var count = 0;
+                if (chosenItems[data[i].ItemId]) {
+                    count = Number(chosenItems[data[i].ItemId]['count']) + Number(data[i].Quantity);
+                } else {
+                    count = data[i].Quantity;
+                }
+
+                chosenItems[data[i].ItemId] = { count: count, description: data[i].Description, uom: data[i].UOM };
+            }
+            generateTable();
+            $('.ui.modal').modal('hide');
+        }
     }
 
     $(document).ready(function () {

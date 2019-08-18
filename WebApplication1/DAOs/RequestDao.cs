@@ -39,7 +39,8 @@ namespace WebApplication1.DAOs
                     ctx.Requests.Add(req);
                     ctx.SaveChanges();
                 }
-            }catch (Exception e)
+            }
+            catch (Exception e)
             {
                 throw new Exception("Internal Server Error");
             }
@@ -49,22 +50,23 @@ namespace WebApplication1.DAOs
         {
             try
             {
-                using(var ctx = new UniDBContext())
+                using (var ctx = new UniDBContext())
                 {
                     List<Request> requests = ctx.Requests.Include("Requestor").Where(r => r.Requestor.Department.DepartmentId == departmentId && r.Status == (int)RequestStatus.Requested).ToList();
-                    
+
                     return requests;
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return null;
             }
         }
 
-        public static List<RequestDetail> getRequestDetailsByRequestId(int id,int departmentId)
+        public static List<RequestDetail> getRequestDetailsByRequestId(int id, int departmentId)
         {
             List<RequestDetail> details = null;
-            using(var ctx = new UniDBContext())
+            using (var ctx = new UniDBContext())
             {
                 details = ctx.RequestDetails.Include("Item").Where(d => d.Request.RequestId == id && d.Request.Department.DepartmentId == departmentId).ToList();
             }
@@ -73,7 +75,7 @@ namespace WebApplication1.DAOs
 
         public static void ApproveRequest(Request request)
         {
-            
+
             using (var ctx = new UniDBContext())
             {
                 try
@@ -84,7 +86,7 @@ namespace WebApplication1.DAOs
                     req.Date = DateTime.Now.AddDays(-1);
                     ctx.Users.Attach(req.ApprovedBy);
                     ctx.SaveChanges();
-                }                
+                }
                 catch (Exception e)
                 {
                     Debug.WriteLine(e.InnerException.Message);
@@ -95,12 +97,12 @@ namespace WebApplication1.DAOs
 
         public static List<RetrievalItem> GetRequestDeailsByItems()
         {
-            using(var ctx = new UniDBContext())
+            using (var ctx = new UniDBContext())
             {
                 List<RetrievalItem> items = ctx.RequestDetails.Include("Request").Include("Item")
                     .Where(r =>
                         r.Request.Date.CompareTo(DateTime.Now) < 0 && r.Request.Status == (int)RequestStatus.Approved
-                    ).GroupBy(r =>new { r.Item.Description, r.Item.ItemId })
+                    ).GroupBy(r => new { r.Item.Description, r.Item.ItemId })
                     .Select(r => new RetrievalItem
                     {
                         Description = r.Key.Description,
@@ -133,11 +135,11 @@ namespace WebApplication1.DAOs
             }
         }
 
-       public static void CancelRequestById(int requestId,User u)
+        public static void CancelRequestById(int requestId, User u)
         {
-            using(var ctx = new UniDBContext())
+            using (var ctx = new UniDBContext())
             {
-                Request request = ctx.Requests.Where(r => r.RequestId == requestId && r.Department.DepartmentId == u.Department.DepartmentId 
+                Request request = ctx.Requests.Where(r => r.RequestId == requestId && r.Department.DepartmentId == u.Department.DepartmentId
                 && r.Requestor.UserId == u.UserId && r.Status == (int)RequestStatus.Requested)
                     .SingleOrDefault();
                 if (request != null)
@@ -148,12 +150,12 @@ namespace WebApplication1.DAOs
             }
         }
 
-        public static Request GetRequestById(int requestId,User u)
+        public static Request GetRequestById(int requestId, User u)
         {
-            using(var ctx = new UniDBContext())
+            using (var ctx = new UniDBContext())
             {
                 IQueryable<Request> query = ctx.Requests.Include("Requestor").Include("RequestDetails").Include("ApprovedBy").Include("Department").Include("RequestDetails.Item");
-                if(u.Rank == (int)UserRank.Clerk || u.Rank == (int)UserRank.Supervisor || u.Rank == (int)UserRank.Manager)
+                if (u.Rank == (int)UserRank.Clerk || u.Rank == (int)UserRank.Supervisor || u.Rank == (int)UserRank.Manager)
                 {
                     query = query.Where(r => r.RequestId == requestId);
                 }
@@ -170,7 +172,7 @@ namespace WebApplication1.DAOs
         //update request for delivered qty,status,etc.
         public static void UpdateRequestById(int requestId)
         {
-            using(var ctx = new UniDBContext())
+            using (var ctx = new UniDBContext())
             {
                 Request req = ctx.Requests.Include("RequestDetails").Include("RequestDetails.Item")
                     .Where(r => r.RequestId == requestId).SingleOrDefault();
@@ -186,7 +188,7 @@ namespace WebApplication1.DAOs
                     })
                     .ToDictionary(dd => dd.ItemId, dd => dd.Total);
                 bool fulfilRequest = true;
-                foreach(var rD in req.RequestDetails)
+                foreach (var rD in req.RequestDetails)
                 {
                     if (deliveredItemDict.ContainsKey(rD.Item.ItemId))
                     {
@@ -202,18 +204,20 @@ namespace WebApplication1.DAOs
                             rD.DeliveredQuantity += amountToIncrease;
                             fulfilRequest = false;
                         }
-                    }else
+                    }
+                    else
                     {
                         fulfilRequest = false;
                     }
-                    
-                    
+
+
                 }
 
-                if(fulfilRequest != true)
+                if (fulfilRequest != true)
                 {
                     req.Status = (int)RequestStatus.PartiallyDelivered;
-                }else
+                }
+                else
                 {
                     req.Status = (int)RequestStatus.FullyDelivered;
                 }
@@ -225,7 +229,7 @@ namespace WebApplication1.DAOs
 
         public static List<Request> GetUnFulfilledRequests()
         {
-            using(var ctx = new UniDBContext())
+            using (var ctx = new UniDBContext())
             {
                 List<Request> requests = ctx.Requests.Include("Department")
                     .Where(r => r.Status == (int)RequestStatus.Approved || r.Status == (int)RequestStatus.PartiallyDelivered)
@@ -317,7 +321,7 @@ namespace WebApplication1.DAOs
 
         //key for item description,
         //another dict key for month and value for no of items requested 
-        public static Dictionary<string,Dictionary<int,int>> GetRequestedItemNoByCategory(string category)
+        public static Dictionary<string, Dictionary<int, int>> GetRequestedItemNoByCategory(string category)
         {
             using (var ctx = new UniDBContext())
             {
@@ -329,7 +333,8 @@ namespace WebApplication1.DAOs
                     .ToDictionary(cl => cl.Key, cl => cl.ToList());
 
                 Dictionary<string, Dictionary<int, int>> itemInfo = new Dictionary<string, Dictionary<int, int>>();
-                foreach(KeyValuePair<string,List<RequestDetail>> kV in rDDict){
+                foreach (KeyValuePair<string, List<RequestDetail>> kV in rDDict)
+                {
                     List<int> rdIds = kV.Value.Select(rd => rd.RequestDetailId).ToList();
 
                     Dictionary<int, int> monthAndItemAmount = ctx.RequestDetails.Include("Request")
@@ -347,10 +352,10 @@ namespace WebApplication1.DAOs
 
         public static void UpdateRequestDisbursementStatus(int requestId)
         {
-            using(var ctx = new UniDBContext())
+            using (var ctx = new UniDBContext())
             {
                 Request req = ctx.Requests.Where(r => r.RequestId == requestId).SingleOrDefault();
-                if(req != null)
+                if (req != null)
                 {
                     req.DisbursementStatus = (int)RequestRetrievalStatus.NotPrepared;
                     ctx.SaveChanges();
@@ -360,15 +365,49 @@ namespace WebApplication1.DAOs
 
         public static List<RequestDetail> GetUnfulfilledRequestDetails()
         {
-            using(var ctx = new UniDBContext())
+            using (var ctx = new UniDBContext())
             {
                 List<RequestDetail> details = ctx.RequestDetails.Include("Request").Include("Item")
                     .Where(rd => rd.Request.Status == (int)RequestStatus.Approved || rd.Request.Status == (int)RequestStatus.PartiallyDelivered)
-                    .Where(rd => rd.Quantity - rd.DeliveredQuantity != 0) 
+                    .Where(rd => rd.Quantity - rd.DeliveredQuantity != 0)
                     .ToList();
 
                 return details;
 
+            }
+        }
+
+        public static List<RequestDetail> GetLatestRequisitionByDepartment(int departmentId)
+        {
+            using (var ctx = new UniDBContext())
+            {
+                Request request = ctx.Requests.Include("Department").Include("RequestDetails").Include("RequestDetails.Item")
+                    .Where(r => r.Department.DepartmentId == departmentId && (r.Status == (int)RequestStatus.Approved || r.Status == (int)RequestStatus.PartiallyDelivered || r.Status == (int)RequestStatus.FullyDelivered))
+                    .OrderByDescending(r => r.RequestId)
+                    .FirstOrDefault();
+                   
+                if(request != null)
+                {
+                    return request.RequestDetails.ToList();
+                }
+                
+                return null;
+
+
+            }
+
+        }
+
+        public static Dictionary<string, List<RequestDetail>> GetRequestDetailsByAllDepartments() {
+        
+            using(var ctx = new UniDBContext())
+            {
+                Dictionary<string, List<RequestDetail>> detailDict = ctx.RequestDetails.Include("Request").Include("Request.Department").Include("Item")
+                    .Where(rd => rd.Request.Status != (int)RequestStatus.Cancelled && rd.Request.Status != (int)RequestStatus.Rejected && rd.Request.Status != (int)RequestStatus.Requested && rd.Request.Date.Year == DateTime.Now.Year)
+                    .GroupBy(rd => rd.Request.Department.DepartmentName)
+                    .ToDictionary(cl => cl.Key, cl => cl.ToList());
+
+                return detailDict;
             }
         }
 

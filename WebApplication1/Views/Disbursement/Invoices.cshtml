@@ -64,7 +64,7 @@
         var div = document.getElementById("table-div")
         var departmentName = departmentDropdown.options[departmentDropdown.selectedIndex].innerHTML;
         var monthName = monthDropdown.options[monthDropdown.selectedIndex].innerHTML;
-        div.innerHTML = `No disbursement found for ${departmentName} in ${monthName}.`
+        div.innerHTML = `No approved disbursement found for ${departmentName} in ${monthName}.`
     }
 
     function GenerateTable(data) {
@@ -73,7 +73,7 @@
         var tableText = `<table class="ui celled table"><thead><tr><th>Department Name</th><th>Total Cost</th><th>Option</th></tr></thead><tbody>`;
         for (var i = 0; i < data.length; i++) {
             console.log(data[i])
-            tableText += `<tr><td>${departmentName}</td><td>${data[i].Total}</td><td><a href="http://localhost:50271/approveddisbursements/${data[i].DisbursementId}">View Detail</a></td></tr>`
+            tableText += `<tr><td>${departmentName}</td><td>$${data[i].Total}</td><td><a href="http://localhost:50271/approveddisbursements/${data[i].DisbursementId}">View Detail</a></td></tr>`
         }
 
         tableText += `</tbody></table><a href="http://localhost:50271/generateinvoice?requestedDepartmentId=${departmentDropdown.value}&month=${monthDropdown.value}" class="ui primary button">Generate Invoice</a>`
