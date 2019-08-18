@@ -202,6 +202,9 @@ namespace WebApplication1.DAOs
                             rD.DeliveredQuantity += amountToIncrease;
                             fulfilRequest = false;
                         }
+                    }else
+                    {
+                        fulfilRequest = false;
                     }
                     
                     
@@ -338,6 +341,33 @@ namespace WebApplication1.DAOs
                 }
 
                 return itemInfo;
+            }
+        }
+
+        public static void UpdateRequestDisbursementStatus(int requestId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                Request req = ctx.Requests.Where(r => r.RequestId == requestId).SingleOrDefault();
+                if(req != null)
+                {
+                    req.DisbursementStatus = (int)RequestRetrievalStatus.NotPrepared;
+                    ctx.SaveChanges();
+                }
+            }
+        }
+
+        public static List<RequestDetail> GetUnfulfilledRequestDetails()
+        {
+            using(var ctx = new UniDBContext())
+            {
+                List<RequestDetail> details = ctx.RequestDetails.Include("Request").Include("Item")
+                    .Where(rd => rd.Request.Status == (int)RequestStatus.Approved || rd.Request.Status == (int)RequestStatus.PartiallyDelivered)
+                    .Where(rd => rd.Quantity - rd.DeliveredQuantity != 0) 
+                    .ToList();
+
+                return details;
+
             }
         }
 

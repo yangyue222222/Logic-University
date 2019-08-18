@@ -63,5 +63,28 @@ namespace WebApplication1.DAOs
                 return loggedInUser;
             }
         }
+
+        public async static Task<User> GetDepartmentHeadByDepartmentId(int departmentId)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                User deptHead = ctx.Users.Include("Department").Where(u => u.Department.DepartmentId == departmentId && u.Rank == (int)UserRank.Head)
+                    .SingleOrDefault();
+                return deptHead;
+            }
+        }
+
+        public static List<User> FindRepresentativeByDepartmentIds(List<int> deptIds)
+        {
+            using (var ctx = new UniDBContext())
+            {
+                List<User> reps = ctx.Departments.Include("Representative")
+                    .Where(d => deptIds.Contains(d.DepartmentId))
+                    .Select(d => d.Representative)
+                    .ToList();
+
+                return reps;
+            }
+        }
     }
 }

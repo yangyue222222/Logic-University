@@ -8,6 +8,7 @@ using System.Diagnostics;
 using WebApplication1.DAOs;
 using WebApplication1.Utilities;
 using WebApplication1.Filters;
+using System.Threading.Tasks;
 
 namespace WebApplication1.Controllers
 {
@@ -54,11 +55,14 @@ namespace WebApplication1.Controllers
                         UserId = userId,
                         Department = d
                     };
+
                     RequestDao.InsertRequest(items, u);
+                    Task.Run(() => EmailUtility.SendEmailForApproval(departmentId));
                     return new HttpStatusCodeResult(200);
                 }
                 catch (Exception e)
                 {
+                    Debug.WriteLine(e.Message);
                     return new HttpStatusCodeResult(400);
                 }
 
@@ -163,6 +167,7 @@ namespace WebApplication1.Controllers
             }
 
             RequestDao.ApproveRequest(request);
+          
             return RedirectToAction("PendingRequisitions");
         }
         [Route("Requisitions/{id}/{status}")]

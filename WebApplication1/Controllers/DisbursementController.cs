@@ -8,6 +8,8 @@ using WebApplication1.DAOs;
 using WebApplication1.DataAccessLayer;
 using System.Diagnostics;
 using WebApplication1.Filters;
+using System.Threading.Tasks;
+using WebApplication1.Utilities;
 
 namespace WebApplication1.Controllers
 {
@@ -72,7 +74,7 @@ namespace WebApplication1.Controllers
 
 
 
-        //when reach to the collection point and storeman will click received to the particular disbursement id
+        //when reach to the collection point and storeman will click deliver to the particular disbursement id
         [HttpPost, Route("deliveries/{id}")]
         [AuthorizeFilter((int)UserRank.Clerk)]
         public ActionResult ReceiveItemsByDepartment(List<DisbursementDetail> details,int id)
@@ -82,7 +84,8 @@ namespace WebApplication1.Controllers
 
             //generate adjustment if items are missing
             List<AdjustmentDetail> adjustmentDetails = new List<AdjustmentDetail>();
-
+            //if detail drop to 0 , it should be removed
+            List<DisbursementDetail> disDetails = new List<DisbursementDetail>();
             foreach (var d in details)
             {
                 DisbursementDetail disDetail = dDict[d.DisbursementDetailId];
@@ -97,7 +100,10 @@ namespace WebApplication1.Controllers
                         Count = disDetail.Quantity - d.Quantity
                         
                     };
-
+                    if(d.Quantity == 0)
+                    {
+                        disDetails.Add(disDetail);
+                    }
                     adjustmentDetails.Add(adDetail);
                 }
             }
@@ -114,9 +120,31 @@ namespace WebApplication1.Controllers
             }
 
 
-            Disbursement dis = DisbursementDao.DeliverDisbursement(id, details);
-            //need to update the request such as status, delivered Qty
-            RequestDao.UpdateRequestById(dis.Request.RequestId);
+
+            Disbursement dis = DisbursementDao.GetDisbursement(id);
+            int requestId = dis.Request.RequestId;
+
+            dis = DisbursementDao.DeliverDisbursement(id, details);
+
+            //remove disbursement detail with quantity of zero
+            if (disDetails.Count > 0)
+            {
+                DisbursementDao.RemoveDisbursementDetails(disDetails);
+                //details have been removed, need to remove disbursement if disbursement got no details
+                //removedDisbursement = DisbursementDao.RemoveDisbursementWithoutDetails(id);
+            }
+
+            dis = DisbursementDao.GetDeliveredDisbursement(id);
+            if(dis != null)
+            {
+                //need to update the request such as status, delivered Qty
+                RequestDao.UpdateRequestById(requestId);
+            }else
+            {
+                //if disbursement is removed, change disbursement status of request back to not prepared
+                RequestDao.UpdateRequestDisbursementStatus(requestId);
+            }
+
 
             return RedirectToAction("Deliveries");
         }
@@ -180,6 +208,7 @@ namespace WebApplication1.Controllers
                 }
 
                 DisbursementDao.GenerateDisbursements(items);
+                Task.Run(() => EmailUtility.SendEmailForItemsPickUp());
                 return RedirectToAction("Retrieval", "Stationery");
             }
             else

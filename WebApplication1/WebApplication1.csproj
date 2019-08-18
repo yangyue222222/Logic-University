@@ -191,6 +191,7 @@
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\EmailUtility.cs" />
     <Compile Include="Utilities\TokenUtility.cs" />
   </ItemGroup>
   <ItemGroup>

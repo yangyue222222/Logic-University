@@ -64,5 +64,17 @@ namespace WebApplication1.DAOs
             }
         }
 
+
+        public static List<Item> GetCurrentStockInfoByIds(List<int> itemIds)
+        {
+            using(var ctx = new UniDBContext())
+            {
+                List<Item> itemStockInfo = ctx.Items.Where(i => itemIds.Contains(i.ItemId))
+                    .ToList();
+
+                return itemStockInfo;
+            }
+        } 
+
     }
 }
