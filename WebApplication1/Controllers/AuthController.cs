@@ -124,9 +124,6 @@ namespace WebApplication1.App_Start
                     case (int)UserRank.Head:
                         result = RedirectToRoute("pendingrequisitions");
                         break;
-                    case (int)UserRank.TemporaryHead:
-                        result = RedirectToAction("PendingRequisitions", "Requisition");
-                        break;
                     case (int)UserRank.Clerk:
                         result = RedirectToRoute("orderitems");
                         break;

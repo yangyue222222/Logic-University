@@ -39,8 +39,8 @@
 </div>
 
 <script>
-    var departmentDropdown = document.getElementById("department-dropdown")
-    var monthDropdown = document.getElementById("month-dropdown")
+    var departmentDropdown = document.getElementById("department-dropdown");
+    var monthDropdown = document.getElementById("month-dropdown");
     function GetReq() {
         var departmentId = departmentDropdown.value;
         var month = monthDropdown.value;
@@ -66,13 +66,31 @@
 
     function GenerateTable(data) {
         var div = document.getElementById("table-div")
-        var tableText = `<table class="ui celled table"><thead><tr><th>Item Description</th><th>Total Requested</th></tr></thead><tbody>`;
+        var tableText = `<table id="reportTable" class="ui celled table"><thead><tr><th>Item Description</th><th>Total Requested</th></tr></thead><tbody>`;
         for (var i = 0; i < data.length; i++) {
             console.log(data[i])
             tableText += `<tr><td>${data[i].Description}</td><td>${data[i].AllocatedQuantity}</td></tr>`
         }
 
-        tableText += `</tbody></table><a href="" class="ui primary button">Create Report</a>`
+        tableText += `</tbody></table><button onclick="SaveReport()" class="ui positive button" style="margin-left : 10px;">Create Report</button>`
         div.innerHTML = tableText;
+    }
+    function SaveReport() {
+        var deptName = departmentDropdown.options[departmentDropdown.selectedIndex].innerHTML;
+        var monthName = monthDropdown.options[monthDropdown.selectedIndex].innerHTML;
+        var table = document.getElementById("reportTable");
+        var reportText = "Item Description, Total Requested,\n";
+        for (var i = 1; i < table.rows.length; i++) {
+            var row = table.rows[i];
+            for (var j = 0; j < 2; j++) {
+                reportText += (row.cells[j].innerHTML + ",");
+            }
+            reportText += "\n";
+        }
+
+        var a = document.createElement('a');
+        a.href = "data:text/csv;charset=UTF-8," + encodeURIComponent(reportText);
+        a.download = 'ReqReport' + deptName + monthName +'.csv';
+        a.click();
     }
 </script>
