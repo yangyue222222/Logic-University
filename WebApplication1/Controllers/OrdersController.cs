@@ -115,11 +115,24 @@ namespace WebApplication1.Controllers
         }
 
         //post order for receiving stock
-        [HttpPost,Route("approveorders/{orderId}")]
+        [HttpPost, Route("approveorders/{orderId}")]
         [AuthorizeFilter((int)UserRank.Clerk)]
-        public ActionResult ApprovedOrders(List<OrderDetail> orderDetails,int orderId)
+        public ActionResult ApprovedOrders(List<OrderDetail> orderDetails, int orderId)
         {
-            OrderDao.ReceiveStocks(orderDetails, orderId);
+            bool validOrder = true;
+            foreach (var od in orderDetails)
+            {
+                if(od.DeliveredQuantity < 0)
+                {
+                    validOrder = false;
+                    break;
+                }
+            }
+
+            if (validOrder)
+            {
+                OrderDao.ReceiveStocks(orderDetails, orderId);
+            }
             return RedirectToAction("ApprovedOrders");
         }
 
